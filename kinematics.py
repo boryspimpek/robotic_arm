@@ -39,14 +39,14 @@ class Kinematics:
         s_shoulder = 180 - theta1 
         s_elbow = 180 - (90 + theta2)
 
-        print("[Inverse Kinematics — Punkt docelowy]")
-        print(f"  Obrót podstawy (phi):   {phi:.2f}°")
-        print(f"  Ramię 1 (theta1):        {theta1:.2f}°")
-        print(f"  Ramię 2 (theta2):        {theta2:.2f}°")
-        print("  Kąty serw (0-180°):")
-        print(f"  Serwo 1 (baza):          {s_base:.2f}°")
-        print(f"  Serwo 2 (ramię 1):       {s_shoulder:.2f}°")
-        print(f"  Serwo 3 (ramię 2):       {s_elbow:.2f}°")
+        # print("[Inverse Kinematics — Punkt docelowy]")
+        # print(f"  Obrót podstawy (phi):   {phi:.2f}°")
+        # print(f"  Ramię 1 (theta1):        {theta1:.2f}°")
+        # print(f"  Ramię 2 (theta2):        {theta2:.2f}°")
+        # print("  Kąty serw (0-180°):")
+        # print(f"  Serwo 1 (baza):          {s_base:.2f}°")
+        # print(f"  Serwo 2 (ramię 1):       {s_shoulder:.2f}°")
+        # print(f"  Serwo 3 (ramię 2):       {s_elbow:.2f}°")
 
         angles = {
             SERVO_BASE_ID: s_base,

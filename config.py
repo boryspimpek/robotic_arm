@@ -7,7 +7,7 @@ SERVO_BASE_ID = 1       # obrót podstawy
 SERVO_SHOULDER_ID = 2   # ramię nr 1
 SERVO_ELBOW_ID = 3      # ramię nr 2
 
-UART_PORT = "COM8"
+UART_PORT = "/dev/ttyACM0"
 BAUDRATE = 1000000
 
 SERVO_MID_ANGLE = 90    # pozycja pionowa serwa

@@ -22,12 +22,13 @@ arm = ArmController(kin, servo_ctrl)
 
 
 ### ALONG AXIS
-arm.point_to_point((143.266, 0, 47.619), (191.608, 0, 47.619))
+# arm.point_to_point((143.266, 0, 47.619), (191.608, 0, 47.619))
 
-arm.point_to_point((191.608, 0, 47.619), (191.608, 0, -35.036))
+# arm.point_to_point((191.608, 0, 47.619), (191.608, 0, -35.036))
 
-arm.point_to_point((191.608, 0, -35.036), (143.266, 0, -35.036))
+# arm.point_to_point((191.608, 0, -35.036), (143.266, 0, -35.036))
 
-arm.point_to_point((143.266, 0, -35.036), (143.266, 0, 47.619))
+# arm.point_to_point((143.266, 0, -35.036), (143.266, 0, 47.619))
 
-
+start = (200, 0, 0)
+arm.move_to_point(start, steps=150)
