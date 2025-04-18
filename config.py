@@ -6,6 +6,8 @@ L2 = 100  # mm, długość drugiego ramienia
 SERVO_BASE_ID = 1       # obrót podstawy
 SERVO_SHOULDER_ID = 2   # ramię nr 1
 SERVO_ELBOW_ID = 3      # ramię nr 2
+SERVO_WRIST_ID = 4
+
 
 UART_PORT = "/dev/ttyACM0"
 BAUDRATE = 1000000
@@ -18,6 +20,7 @@ SERVO_ANGLE_LIMITS = (0, 180)  # dozwolony zakres dla każdego serwa
 SERVO_TRIMS = {
     SERVO_BASE_ID: 0.0,
     SERVO_SHOULDER_ID: +1,  # przykład korekty (możesz zmienić)
-    SERVO_ELBOW_ID: +1
+    SERVO_ELBOW_ID: +1,
+    SERVO_WRIST_ID: +5
 }
 

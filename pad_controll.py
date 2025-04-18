@@ -30,9 +30,9 @@ class HybridController:
 
             self.mode = "angle"
             self.angle_controller = AngleController(interface="/dev/input/js0", connecting_using_ds4drv=False)
-            self.angle_controller.base_angle = 90
-            self.angle_controller.shoulder_angle = 90
-            self.angle_controller.elbow_angle = 90
+            # self.angle_controller.base_angle = 90
+            # self.angle_controller.shoulder_angle = 90
+            # self.angle_controller.elbow_angle = 90
             self.angle_controller.on_x_press = self.switch_mode
             self.angle_controller.on_exit = self.exit_program
             self.current_controller = self.angle_controller

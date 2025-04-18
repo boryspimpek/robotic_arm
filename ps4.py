@@ -34,7 +34,7 @@ class ArmPS4Controller(Controller):
         self.rx = 0.0
 
         print("[INFO] Przechodzę do pozycji startowej...")
-        self.arm.move_to_point_dps((self.x, self.y, self.z), tempo_dps=10)
+        self.arm.move_to_point_dps((self.x, self.y, self.z), tempo_dps=30)
 
         self.control_thread = threading.Thread(target=self.update_loop)
         self.control_thread.start()
@@ -42,12 +42,12 @@ class ArmPS4Controller(Controller):
     def apply_deadzone(self, val):
         return val if abs(val) > self.deadzone else 0.0
 
-    def on_L3_up(self, val): self.lz = -self.apply_deadzone(val / 32767)
-    def on_L3_down(self, val): self.lz = -self.apply_deadzone(val / 32767)
+    def on_R3_up(self, val): self.lz = -self.apply_deadzone(val / 32767)
+    def on_R3_down(self, val): self.lz = -self.apply_deadzone(val / 32767)
     def on_L3_left(self, val): self.lphi = -self.apply_deadzone(val / 32767)
     def on_L3_right(self, val): self.lphi = -self.apply_deadzone(val / 32767)
-    def on_R3_up(self, val): self.rx = -self.apply_deadzone(val / 32767)
-    def on_R3_down(self, val): self.rx = -self.apply_deadzone(val / 32767)
+    def on_L3_up(self, val): self.rx = -self.apply_deadzone(val / 32767)
+    def on_L3_down(self, val): self.rx = -self.apply_deadzone(val / 32767)
 
     def on_x_press(self):
         pass
