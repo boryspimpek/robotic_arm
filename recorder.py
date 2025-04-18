@@ -8,7 +8,7 @@ from controller import ArmController
 from kinematics import Kinematics
 
 POSES_FILE = "poses.json"
-TEMPO_DPS = 30.0  # prędkość ruchu serw w °/s
+TEMPO_DPS = 60.0  # prędkość ruchu serw w °/s
 
 def record_positions(ctrl):
     print("[TRYB NAGRYWANIA]")
@@ -89,9 +89,8 @@ def playback(ctrl):
 
     print("[OK] Odtwarzanie zakończone.")
 
-
 if __name__ == "__main__":
-    servo_ctrl = ServoController(port_path="COM8")  # lub UART_PORT z config.py
+    servo_ctrl = ServoController(port_path="/dev/ttyACM0")  # lub UART_PORT z config.py
     kin = Kinematics(100, 100)  # lub importuj L1, L2 z config
     controller = ArmController(kin, servo_ctrl)
 

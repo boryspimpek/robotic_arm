@@ -40,7 +40,7 @@ class ArmPS4Controller(Controller):
 
 
         print("[INFO] Przechodzę do pozycji startowej...")
-        self.arm.move_to_point((self.x, self.y, self.z), steps=100)
+        self.arm.move_to_point_dps((self.x, self.y, self.z), tempo_dps=30)
 
         # Uruchamiamy wątek sterowania ruchem
         self.control_thread = threading.Thread(target=self.update_loop)
@@ -49,7 +49,7 @@ class ArmPS4Controller(Controller):
     def apply_deadzone(self, val):
         return val if abs(val) > self.deadzone else 0.0
     
-# L3 – pion (Z)
+    # L3 – pion (Z)
     def on_L3_up(self, val): self.lz = -self.apply_deadzone(val / 32767)
     def on_L3_down(self, val): self.lz = -self.apply_deadzone(val / 32767)
 
@@ -76,7 +76,7 @@ class ArmPS4Controller(Controller):
                 current_phi += dphi
                 current_phi = max(-90, min(90, current_phi))  # ogranicz obrót
 
-                success = self.arm.move_xz_and_rotate_base(
+                success = self.arm.pad_controll(
                     new_x, new_z, current_phi, steps=5
                 )
 

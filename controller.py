@@ -9,9 +9,7 @@ class ArmController:
         self.kin = kinematics
         self.servo = servo_ctrl
 
-    def move_to_point(self, target_xyz, steps, elbow_up=True):
-        # from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
-
+    def move_to_point_steps(self, target_xyz, steps, elbow_up=True):
         # 1. Odczyt aktualnych kątów serw
         current_angles = self.servo.get_all_servo_positions_deg([
             SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
@@ -50,11 +48,11 @@ class ArmController:
         return True
 
     def point_to_point(self, start, end, steps=300, elbow_up=True):
-        from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
+        # from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
 
         print("[INFO] Przejście do punktu startowego trajektorii...")
-        self.move_to_point(start, steps=150, elbow_up=elbow_up)
-        time.sleep(1)
+        self.move_to_point_dps(start, tempo_dps=30, elbow_up=elbow_up)
+        # time.sleep(1)
 
         current_angles = self.servo.get_all_servo_positions_deg([
             SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
@@ -140,7 +138,7 @@ class ArmController:
 
         return True
 
-    def move_xz_and_rotate_base(self, x, z, phi_deg, steps=5, elbow_up=True):
+    def pad_controll(self, x, z, phi_deg, steps=5, elbow_up=True):
         from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
 
         try:
@@ -183,3 +181,46 @@ class ArmController:
         except Exception as e:
             print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
             return False
+
+    def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
+        # Odczytanie aktualnych kątów serw
+        current_angles = self.servo.get_all_servo_positions_deg([SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID])
+
+        # Walidacja — brak pozycji z któregoś serwa
+        for sid in [SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID]:
+            if sid not in current_angles:
+                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
+                return
+
+        # Obliczenie kątów serw na podstawie punktu docelowego
+        try:
+            phi, t1, t2 = self.kin.inverse(*target_xyz, elbow_up)
+            target_s1, target_s2, target_s3 = self.kin.to_servo_angles(phi, t1, t2, apply_trim=True)
+        except Exception as e:
+            print(f"[ERROR] Punkt docelowy nieosiągalny: {e}")
+            return False
+
+        # Synchronizacja kątów za pomocą sync_angles
+        start_angles = current_angles
+        end_angles = {
+            SERVO_BASE_ID: target_s1,
+            SERVO_SHOULDER_ID: target_s2,
+            SERVO_ELBOW_ID: target_s3
+        }
+
+        # Obliczanie różnicy kątów
+        angle_deltas = {sid: abs(end_angles[sid] - start_angles[sid]) for sid in end_angles}
+
+        # Obliczanie czasu dla każdego serwa na podstawie dps
+        max_delta = max(angle_deltas.values())  # Maksymalna różnica kątów (najdłuższy ruch)
+        time_to_move = max_delta / tempo_dps  # Czas ruchu w sekundach
+
+        # Wywołanie sync_angles z odpowiednim tempem (dps)
+        self.servo.sync_angles(start_angles, end_angles, tempo_dps)
+
+        # Czekanie na zakończenie ruchu
+        print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
+        time.sleep(time_to_move)  # Czekanie na zakończenie ruchu
+
+        print("[INFO] Ruch zakończony.")
+        return True

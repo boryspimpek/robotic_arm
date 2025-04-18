@@ -44,7 +44,7 @@ class ServoController:
             self.ctrl.WritePosEx(sid, raw, speed, acc)
             self.last_positions[sid] = angle
 
-    def sync_angles(self, start_angles: dict, end_angles: dict, tempo_dps=60.0):
+    def sync_angles(self, start_angles: dict, end_angles: dict, tempo_dps):
         ids = end_angles.keys()
         max_delta = max(abs(end_angles[sid] - start_angles.get(sid, end_angles[sid])) for sid in ids)
         max_delta = max(max_delta, 1.0)  # min. 1 stopień, by uniknąć dzielenia przez 0
