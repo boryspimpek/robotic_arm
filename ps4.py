@@ -25,7 +25,7 @@ class ArmPS4Controller(Controller):
         self.x = 142.0
         self.y = 0.0
         self.z = 0.0
-        self.step = 5.0  # podstawowy krok
+        # self.step = 5.0  # podstawowy krok
         self.deadzone = 0.3
         self.running = True
 
@@ -40,7 +40,7 @@ class ArmPS4Controller(Controller):
 
 
         print("[INFO] Przechodzę do pozycji startowej...")
-        self.arm.move_to_point_dps((self.x, self.y, self.z), tempo_dps=30)
+        self.arm.move_to_point_dps((self.x, self.y, self.z), tempo_dps=10)
 
         # Uruchamiamy wątek sterowania ruchem
         self.control_thread = threading.Thread(target=self.update_loop)
@@ -66,9 +66,9 @@ class ArmPS4Controller(Controller):
         current_phi = 0.0
 
         while self.running:
-            dx = scaled_step(self.rx, base_step=3.0, expo=4.0)      # oś X z R3
-            dz = scaled_step(self.lz, base_step=3.0, expo=4.0)      # oś Z z L3
-            dphi = scaled_step(self.lphi, base_step=2.0, expo=3.0)  # obrót z L3
+            dx = scaled_step(self.rx, base_step=5.0, expo=5.0)      # oś X z R3
+            dz = scaled_step(self.lz, base_step=5.0, expo=5.0)      # oś Z z L3
+            dphi = scaled_step(self.lphi, base_step=2.0, expo=5.0)  # obrót z L3
 
             if dx != 0.0 or dz != 0.0 or dphi != 0.0:
                 new_x = self.x + dx
