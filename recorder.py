@@ -8,7 +8,7 @@ from controller import ArmController
 from kinematics import Kinematics
 
 POSES_FILE = "poses.json"
-TEMPO_DPS = 60.0  # prędkość ruchu serw w °/s
+TEMPO_DPS = 30.0  # prędkość ruchu serw w °/s
 
 def record_positions(ctrl):
     print("[TRYB NAGRYWANIA]")
