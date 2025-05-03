@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotic Arm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Robotic arm</h1>
+
+    <hr>
+
+    <h1>Fire preset</h1>
+
+    <div class="preset-buttons">
+        <button onclick="movePreset('home')">Home</button>
+        <button onclick="movePreset('stretch')">Stretch</button>
+        <button onclick="movePreset('pick')">Pick</button>
+        <button onclick="movePreset('place')">Place</button>
+    </div>
+
+    <hr>
+
+    <h1>Save position</h1>
+
+    <div class="preset-buttons">
+        <button onclick="savePosition()">Zapisz pozycję</button>
+        <button onclick="resetPositions()">Usuń wszystkie</button>
+        <button onclick="playPositions()">Odtwórz zapisane</button>
+    </div>
+    
+    <hr>
+
+    <div class="preset-buttons">
+        <button onclick="torqueOn()">Torque ON</button>
+        <button onclick="torqueOff()">Torque OFF</button>
+    </div>
+    
+    <hr>
+    
+    <h1>Dualshock PS4 controller</h1>
+
+    <div class="preset-buttons">
+        <button onclick="startPad()">GO</button>
+        <button onclick="stopPad()">STOP</button>
+    </div>
+
+    <hr>    
+
+    <h1>Set angle</h1>
+
+    <div class="servo-block">
+        <h2>Base Angle: <span id="angle1">90</span>°</h2>
+        <input type="range" min="0" max="180" value="90" id="slider1">
+    </div>
+    
+    <div class="servo-block">
+        <h2>Shoulder Angle: <span id="angle2">90</span>°</h2>
+        <input type="range" min="0" max="180" value="90" id="slider2">
+    </div>
+    
+    <div class="servo-block">
+        <h2>Elbow Angle: <span id="angle3">90</span>°</h2>
+        <input type="range" min="0" max="180" value="90" id="slider3">
+    </div>
+    
+    <div class="servo-block">
+        <h2>Wrist Angle: <span id="angle4">90</span>°</h2>
+        <input type="range" min="0" max="180" value="90" id="slider4">
+    </div>
+    
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
