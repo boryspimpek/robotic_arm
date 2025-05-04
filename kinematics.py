@@ -1,7 +1,8 @@
-### robot_arm/kinematics.py
+# robot_arm/kinematics.py
 
 import math
 from config import SERVO_TRIMS, SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_ANGLE_LIMITS, SERVO_WRIST_ID
+
 
 class Kinematics:
     def __init__(self, l1, l2):
@@ -37,8 +38,8 @@ class Kinematics:
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
     def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True, apply_trim=True):
-        s_base = 90 - phi 
-        s_shoulder = 180 - theta1 
+        s_base = 90 - phi
+        s_shoulder = 180 - theta1
         s_elbow = 180 - (90 + theta2) - 90
         s_wrist = (90 if wrist_horizontal else 180) + theta3
 
@@ -67,5 +68,3 @@ class Kinematics:
                 angles[sid] += SERVO_TRIMS.get(sid, 0.0)
 
         return angles[SERVO_BASE_ID], angles[SERVO_SHOULDER_ID], angles[SERVO_ELBOW_ID], angles[SERVO_WRIST_ID]
-    
-    

@@ -1,49 +1,122 @@
+/* ############################################ Tło ############################################# */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     text-align: center;
     padding: 40px;
-    background-color: #000000; 
     color: #ffffff;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4); 
+    background-image: url('/static/images/Nature-Landscape-1080-x-1920-Wallpaper-Vertical.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
+/* #################################### Stylizacja nagłówka ###################################### */
 h1 {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 36px; 
+    font-weight: bold; 
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    text-shadow: 
+        2px 2px 0px #000000,   /* Cień na prawo i w dół */
+        -2px -2px 0px #000000,  /* Cień na lewo i w górę */
+        2px -2px 0px #000000,   /* Cień na prawo i w górę */
+        -2px 2px 0px #000000;   /* Cień na lewo i w dół */ 
 }
 
+/* #################################### Stylizacja buttonow ###################################### */
 .preset-buttons {
     display: flex;
-    justify-content: center; /* Wyśrodkowanie przycisków w poziomie */
-    flex-wrap: wrap;         /* Jeśli się nie zmieszczą na szerokość, przechodzą do nowej linii */
+    justify-content: center; 
+    flex-wrap: wrap;         
     margin-bottom: 40px;
 }
 
+/* Domyślny styl przycisków */
 .preset-buttons button {
     width: 150px;
     height: 50px;
     margin: 10px;
     font-size: 18px;
-
-    display: flex;           /* FLEX MODE! */
-    align-items: center;     /* pionowo wyśrodkowany tekst */
-    justify-content: center; /* poziomo wyśrodkowany tekst */
-
-    background-color: #1E90FF;
-    color: white;
+    text-shadow: 
+        2px 2px 0px #000000,   /* Cień na prawo i w dół */
+        -2px -2px 0px #000000,  /* Cień na lewo i w górę */
+        2px -2px 0px #000000,   /* Cień na prawo i w górę */
+        -2px 2px 0px #000000;   /* Cień na lewo i w dół */ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: rgb(174, 174, 174);
     border: none;
     border-radius: 8px;
-    transition: background-color 0.3s ease;
     cursor: pointer;
-}
-.preset-buttons button:hover {
-    background-color: #2980b9; /* ciemniejszy niebieski przy hover */
+    transition: background-color 0.3s ease;
 }
 
+/* Efekt hover tylko dla komputerów */
+@media (min-width: 768px) {
+    .preset-buttons button:hover {
+        background-color: #2980b9; 
+    }
+}
+
+/* Brak efektu hover na telefonach */
+@media (max-width: 767px) {
+    .preset-buttons button:active {
+        background-color: #2980b9; 
+    }
+}
+
+/* ################################ Stylizowanie bloku z suwakami #################################### */
 .servo-block {
     margin-bottom: 40px;
+    color: rgb(174, 174, 174);
+    background-color: rgba(0, 0, 0, 0.5); 
+    border-radius: 10px; /* Zaokrąglone rogi */
+    padding: 20px;
+    font-size: 18px;
 }
 
+/* Stylizowanie tekstu nad sliderem */
+.servo-block h2 {
+    font-family: Arial, sans-serif;  
+    font-size: 18px;                 
+    font-weight: normal;             
+    margin-bottom: 10px;             
+    margin-top: -10px;               
+    color: rgb(174, 174, 174);
+    text-shadow: 
+        2px 2px 0px #000000,   /* Cień na prawo i w dół */
+        -2px -2px 0px #000000,  /* Cień na lewo i w górę */
+        2px -2px 0px #000000,   /* Cień na prawo i w górę */
+        -2px 2px 0px #000000;   /* Cień na lewo i w dół */ 
+}
+
+/* Stylizowanie suwaka, aby był bardziej spójny */
 input[type=range] {
-    width: 80%;
+    -webkit-appearance: none;  
+    -moz-appearance: none;     
+    appearance: none;          
+    width: 80%;                
+    height: 8px;               
+    background: #ddd;          
+    border-radius: 5px;        
+    outline: none;             
+    transition: background 0.3s ease; /
+}
+
+/* Styl dla okrągłego uchwytu suwaka */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;  
+    appearance: none;          
+    width: 20px;               
+    height: 20px;              
+    border-radius: 50%;        
+    background: #000000;       
+    cursor: pointer;           
 }
 
 .angle-display {
@@ -51,10 +124,11 @@ input[type=range] {
     font-size: 18px;
 }
 
-/* RESPONSYWNOŚĆ dla ekranów max 768px (tablet/telefon) */
+/* ########################## RESPONSYWNOŚĆ dla ekranów max 768px (tablet/telefon) ################# */
 @media (max-width: 768px) {
     body {
         padding: 20px;
+        background-image: url('/static/images/Nature-Landscape-1080-x-1920-Wallpaper-Vertical.jpg');
     }
 
     h1 {

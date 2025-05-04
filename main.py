@@ -1,4 +1,4 @@
-### robot_arm/main.py
+# robot_arm/main.py
 
 import time
 from kinematics import Kinematics
@@ -12,7 +12,7 @@ servo_ctrl = ServoController(UART_PORT)
 arm = ArmController(kin, servo_ctrl)
 
 
-###### GRIPPER
+# GRIPPER
 # while True:
 #     open_gripper()
 #     time.sleep(1)
@@ -39,15 +39,15 @@ print(f"Wrist: {angles[SERVO_WRIST_ID]:.1f}°")
 
 # ####### SET ANGELS
 home = {
-    SERVO_BASE_ID: 90,      
-    SERVO_SHOULDER_ID: 90, 
+    SERVO_BASE_ID: 90,
+    SERVO_SHOULDER_ID: 90,
     SERVO_ELBOW_ID: 90,
     SERVO_WRIST_ID: 90,
 }
 servo_ctrl.move_to(home)
 
 
-####### POINT TO POINT
+# POINT TO POINT
 # arm.point_to_point((142, 0, 0), (200, 0, 0))
 
 # arm.point_to_point((200, 0, 0), (142, 0, 0))
@@ -59,8 +59,7 @@ servo_ctrl.move_to(home)
 # arm.point_to_point((176, 0, 73), (160, 0, 73))
 
 
-
-###### MOVE TO POINT
+# MOVE TO POINT
 # a = (10, 0, 20)
 # b = (0, 0, 200)
 # c = (100, 0, 100)
@@ -86,4 +85,3 @@ servo_ctrl.move_to(home)
 # time.sleep(1)
 # arm.move_to_point_dps(e, tempo_dps=30)
 # time.sleep(1)
-

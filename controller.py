@@ -1,9 +1,10 @@
-### robot_arm/controller.py
+# robot_arm/controller.py
 
 import math
 import time
 import numpy as np
 from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+
 
 class ArmController:
     def __init__(self, kinematics, servo_ctrl):
@@ -83,11 +84,11 @@ class ArmController:
                     return False
 
             # 5. Obliczanie delty (różnicy) pomiędzy kątami z IK a aktualnymi kątami
-            deltas = {}  # Słownik do przechowywania delty dla każdego serwa
+            deltas = {}  
             for sid in angles:
                 current_angle = current_angles[sid]
                 target_angle = angles[sid]
-                delta = abs(target_angle - current_angle)  # Delta pomiędzy aktualnym a docelowym kątem
+                delta = abs(target_angle - current_angle)  
                 deltas[sid] = delta
                 # print(f"Serwo {sid}: Delta = {delta:.2f}°")
 

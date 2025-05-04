@@ -1,4 +1,4 @@
-### robot_arm/config.py
+# robot_arm/config.py
 
 L1 = 120  # mm, długość pierwszego ramienia
 L2 = 120  # mm, długość drugiego ramienia
@@ -27,4 +27,3 @@ SERVO_TRIMS = {
     SERVO_ELBOW_ID: 0,
     SERVO_WRIST_ID: 0
 }
-
