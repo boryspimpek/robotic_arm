@@ -55,8 +55,13 @@ class ArmPS4Controller(Controller):
     def on_L3_down(self, val): self.joystick_rx = -self.apply_deadzone(val / 32767)
     def on_L3_left(self, val): self.joystick_lphi = -self.apply_deadzone(val / 32767)
     def on_L3_right(self, val): self.joystick_lphi = -self.apply_deadzone(val / 32767)
-
+    def on_L3_y_at_rest(self): pass
+    def on_R3_right(self, value): pass
+    def on_R3_left(self, value): pass
+    def on_R3_x_at_rest(self): pass
+    def on_R3_y_at_rest(self): pass
     def on_R1_press(self):
+
         self.gripper_closed = not self.gripper_closed
         if self.gripper_closed:
             print("[INFO] Zamykam chwytak")
@@ -79,7 +84,7 @@ class ArmPS4Controller(Controller):
         print("[INFO] Zamykanie kontrolera...")
         self.running = False
         self.control_thread.join()
-        self.servo_controller.torque_off_all()
+        # self.servo_controller.torque_off_all()
         self.stop = True
         if hasattr(self, 'on_exit'):
             self.on_exit()
@@ -114,7 +119,7 @@ class ArmPS4Controller(Controller):
                 new_x = max(5.0, self.x + delta_x)
 
                 # Ustal maksymalne ograniczenie dla Z w zależności od trybu nadgarstka
-                z_limit = -20.0 if self.wrist_horizontal else -20.0
+                z_limit = -50.0 if self.wrist_horizontal else 20.0
                 new_z = max(z_limit, self.z + delta_z)
 
                 new_phi = max(-90, min(90, self.phi + delta_phi))
