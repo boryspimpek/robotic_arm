@@ -2,11 +2,12 @@
 
 import sys
 import os
+import numpy as np
+from kinematics import Kinematics
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
-import time
 from STservo_sdk.port_handler import PortHandler
 from STservo_sdk.sts import sts
-from config import baudrate, st_speed, st_acc, angle_limits, base, elbow, schoulder, trims, wrist
+from config import L1, L2, baudrate, st_speed, st_acc, angle_limits, base, elbow, schoulder, trims, wrist
 
 class ServoController:
     def __init__(self, port_path):
@@ -15,21 +16,111 @@ class ServoController:
         self.port.setBaudRate(baudrate)
         self.ctrl = sts(self.port)
         self.last_positions = {}  # zapamiętanie poprzednich pozycji
+        self.kin = Kinematics(L1, L2)  # Initialize kinematics (ensure Kinematics is imported or defined)
 
     def deg_to_raw(self, angle_deg):
         return int(angle_deg * 4095 / 2 / 180)
 
-    def move_servo(self, servo_id, angle_deg):
-        int_angle = int(angle_deg)
+    def safe_move_servo(self, servo_id, target_angle_deg):
+        # 1. Odczyt aktualnych kątów barku i łokcia
+        relevant_ids = [schoulder, elbow]
+        current_angles = self.get_all_servo_positions_deg(relevant_ids)
 
-        position = self.deg_to_raw(int_angle)
+        if schoulder not in current_angles or elbow not in current_angles:
+            print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
+            return False
+
+        # 2. Symuluj nowy zestaw kątów
+        theta1 = current_angles[schoulder]
+        theta2 = current_angles[elbow]
+
+        if servo_id == schoulder:
+            theta1 = target_angle_deg
+        elif servo_id == elbow:
+            theta2 = target_angle_deg
+        else:
+            # Jeśli to nie bark ani łokieć – nie ma wpływu na z, wykonuj bez sprawdzania
+            self.move_servo(servo_id, target_angle_deg)
+            return True
+
+        # 3. Wywołanie forward kinematics (FK)
+        try:
+            x, y, z = self.kin.forward(theta1, theta2)
+        except Exception as e:
+            print(f"[ERROR] Błąd kinematyki prostej: {e}")
+            return False
+
+        # 4. Sprawdzenie bezpieczeństwa
+        if z < -50.0:
+            print(f"[WARN] Ruch odrzucony – zbyt nisko: z = {z:.1f} mm")
+            return False
+
+        # 5. Ruch jest bezpieczny – wykonaj
+        self.move_servo(servo_id, target_angle_deg)
+        return True
+
+    def move_servo(self, servo_id, angle_deg):
+        position = self.deg_to_raw(angle_deg)
         print(f"Servo {servo_id}: {angle_deg}° → raw {position}")
 
-        speed = st_speed
-        acc = st_acc
-        self.ctrl.WritePosEx(servo_id, position, speed, acc)
-        self.last_positions[servo_id] = int_angle
+        self.ctrl.WritePosEx(servo_id, position, st_speed, st_acc)
+        # self.last_positions[servo_id] = angle_deg
+
+    def safe_move_to(self, angles: dict):
+
+        # Pobierz aktualne kąty serw barku i łokcia
+        current = self.get_all_servo_positions_deg([schoulder, elbow])
         
+        if schoulder not in current or elbow not in current:
+            print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
+            return False
+
+        # Ustal docelowe kąty lub użyj obecnych, jeśli nie podano
+        target_theta1 = angles.get(schoulder, current[schoulder])
+        target_theta2 = angles.get(elbow, current[elbow])
+        
+        current_theta1 = current[schoulder]
+        current_theta2 = current[elbow]
+
+        # Interpolacja w N krokach
+        steps = 30
+        theta1_traj = np.linspace(current_theta1, target_theta1, steps)
+        theta2_traj = np.linspace(current_theta2, target_theta2, steps)
+
+        # Sprawdź całą trajektorię pod kątem bezpieczeństwa
+        for t1, t2 in zip(theta1_traj, theta2_traj):
+            try:
+                x, y, z = self.kin.forward(t1, t2)
+                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
+
+            except Exception as e:
+                print(f"[ERROR] Błąd FK: {e}")
+                return False
+                
+            if z < -20.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
+                return False
+            
+            if x > -10.0 and z < 0.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
+                return False
+            
+            # if x < 10.0:
+            #     print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
+            #     return False
+
+            # if int(round(t2)) == 180 and t1 > 117:
+            #     print(f"[WARN] Niedozwolona konfiguracja: elbow=180°, schoulder={t1:.1f}° > 117°")
+            #     return False
+
+            # if t1 > 117 and t2 > 160:
+            #     print(f"[WARN] Niedozwolona konfiguracja: schoulder={t1:.1f}° > 117°, a elbow={t2:.1f}° > 160°")
+            #     return False
+        
+        # Jeśli cały tor jest bezpieczny – wykonaj ruch
+        self.move_to(angles)
+        return True
+
     def move_to(self, angles: dict):
         for sid, angle in angles.items():
             self.move_servo(sid, angle)

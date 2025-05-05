@@ -41,7 +41,18 @@ const updateSliders = () => {
 
 // Controller functions
 const startPad = () => postRequest('/start_pad');
-const stopPad = () => postRequest('/stop_pad');
+const stopPad = () => {
+    postRequest('/stop_pad')
+        .then(response => {
+            if (response.ok) {
+                updateSliders();  // ← odśwież suwaki
+                alert('Sterowanie padem wyłączone.');
+            } else {
+                alert('Błąd podczas wyłączania pada.');
+            }
+        })
+        .catch(() => alert('Błąd połączenia z serwerem.'));
+};
 
 const savePosition = () => {
     postRequest('/save_position')

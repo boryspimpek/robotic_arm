@@ -22,29 +22,32 @@ arm = ArmController(kin, servo_ctrl)
 # open_gripper()
 # time.sleep(1)
 
-sc_servo_position(gripper)
+# sc_servo_position(gripper)
 
-IDS = {
-    base: 1,
-    schoulder: 2,
-    elbow: 3,
-    wrist: 4,
-}
+# IDS = {
+#     base: 1,
+#     schoulder: 2,
+#     elbow: 3,
+#     wrist: 4,
+# }
 
-angles = servo_ctrl.get_all_servo_positions_deg(IDS)
-print(f"Base: {angles[base]:.1f}°")
-print(f"Shoulder: {angles[schoulder]:.1f}°")
-print(f"Elbow: {angles[elbow]:.1f}°")
-print(f"Wrist: {angles[wrist]:.1f}°")
+# angles = servo_ctrl.get_all_servo_positions_deg(IDS)
+# print(f"Base: {angles[base]:.1f}°")
+# print(f"Shoulder: {angles[schoulder]:.1f}°")
+# print(f"Elbow: {angles[elbow]:.1f}°")
+# print(f"Wrist: {angles[wrist]:.1f}°")
 
-# ####### SET ANGELS
+####### SET ANGELS
 home = {
     base: 90,
     schoulder: 90,
     elbow: 90,
     wrist: 90,
 }
-servo_ctrl.move_to(home)
+servo_ctrl.safe_move_to(home)
+
+
+# servo_ctrl.safe_move_servo(schoulder, 150)
 
 
 # POINT TO POINT

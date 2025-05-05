@@ -48,7 +48,7 @@ def move_servo():
     data = request.json
     servo_id = int(data.get('id'))
     angle = int(data.get('angle'))
-    servo_ctrl.move_to({servo_id: angle})
+    servo_ctrl.safe_move_to({servo_id: angle})
     return '', 204
 
 

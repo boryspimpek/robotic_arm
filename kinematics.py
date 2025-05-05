@@ -37,6 +37,19 @@ class Kinematics:
         theta3_deg = math.degrees(theta3)
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
+    def forward(self, theta1_deg, theta2_deg):
+        # Konwersja na radiany
+        t1 = math.radians(theta1_deg)
+        t2 = math.radians(theta2_deg)
+
+        # Pozycja końcówki ramienia
+        x = self.l1 * math.cos(t1) + self.l2 * math.cos(t1 + t2)
+        z = self.l1 * math.sin(t1) + self.l2 * math.sin(t1 + t2)
+
+        # Zakładamy ramię w płaszczyźnie X/Z, y = 0
+        return x, 0.0, z
+
+
     def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True, apply_trim=True):
         s_base = 90 - phi
         s_shoulder = 180 - theta1
