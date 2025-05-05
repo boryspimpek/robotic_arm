@@ -75,6 +75,16 @@ const playPositions = () => {
         .catch(() => alert('Błąd przy odtwarzaniu.'));
 };
 
+const stopPositions = () => {
+    postRequest('/stop_positions')
+        .then(response => response.text())
+        .then(msg => {
+            alert(msg);
+            setTimeout(updateSliders, 2000); 
+        })
+        .catch(() => alert('Błąd przy zatrzymywaniu sekwencji.'));
+};
+
 const torqueOn = () => {
     postRequest('/torque_on')
         .then(response => response.text())

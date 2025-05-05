@@ -12,10 +12,8 @@ app = Flask(__name__)
 kin = Kinematics(L1, L2)
 servo_ctrl = ServoController(port)
 arm = ArmController(kin, servo_ctrl)
-
-# Global variable for pad process
+positions_process = None
 pad_process = None
-
 
 # Utility functions
 def run_script(script_name):
@@ -104,12 +102,28 @@ def reset_positions():
 
 @app.route('/play_positions', methods=['POST'])
 def play_positions():
+    global positions_process
     try:
-        subprocess.Popen(['python3', 'play_positions.py'])
-        return 'Playback started.', 200
+        if positions_process is None or positions_process.poll() is not None:
+            positions_process = subprocess.Popen(['python3', 'play_positions.py'])
+            return 'Odtwarzanie rozpoczęte.', 200
+        else:
+            return 'Sekwencja już trwa.', 409
     except Exception as e:
-        return f'Error: {e}', 500
+        return f'Błąd: {e}', 500
 
+@app.route('/stop_positions', methods=['POST'])
+def stop_positions():
+    global positions_process
+    try:
+        if positions_process and positions_process.poll() is None:
+            positions_process.terminate()
+            positions_process = None
+            return 'Odtwarzanie zatrzymane.', 200
+        else:
+            return 'Brak aktywnej sekwencji.', 200
+    except Exception as e:
+        return f'Błąd zatrzymywania: {e}', 500
 
 @app.route('/torque_on', methods=['POST'])
 def torque_on():
