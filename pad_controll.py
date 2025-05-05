@@ -1,5 +1,8 @@
 # hybrid_arm_controller.py
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
 from ps4 import ArmPS4Controller as IKController
 from ps42 import ArmPS4Controller as AngleController
 import threading

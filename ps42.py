@@ -4,7 +4,7 @@ from kinematics import Kinematics
 from servos import ServoController
 from config import (
     L1, L2,
-    SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID, UART_PORT,
+    base, schoulder, elbow, wrist, port,
 )
 
 import threading
@@ -12,7 +12,6 @@ import time
 import math
 
 def scaled_step(value, base_step=5.0, exponent=2.0):
-    """Skaluje wejście joysticka wykładniczo dla precyzyjnej kontroli."""
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
 
@@ -40,11 +39,11 @@ class ArmPS4Controller(Controller):
 
         # Odczyt aktualnych kątów z serw
         angles = self.servo_controller.get_all_servo_positions_deg([
-            SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+            base, schoulder, elbow, wrist
         ])
-        self.base_angle = angles.get(SERVO_BASE_ID, 90)
-        self.shoulder_angle = angles.get(SERVO_SHOULDER_ID, 90)
-        self.elbow_angle = angles.get(SERVO_ELBOW_ID, 90)
+        self.base_angle = angles.get(base, 90)
+        self.shoulder_angle = angles.get(schoulder, 90)
+        self.elbow_angle = angles.get(elbow, 90)
         self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
 
         # Wątek sterowania
@@ -95,15 +94,15 @@ class ArmPS4Controller(Controller):
 
             # Wysłanie do serw
             self.servo_controller.move_to({
-                SERVO_BASE_ID: self.base_angle,
-                SERVO_SHOULDER_ID: self.shoulder_angle,
-                SERVO_ELBOW_ID: self.elbow_angle,
-                SERVO_WRIST_ID: self.wrist_angle
+                base: self.base_angle,
+                schoulder: self.shoulder_angle,
+                elbow: self.elbow_angle,
+                wrist: self.wrist_angle
             })
 
             time.sleep(refresh_rate)
 
 
 if __name__ == "__main__":
-    pad = ArmPS4Controller(interface=UART_PORT, connecting_using_ds4drv=False)
+    pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)
     pad.listen()

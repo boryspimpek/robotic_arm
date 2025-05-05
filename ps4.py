@@ -3,7 +3,7 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
-from config import L1, L2, UART_PORT
+from config import L1, L2, port
 import threading
 import time
 import math
@@ -19,7 +19,7 @@ class ArmPS4Controller(Controller):
         super().__init__(**kwargs)
 
         self.kinematics = Kinematics(L1, L2)
-        self.servo_controller = ServoController(UART_PORT)
+        self.servo_controller = ServoController(port)
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
         self.wrist_horizontal = True  # Domyślnie poziomo
@@ -135,5 +135,5 @@ class ArmPS4Controller(Controller):
 # --- Start aplikacji ---
 
 if __name__ == "__main__":
-    pad = ArmPS4Controller(interface=UART_PORT, connecting_using_ds4drv=False)
+    pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)
     pad.listen()

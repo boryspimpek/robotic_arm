@@ -5,10 +5,10 @@ from kinematics import Kinematics
 from servos import ServoController
 from controller import ArmController
 from sc_controll import open_gripper, sc_servo, close_gripper, sc_servo_position
-from config import L1, L2, SERVO_GRIPPER_ID, SERVO_WRIST_ID, UART_PORT, SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID
+from config import L1, L2, gripper, wrist, port, base, schoulder, elbow
 
 kin = Kinematics(L1, L2)
-servo_ctrl = ServoController(UART_PORT)
+servo_ctrl = ServoController(port)
 arm = ArmController(kin, servo_ctrl)
 
 
@@ -22,27 +22,27 @@ arm = ArmController(kin, servo_ctrl)
 # open_gripper()
 # time.sleep(1)
 
-sc_servo_position(SERVO_GRIPPER_ID)
+sc_servo_position(gripper)
 
 IDS = {
-    SERVO_BASE_ID: 1,
-    SERVO_SHOULDER_ID: 2,
-    SERVO_ELBOW_ID: 3,
-    SERVO_WRIST_ID: 4,
+    base: 1,
+    schoulder: 2,
+    elbow: 3,
+    wrist: 4,
 }
 
 angles = servo_ctrl.get_all_servo_positions_deg(IDS)
-print(f"Base: {angles[SERVO_BASE_ID]:.1f}°")
-print(f"Shoulder: {angles[SERVO_SHOULDER_ID]:.1f}°")
-print(f"Elbow: {angles[SERVO_ELBOW_ID]:.1f}°")
-print(f"Wrist: {angles[SERVO_WRIST_ID]:.1f}°")
+print(f"Base: {angles[base]:.1f}°")
+print(f"Shoulder: {angles[schoulder]:.1f}°")
+print(f"Elbow: {angles[elbow]:.1f}°")
+print(f"Wrist: {angles[wrist]:.1f}°")
 
 # ####### SET ANGELS
 home = {
-    SERVO_BASE_ID: 90,
-    SERVO_SHOULDER_ID: 90,
-    SERVO_ELBOW_ID: 90,
-    SERVO_WRIST_ID: 90,
+    base: 90,
+    schoulder: 90,
+    elbow: 90,
+    wrist: 90,
 }
 servo_ctrl.move_to(home)
 

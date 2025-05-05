@@ -1,10 +1,9 @@
-# robot_arm/controller.py
+### robot_arm/controller.py
 
 import math
 import time
 import numpy as np
-from config import SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
-
+from config import base, schoulder, elbow, wrist
 
 class ArmController:
     def __init__(self, kinematics, servo_ctrl):
@@ -28,10 +27,10 @@ class ArmController:
                 s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
 
                 self.servo.sync_points({
-                    SERVO_BASE_ID: s1,
-                    SERVO_SHOULDER_ID: s2,
-                    SERVO_ELBOW_ID: s3,
-                    SERVO_WRIST_ID: s4
+                    base: s1,
+                    schoulder: s2,
+                    elbow: s3,
+                    wrist: s4
                 })
                 time.sleep(0.003)
 
@@ -50,10 +49,10 @@ class ArmController:
                 s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
 
                 self.servo.sync_points({
-                    SERVO_BASE_ID: s1,
-                    SERVO_SHOULDER_ID: s2,
-                    SERVO_ELBOW_ID: s3,
-                    SERVO_WRIST_ID: s4
+                    base: s1,
+                    schoulder: s2,
+                    elbow: s3,
+                    wrist: s4
                 })
                 time.sleep(0.01)
 
@@ -70,10 +69,10 @@ class ArmController:
 
             # 3. Przypisz cele do serw
             angles = {
-                SERVO_BASE_ID: s1,
-                SERVO_SHOULDER_ID: s2,
-                SERVO_ELBOW_ID: s3,
-                SERVO_WRIST_ID: s4
+                base: s1,
+                schoulder: s2,
+                elbow: s3,
+                wrist: s4
             }
 
             # 4. Odczyt aktualnych kątów
@@ -84,11 +83,11 @@ class ArmController:
                     return False
 
             # 5. Obliczanie delty (różnicy) pomiędzy kątami z IK a aktualnymi kątami
-            deltas = {}  
+            deltas = {}  # Słownik do przechowywania delty dla każdego serwa
             for sid in angles:
                 current_angle = current_angles[sid]
                 target_angle = angles[sid]
-                delta = abs(target_angle - current_angle)  
+                delta = abs(target_angle - current_angle)  # Delta pomiędzy aktualnym a docelowym kątem
                 deltas[sid] = delta
                 # print(f"Serwo {sid}: Delta = {delta:.2f}°")
 
@@ -122,11 +121,11 @@ class ArmController:
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         # Odczytanie aktualnych kątów serw (4 serwa)
         current_angles = self.servo.get_all_servo_positions_deg([
-            SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+            base, schoulder, elbow, wrist
         ])
 
         # Walidacja — brak pozycji z któregoś serwa
-        for sid in [SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID]:
+        for sid in [base, schoulder, elbow, wrist]:
             if sid not in current_angles:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return
@@ -134,7 +133,7 @@ class ArmController:
         # Obliczenie kątów serw na podstawie punktu docelowego
         try:
             phi, t1, t2, t3 = self.kin.inverse(*target_xyz, elbow_up)
-            target_s1, target_s2, target_s3, target_s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
+            s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
         except Exception as e:
             print(f"[ERROR] Punkt docelowy nieosiągalny: {e}")
             return False
@@ -142,10 +141,10 @@ class ArmController:
         # Synchronizacja kątów za pomocą sync_angles
         start_angles = current_angles
         end_angles = {
-            SERVO_BASE_ID: target_s1,
-            SERVO_SHOULDER_ID: target_s2,
-            SERVO_ELBOW_ID: target_s3,
-            SERVO_WRIST_ID: target_s4
+            base: s1,
+            schoulder: s2,
+            elbow: s3,
+            wrist: s4
         }
 
         # Obliczanie różnicy kątów

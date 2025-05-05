@@ -1,7 +1,7 @@
 # robot_arm/kinematics.py
 
 import math
-from config import SERVO_TRIMS, SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_ANGLE_LIMITS, SERVO_WRIST_ID
+from config import trims, base, schoulder, elbow, angle_limits, wrist
 
 
 class Kinematics:
@@ -44,17 +44,17 @@ class Kinematics:
         s_wrist = (90 if wrist_horizontal else 180) + theta3
 
         angles = {
-            SERVO_BASE_ID: s_base,
-            SERVO_SHOULDER_ID: s_shoulder,
-            SERVO_ELBOW_ID: s_elbow,
-            SERVO_WRIST_ID: s_wrist
+            base: s_base,
+            schoulder: s_shoulder,
+            elbow: s_elbow,
+            wrist: s_wrist
         }
 
         # Walidacja przed trimem
         for sid, angle in angles.items():
-            min_angle, max_angle = SERVO_ANGLE_LIMITS
+            min_angle, max_angle = angle_limits
             if not (min_angle <= angle <= max_angle):
-                if sid == SERVO_WRIST_ID:
+                if sid == wrist:
                     # Przycinamy tylko nadgarstek
                     clipped = max(min(angle, max_angle), min_angle)
                     print(f"[WARN] Kąt nadgarstka poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
@@ -65,6 +65,6 @@ class Kinematics:
         # Trim dodajemy dopiero po walidacji
         if apply_trim:
             for sid in angles:
-                angles[sid] += SERVO_TRIMS.get(sid, 0.0)
+                angles[sid] += trims.get(sid, 0.0)
 
-        return angles[SERVO_BASE_ID], angles[SERVO_SHOULDER_ID], angles[SERVO_ELBOW_ID], angles[SERVO_WRIST_ID]
+        return angles[base], angles[schoulder], angles[elbow], angles[wrist]

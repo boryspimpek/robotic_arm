@@ -1,7 +1,7 @@
 ### robot_arm/kinematics.py
 
 import math
-from config import SERVO_TRIMS, SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_ANGLE_LIMITS, SERVO_WRIST_ID
+from config import trims, base, schoulder, elbow, angle_limits, wrist
 
 class Kinematics:
     def __init__(self, l1, l2):
@@ -50,23 +50,23 @@ class Kinematics:
         # print(f"  Serwo 4 (ramie 3):        {s_wrist:.2f}°")
 
         angles = {
-            SERVO_BASE_ID: s_base,
-            SERVO_SHOULDER_ID: s_shoulder,
-            SERVO_ELBOW_ID: s_elbow,
+            base: s_base,
+            schoulder: s_shoulder,
+            elbow: s_elbow,
             
         }
 
         # Walidacja przed trimem
         for sid, angle in angles.items():
-            min_angle, max_angle = SERVO_ANGLE_LIMITS
+            min_angle, max_angle = angle_limits
             if not (min_angle <= angle <= max_angle):
                 raise ValueError(f"Kąt serwa ID {sid} poza zakresem: {angle:.2f}° (przed trimem)")
 
         # Trim dodajemy dopiero po walidacji
         if apply_trim:
             for sid in angles:
-                angles[sid] += SERVO_TRIMS.get(sid, 0.0)
+                angles[sid] += trims.get(sid, 0.0)
 
-        return angles[SERVO_BASE_ID], angles[SERVO_SHOULDER_ID], angles[SERVO_ELBOW_ID]
+        return angles[base], angles[schoulder], angles[elbow]
     
     

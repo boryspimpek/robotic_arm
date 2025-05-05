@@ -1,107 +1,98 @@
-// Funkcja która ustawia kąt serwa
-function moveServo(id, angle) {
-    document.getElementById('angle' + id).innerText = angle;
-
-    fetch('/move_servo', {
+// Helper function for POST requests
+const postRequest = (url, body = null) => {
+    const options = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id, angle: angle })
-    });
-}
-// Funkcja która ustawia preset
-function movePreset(presetName) {
-    fetch('/move_preset/' + presetName, {
-        method: 'POST'
-    })
-    .then(response => {
-        if (response.ok) {
-            // Jeśli preset się udał, odśwież suwaki
-            updateSliders();
-        } else {
-            console.error('Preset error!');
-        }
-    });
-}
+        headers: { 'Content-Type': 'application/json' },
+    };
+    if (body) options.body = JSON.stringify(body);
+    return fetch(url, options);
+};
 
-// Funkcja która odświeża suwaki
-function updateSliders() {
-    fetch('/get_angles')
-        .then(response => response.json())
-        .then(data => {
-            for (const id in data) {
-                const angle = data[id];
-                const slider = document.getElementById('slider' + id);
-                const angleDisplay = document.getElementById('angle' + id);
-                if (slider) slider.value = angle;
-                if (angleDisplay) angleDisplay.innerText = angle;
+// Servo control functions
+const moveServo = (id, angle) => {
+    document.getElementById(`angle${id}`).innerText = angle;
+    postRequest('/move_servo', { id, angle });
+};
+
+const movePreset = (presetName) => {
+    postRequest(`/move_preset/${presetName}`)
+        .then(response => {
+            if (response.ok) {
+                updateSliders();
+            } else {
+                console.error('Preset error!');
             }
         });
-}
+};
 
-// Controller
-function startPad() {
-    fetch('/start_pad', { method: 'POST' });
-}
-
-function stopPad() {
-    fetch('/stop_pad', { method: 'POST' });
-}
-
-function savePosition() {
-    fetch('/save_position', { method: 'POST' })
-        .then(r => r.text())
-        .then(alert)
-        .catch(() => alert('Błąd przy zapisie.'));
-}
-
-function resetPositions() {
-    fetch('/reset_positions', { method: 'POST' })
-        .then(r => r.text())
-        .then(alert)
-        .catch(() => alert('Błąd przy usuwaniu.'));
-}
-
-function playPositions() {
-    fetch('/play_positions', { method: 'POST' })
-        .then(r => r.text())
-        .then(alert)
-        .catch(() => alert('Błąd przy odtwarzaniu.'));
-}
-
-function torqueOn() {
-    fetch('/torque_on', { method: 'POST' })
-        .then(r => r.text())
-        .then(alert)
-        .catch(() => alert('Błąd przy włączaniu torque'));
-}
-
-function torqueOff() {
-    fetch('/torque_off', { method: 'POST' })
-        .then(r => r.text())
-        .then(alert)
-        .catch(() => alert('Błąd przy wyłączaniu torque'));
-}
-
-// Ustaw suwaki na aktualne wartości serw po załadowaniu strony
-window.onload = function () {
+// Slider update function
+const updateSliders = () => {
     fetch('/get_angles')
         .then(response => response.json())
         .then(data => {
-            for (const id in data) {
-                const angle = data[id];
-                const slider = document.getElementById('slider' + id);
-                const angleDisplay = document.getElementById('angle' + id);
+            Object.entries(data).forEach(([id, angle]) => {
+                const slider = document.getElementById(`slider${id}`);
+                const angleDisplay = document.getElementById(`angle${id}`);
+                if (slider) slider.value = angle;
+                if (angleDisplay) angleDisplay.innerText = angle;
+            });
+        });
+};
+
+// Controller functions
+const startPad = () => postRequest('/start_pad');
+const stopPad = () => postRequest('/stop_pad');
+
+const savePosition = () => {
+    postRequest('/save_position')
+        .then(response => response.text())
+        .then(alert)
+        .catch(() => alert('Błąd przy zapisie.'));
+};
+
+const resetPositions = () => {
+    postRequest('/reset_positions')
+        .then(response => response.text())
+        .then(alert)
+        .catch(() => alert('Błąd przy usuwaniu.'));
+};
+
+const playPositions = () => {
+    postRequest('/play_positions')
+        .then(response => response.text())
+        .then(alert)
+        .catch(() => alert('Błąd przy odtwarzaniu.'));
+};
+
+const torqueOn = () => {
+    postRequest('/torque_on')
+        .then(response => response.text())
+        .then(alert)
+        .catch(() => alert('Błąd przy włączaniu torque'));
+};
+
+const torqueOff = () => {
+    postRequest('/torque_off')
+        .then(response => response.text())
+        .then(alert)
+        .catch(() => alert('Błąd przy wyłączaniu torque'));
+};
+
+// Initialize sliders on page load
+window.onload = () => {
+    fetch('/get_angles')
+        .then(response => response.json())
+        .then(data => {
+            Object.entries(data).forEach(([id, angle]) => {
+                const slider = document.getElementById(`slider${id}`);
+                const angleDisplay = document.getElementById(`angle${id}`);
                 if (slider) slider.value = angle;
                 if (angleDisplay) angleDisplay.innerText = angle;
 
-                // Dodaj nasłuchiwanie przesunięcia suwaka
+                // Add event listener for slider input
                 if (slider) {
-                    slider.oninput = function () {
-                        moveServo(id, this.value);
-                    };
+                    slider.oninput = () => moveServo(id, slider.value);
                 }
-            }
+            });
         });
 };

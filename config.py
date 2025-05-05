@@ -1,29 +1,31 @@
 # robot_arm/config.py
 
-L1 = 120  # mm, długość pierwszego ramienia
-L2 = 120  # mm, długość drugiego ramienia
+# Arm segment lengths (in mm)
+L1 = 120  
+L2 = 120  
 
-##### ST Servos ####
-SERVO_BASE_ID = 1       # obrót podstawy
-SERVO_SHOULDER_ID = 2   # ramię nr 1
-SERVO_ELBOW_ID = 3      # ramię nr 2
-SERVO_WRIST_ID = 4
-#### SC Servos ####
-SERVO_GRIPPER_ID = 5
+# Servo IDs for different parts of the robotic arm
+base = 1        
+schoulder = 2   
+elbow = 3       
+wrist = 4       
+gripper = 5     
 
-UART_PORT = "/dev/ttyACM0"
-BAUDRATE = 1000000
+# Communication settings
+port = "/dev/ttyACM0"  
+baudrate = 1000000     
 
-SERVO_MID_ANGLE = 90    # pozycja pionowa serwa
-GLOBAL_SERVO_SPEED = 500  # surowa prędkość dla WritePosEx()
-SC_SERVO_SPEED = 500      # prędkość dla SCServo
-GLOBAL_SERVO_ACC = 25      # surowa akceleracja dla WritePosEx()
-SC_SERVO_ACC = 25         # akceleracja dla SCServo
-SERVO_ANGLE_LIMITS = (0, 180)  # dozwolony zakres dla każdego serwa
+# Motion settings
+st_speed = 500         
+sc_speed = 500         
+st_acc = 25            
+sc_acc = 25            
+angle_limits = (0, 180)  
 
-SERVO_TRIMS = {
-    SERVO_BASE_ID: 0,
-    SERVO_SHOULDER_ID: 0,  # przykład korekty (możesz zmienić)
-    SERVO_ELBOW_ID: 0,
-    SERVO_WRIST_ID: 0
+# Servo trims (adjustments for alignment)
+trims = {
+    base: 0,        
+    schoulder: 0,   
+    elbow: 0,       
+    wrist: 0        
 }

@@ -1,23 +1,34 @@
-# recorder.py
-
 import time
 import json
-from config import L1, L2, SC_SERVO_ACC, SC_SERVO_SPEED, SERVO_BASE_ID, SERVO_GRIPPER_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+from config import (
+    L1, L2, sc_acc, sc_speed, base, gripper,
+    schoulder, elbow, wrist
+)
 from servos import ServoController
 from controller import ArmController
 from kinematics import Kinematics
-from sc_controll import open_gripper, close_gripper, sc_servo, sc_servo_position 
+from sc_controll import open_gripper, close_gripper, sc_servo, sc_servo_position
 
-recorded_poses_FILE = "recorded_poses.json"
-TEMPO_DPS = 50.0  # prędkość ruchu serw w °/s
+file = "recorded_poses.json"
+dps = 50.0
 
-with open("positions.json", "r") as f:
-    predefined_positions = json.load(f)
+def load_predefined_positions(file_path="positions.json"):
+    try:
+        with open(file_path, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"[ERROR] File '{file_path}' not found.")
+        return {}
 
-def record_positions(ctrl):
-    print("[TRYB NAGRYWANIA]")
-    print("Ustawiaj serwa ręcznie.")
-    print("ENTER - zapisz pozycję, O - otwórz chwytak, Z - zamknij chwytak, Q - zakończ\n")
+def save_recorded_positions(poses, file_path=file):
+    with open(file_path, "w") as f:
+        json.dump(poses, f, indent=2)
+    print(f"[OK] Saved {len(poses)} positions to file '{file_path}'.")
+
+def record_positions(ctrl, predefined_positions):
+    print("[RECORDING MODE]")
+    print("Manually adjust the servos.")
+    print("ENTER - Save position, O - Open gripper, Z - Close gripper, Q - Quit\n")
 
     ctrl.torque_off_all()
     recorded_poses = []
@@ -47,44 +58,44 @@ def record_positions(ctrl):
 
         elif user_input == '':
             angles = ctrl.get_all_servo_positions_deg([
-                SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+                base, schoulder, elbow, wrist
             ])
-            sc_angle = sc_servo_position(SERVO_GRIPPER_ID)
+            sc_angle = sc_servo_position(gripper)
 
             if len(angles) != 4:
                 print("[BŁĄD] Nie udało się odczytać wszystkich serw.")
                 continue
 
             recorded_poses.append({
-                str(SERVO_BASE_ID): int(angles[SERVO_BASE_ID]),
-                str(SERVO_SHOULDER_ID): int(angles[SERVO_SHOULDER_ID]),
-                str(SERVO_ELBOW_ID): int(angles[SERVO_ELBOW_ID]),
-                str(SERVO_WRIST_ID): int(angles[SERVO_WRIST_ID]),
-                str(SERVO_GRIPPER_ID): int(sc_angle)
+                str(base): int(angles[base]),
+                str(schoulder): int(angles[schoulder]),
+                str(elbow): int(angles[elbow]),
+                str(wrist): int(angles[wrist]),
+                str(gripper): int(sc_angle)
             })
 
             print(f"[ZAPISANO] {len(recorded_poses)}: "
-                f"S1={angles[SERVO_BASE_ID]:.1f}°, "
-                f"S2={angles[SERVO_SHOULDER_ID]:.1f}°, "
-                f"S3={angles[SERVO_ELBOW_ID]:.1f}°, "
-                f"S4={angles[SERVO_WRIST_ID]:.1f}°, "
+                f"S1={angles[base]:.1f}°, "
+                f"S2={angles[schoulder]:.1f}°, "
+                f"S3={angles[elbow]:.1f}°, "
+                f"S4={angles[wrist]:.1f}°, "
                 f"Gripper={sc_angle}")
 
         else:
             print("[INFO] Nieznana komenda. ENTER=Zapisz, O/Z=Chwytak, H/S/P=Pozycje, Q=Wyjdź")
 
-    with open(recorded_poses_FILE, "w") as f:
+    with open(file, "w") as f:
         json.dump(recorded_poses, f, indent=2)
-    print(f"[OK] Zapisano {len(recorded_poses)} pozycji do pliku '{recorded_poses_FILE}'.")
+    print(f"[OK] Zapisano {len(recorded_poses)} pozycji do pliku '{file}'.")
 
 def playback(ctrl):
     print("[TRYB ODTWARZANIA]")
 
     try:
-        with open(recorded_poses_FILE, "r") as f:
+        with open(file, "r") as f:
             recorded_poses = json.load(f)
     except FileNotFoundError:
-        print(f"[BŁĄD] Plik '{recorded_poses_FILE}' nie istnieje.")
+        print(f"[BŁĄD] Plik '{file}' nie istnieje.")
         return
 
     if not recorded_poses:
@@ -94,34 +105,32 @@ def playback(ctrl):
     ctrl.torque_on_all()
 
     last_pose = ctrl.get_all_servo_positions_deg([
-        SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+        base, schoulder, elbow, wrist
     ])
 
     for idx, pose in enumerate(recorded_poses, start=1):
         angles = {int(k): v for k, v in pose.items()}
 
-        # Oddziel ST (ramię) od SC (chwytak)
         arm_angles = {
-            SERVO_BASE_ID: angles[SERVO_BASE_ID],
-            SERVO_SHOULDER_ID: angles[SERVO_SHOULDER_ID],
-            SERVO_ELBOW_ID: angles[SERVO_ELBOW_ID],
-            SERVO_WRIST_ID: angles[SERVO_WRIST_ID]
+            base: angles[base],
+            schoulder: angles[schoulder],
+            elbow: angles[elbow],
+            wrist: angles[wrist]
         }
-        gripper_angle = angles[SERVO_GRIPPER_ID]
+        gripper_angle = angles[gripper]
 
-        ctrl.sync_angles(last_pose, arm_angles, tempo_dps=TEMPO_DPS)
-        sc_servo(SERVO_GRIPPER_ID, gripper_angle, SC_SERVO_SPEED, SC_SERVO_ACC)
+        ctrl.sync_angles(last_pose, arm_angles, tempo_dps=dps)
+        sc_servo(gripper, gripper_angle, sc_speed, sc_acc)
 
         print(f"Poz. {idx}: "
-              f"S1={arm_angles[SERVO_BASE_ID]:.1f}°, "
-              f"S2={arm_angles[SERVO_SHOULDER_ID]:.1f}°, "
-              f"S3={arm_angles[SERVO_ELBOW_ID]:.1f}°, "
-              f"S4={arm_angles[SERVO_WRIST_ID]:.1f}°, "
+              f"S1={arm_angles[base]:.1f}°, "
+              f"S2={arm_angles[schoulder]:.1f}°, "
+              f"S3={arm_angles[elbow]:.1f}°, "
+              f"S4={arm_angles[wrist]:.1f}°, "
               f"Gripper={gripper_angle:.1f}°")
 
-        # oblicz czas ruchu
         delta = max(abs(arm_angles[sid] - last_pose.get(sid, arm_angles[sid])) for sid in arm_angles)
-        move_time = delta / TEMPO_DPS
+        move_time = delta / dps
 
         time.sleep(move_time + 0.1)
 

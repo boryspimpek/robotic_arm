@@ -1,15 +1,18 @@
 ### robot_arm/servos.py
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
 import time
 from STservo_sdk.port_handler import PortHandler
 from STservo_sdk.sts import sts
-from config import BAUDRATE, GLOBAL_SERVO_SPEED, GLOBAL_SERVO_ACC, SERVO_ANGLE_LIMITS, SERVO_BASE_ID, SERVO_ELBOW_ID, SERVO_SHOULDER_ID, SERVO_TRIMS, SERVO_WRIST_ID
+from config import baudrate, st_speed, st_acc, angle_limits, base, elbow, schoulder, trims, wrist
 
 class ServoController:
     def __init__(self, port_path):
         self.port = PortHandler(port_path)
         self.port.openPort()
-        self.port.setBaudRate(BAUDRATE)
+        self.port.setBaudRate(baudrate)
         self.ctrl = sts(self.port)
         self.last_positions = {}  # zapamiętanie poprzednich pozycji
 
@@ -22,8 +25,8 @@ class ServoController:
         position = self.deg_to_raw(int_angle)
         print(f"Servo {servo_id}: {angle_deg}° → raw {position}")
 
-        speed = GLOBAL_SERVO_SPEED
-        acc = GLOBAL_SERVO_ACC
+        speed = st_speed
+        acc = st_acc
         self.ctrl.WritePosEx(servo_id, position, speed, acc)
         self.last_positions[servo_id] = int_angle
         
@@ -77,7 +80,7 @@ class ServoController:
             raw_speed = max(raw_speed, 10)
 
             raw_pos = self.deg_to_raw(end)
-            acc = GLOBAL_SERVO_ACC
+            acc = st_acc
             self.ctrl.WritePosEx(sid, raw_pos, raw_speed, acc)
             self.last_positions[sid] = end
 
@@ -94,7 +97,6 @@ class ServoController:
                 print(f"[WARN] Odczyt serwa ID {sid} nieudany: {e}")
         # print(f"[INFO] Odczytano pozycje serw {positions}")
         return positions
-        
 
     def torque_off(self, servo_id):
         self.ctrl.write1ByteTxRx(servo_id, 40, 0)
@@ -103,10 +105,10 @@ class ServoController:
         self.ctrl.write1ByteTxRx(servo_id, 40, 1)
 
     def torque_off_all(self):
-        for sid in [SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID]:
+        for sid in [base, schoulder, elbow, wrist]:
             self.torque_off(sid)
 
     def torque_on_all(self):
-        for sid in [SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID]:
+        for sid in [base, schoulder, elbow, wrist]:
             self.torque_on(sid)
 

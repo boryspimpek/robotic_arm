@@ -6,70 +6,89 @@
     <title>Robotic Arm</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>TAJFUNEK ROBOTIC ARM</h1>
 
-    <hr>
+    <nav class="navbar">
+        <a href="#presets">Presets</a>
+        <a href="#record">Record</a>
+        <a href="#torque">Torque</a>
+        <a href="#controller">Controller</a>
+        <a href="#angles">Angles</a>
+      </nav>
 
-    <h1>Fire preset</h1>
+    <header>
+        <h1>TAJFUNEK ROBOTIC ARM</h1>
+    </header>
 
-    <div class="preset-buttons">
-        <button onclick="movePreset('home')">Home</button>
-        <button onclick="movePreset('stretch')">Stretch</button>
-        <button onclick="movePreset('pick')">Pick</button>
-        <button onclick="movePreset('place')">Place</button>
-    </div>
+        <hr>
+        
+    <main>
+        <section id="presets">
+            <h2>Fire Preset</h2>
+            <div class="preset-buttons">
+                <button onclick="movePreset('home')">Home</button>
+                <button onclick="movePreset('stretch')">Stretch</button>
+                <button onclick="movePreset('pick')">Pick</button>
+                <button onclick="movePreset('place')">Place</button>
+            </div>
+        </section>
 
-    <hr>
+        <hr>
 
-    <h1>Save position</h1>
+        <section id="record">
+            <h2>Record</h2>
+            <div class="preset-buttons">
+                <button onclick="savePosition()">Zapisz pozycję</button>
+                <button onclick="resetPositions()">Usuń wszystkie</button>
+                <button onclick="playPositions()">Odtwórz zapisane</button>
+            </div>
+        </section>
 
-    <div class="preset-buttons">
-        <button onclick="savePosition()">Zapisz pozycję</button>
-        <button onclick="resetPositions()">Usuń wszystkie</button>
-        <button onclick="playPositions()">Odtwórz zapisane</button>
-    </div>
-    
-    <hr>
+        <hr>
 
-    <div class="preset-buttons">
-        <button onclick="torqueOn()">Torque ON</button>
-        <button onclick="torqueOff()">Torque OFF</button>
-    </div>
-    
-    <hr>
-    
-    <h1>Dualshock PS4 controller</h1>
+        <section id="torque">
+            <h2>Torque Control</h2>
+            <div class="preset-buttons">
+                <button onclick="torqueOn()">Torque ON</button>
+                <button onclick="torqueOff()">Torque OFF</button>
+            </div>
+        </section>
 
-    <div class="preset-buttons">
-        <button onclick="startPad()">GO</button>
-        <button onclick="stopPad()">STOP</button>
-    </div>
+        <hr>
 
-    <hr>    
+        <section id="controller">
+            <h2>Dualshock PS4 Controller</h2>
+            <div class="preset-buttons">
+                <button onclick="startPad()">GO</button>
+                <button onclick="stopPad()">STOP</button>
+            </div>
+        </section>
 
-    <h1>Set angle</h1>
+        <hr>
 
-    <div class="servo-block">
-        <h2>BASE: <span id="angle1">90</span>°</h2>
-        <input type="range" min="0" max="180" value="90" id="slider1">
-    </div>
-    
-    <div class="servo-block">
-        <h2>Shoulder Angle: <span id="angle2">90</span>°</h2>
-        <input type="range" min="0" max="180" value="90" id="slider2">
-    </div>
-    
-    <div class="servo-block">
-        <h2>Elbow Angle: <span id="angle3">90</span>°</h2>
-        <input type="range" min="0" max="180" value="90" id="slider3">
-    </div>
-    
-    <div class="servo-block">
-        <h2>Wrist Angle: <span id="angle4">90</span>°</h2>
-        <input type="range" min="0" max="180" value="90" id="slider4">
-    </div>
-    
+        <section id="angles">
+            <h2>Set Angle</h2>
+            <div class="servo-block">
+                <div class="servo-label">BASE: <span id="angle1">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider1">
+            </div>
+            <div class="servo-block">
+                <div class="servo-label">SHOULDER: <span id="angle2">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider2">
+            </div>
+            <div class="servo-block">
+                <div class="servo-label">ELBOW: <span id="angle3">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider3">
+            </div>
+            <div class="servo-block">
+                <div class="servo-label">WRIST: <span id="angle4">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider4">
+            </div>
+                    </section>
+
+    </main>
+
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 import time
 import json
-from config import SC_SERVO_ACC, SC_SERVO_SPEED, SERVO_BASE_ID, SERVO_GRIPPER_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+from config import sc_acc, sc_speed, base, gripper, schoulder, elbow, wrist
 from servos import ServoController
 from controller import ArmController
 from kinematics import Kinematics
@@ -47,27 +47,27 @@ def record_positions(ctrl):
 
         elif user_input == '':
             angles = ctrl.get_all_servo_positions_deg([
-                SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+                base, schoulder, elbow, wrist
             ])
-            sc_angle = sc_servo_position(SERVO_GRIPPER_ID)
+            sc_angle = sc_servo_position(gripper)
 
             if len(angles) != 4:
                 print("[BŁĄD] Nie udało się odczytać wszystkich serw.")
                 continue
 
             recorded_poses.append({
-                str(SERVO_BASE_ID): int(angles[SERVO_BASE_ID]),
-                str(SERVO_SHOULDER_ID): int(angles[SERVO_SHOULDER_ID]),
-                str(SERVO_ELBOW_ID): int(angles[SERVO_ELBOW_ID]),
-                str(SERVO_WRIST_ID): int(angles[SERVO_WRIST_ID]),
-                str(SERVO_GRIPPER_ID): int(sc_angle)
+                str(base): int(angles[base]),
+                str(schoulder): int(angles[schoulder]),
+                str(elbow): int(angles[elbow]),
+                str(wrist): int(angles[wrist]),
+                str(gripper): int(sc_angle)
             })
 
             print(f"[ZAPISANO] {len(recorded_poses)}: "
-                f"S1={angles[SERVO_BASE_ID]:.1f}°, "
-                f"S2={angles[SERVO_SHOULDER_ID]:.1f}°, "
-                f"S3={angles[SERVO_ELBOW_ID]:.1f}°, "
-                f"S4={angles[SERVO_WRIST_ID]:.1f}°, "
+                f"S1={angles[base]:.1f}°, "
+                f"S2={angles[schoulder]:.1f}°, "
+                f"S3={angles[elbow]:.1f}°, "
+                f"S4={angles[wrist]:.1f}°, "
                 f"Gripper={sc_angle}")
 
         else:
@@ -94,7 +94,7 @@ def playback(ctrl):
     ctrl.torque_on_all()
 
     last_pose = ctrl.get_all_servo_positions_deg([
-        SERVO_BASE_ID, SERVO_SHOULDER_ID, SERVO_ELBOW_ID, SERVO_WRIST_ID
+        base, schoulder, elbow, wrist
     ])
 
     for idx, pose in enumerate(recorded_poses, start=1):
@@ -102,21 +102,21 @@ def playback(ctrl):
 
         # Oddziel ST (ramię) od SC (chwytak)
         arm_angles = {
-            SERVO_BASE_ID: angles[SERVO_BASE_ID],
-            SERVO_SHOULDER_ID: angles[SERVO_SHOULDER_ID],
-            SERVO_ELBOW_ID: angles[SERVO_ELBOW_ID],
-            SERVO_WRIST_ID: angles[SERVO_WRIST_ID]
+            base: angles[base],
+            schoulder: angles[schoulder],
+            elbow: angles[elbow],
+            wrist: angles[wrist]
         }
-        gripper_angle = angles[SERVO_GRIPPER_ID]
+        gripper_angle = angles[gripper]
 
         ctrl.sync_angles(last_pose, arm_angles, tempo_dps=TEMPO_DPS)
-        sc_servo(SERVO_GRIPPER_ID, gripper_angle, SC_SERVO_SPEED, SC_SERVO_ACC)
+        sc_servo(gripper, gripper_angle, sc_speed, sc_acc)
 
         print(f"Poz. {idx}: "
-              f"S1={arm_angles[SERVO_BASE_ID]:.1f}°, "
-              f"S2={arm_angles[SERVO_SHOULDER_ID]:.1f}°, "
-              f"S3={arm_angles[SERVO_ELBOW_ID]:.1f}°, "
-              f"S4={arm_angles[SERVO_WRIST_ID]:.1f}°, "
+              f"S1={arm_angles[base]:.1f}°, "
+              f"S2={arm_angles[schoulder]:.1f}°, "
+              f"S3={arm_angles[elbow]:.1f}°, "
+              f"S4={arm_angles[wrist]:.1f}°, "
               f"Gripper={gripper_angle:.1f}°")
 
         # oblicz czas ruchu

@@ -1,6 +1,6 @@
 from scservo_sdk import *
 
-from config import SC_SERVO_ACC, SC_SERVO_SPEED, SERVO_GRIPPER_ID  # Używamy tej samej biblioteki SCServo SDK
+from config import sc_acc, sc_speed, gripper  # Używamy tej samej biblioteki SCServo SDK
 
 # Parametry domyślne
 BAUDRATE = 1000000           # Domyślny baudrate SCServo
@@ -84,10 +84,10 @@ def sc_servo(SCS_ID, position, speed, acceleration):
     portHandler.closePort()
 
 def open_gripper():
-    sc_servo(SERVO_GRIPPER_ID, 800, SC_SERVO_SPEED, SC_SERVO_ACC)
+    sc_servo(gripper, 800, sc_speed, sc_acc)
 
 def close_gripper():
-    sc_servo(SERVO_GRIPPER_ID, 500, SC_SERVO_SPEED, SC_SERVO_ACC)
+    sc_servo(gripper, 500, sc_speed, sc_acc)
 
 def sc_torque_off():
     # Inicjalizowanie portu
