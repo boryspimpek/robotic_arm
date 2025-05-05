@@ -1,5 +1,4 @@
 from scservo_sdk import *
-
 from config import sc_acc, sc_speed, gripper  # Używamy tej samej biblioteki SCServo SDK
 
 # Parametry domyślne

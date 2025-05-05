@@ -2,12 +2,15 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
-from ps4 import ArmPS4Controller as IKController
-from ps42 import ArmPS4Controller as AngleController
 import threading
 import time
-import sys
+
+# Add the Library path to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
+
+# Import controllers
+from ps4 import ArmPS4Controller as IKController
+from ps42 import ArmPS4Controller as AngleController
 
 class HybridController:
     def __init__(self):

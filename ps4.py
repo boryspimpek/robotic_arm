@@ -1,12 +1,12 @@
+import math
+import threading
+import time
 from pyPS4Controller.controller import Controller
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
 from config import L1, L2, port
-import threading
-import time
-import math
 
 
 def scaled_step(value, base_step, exponent):

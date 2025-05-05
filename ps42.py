@@ -1,11 +1,11 @@
+import math
+import threading
+import time
 from pyPS4Controller.controller import Controller
+from config import L1, L2, base, schoulder, elbow, wrist, port
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
-from config import L1, L2, base, schoulder, elbow, wrist, port
-import threading
-import time
-import math
 
 def scaled_step(value, base_step=5.0, exponent=2.0):
     scaled = abs(value) ** exponent

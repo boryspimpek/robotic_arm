@@ -1,13 +1,16 @@
 ### robot_arm/servos.py
-
 import sys
 import os
 import numpy as np
 from kinematics import Kinematics
+from config import L1, L2, baudrate, st_speed, st_acc, base, elbow, schoulder, wrist
+
+# Add the Library path to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
+
 from STservo_sdk.port_handler import PortHandler
 from STservo_sdk.sts import sts
-from config import L1, L2, baudrate, st_speed, st_acc, angle_limits, base, elbow, schoulder, trims, wrist
+
 
 class ServoController:
     def __init__(self, port_path):
@@ -20,44 +23,6 @@ class ServoController:
 
     def deg_to_raw(self, angle_deg):
         return int(angle_deg * 4095 / 2 / 180)
-
-    def safe_move_servo(self, servo_id, target_angle_deg):
-        # 1. Odczyt aktualnych kątów barku i łokcia
-        relevant_ids = [schoulder, elbow]
-        current_angles = self.get_all_servo_positions_deg(relevant_ids)
-
-        if schoulder not in current_angles or elbow not in current_angles:
-            print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
-            return False
-
-        # 2. Symuluj nowy zestaw kątów
-        theta1 = current_angles[schoulder]
-        theta2 = current_angles[elbow]
-
-        if servo_id == schoulder:
-            theta1 = target_angle_deg
-        elif servo_id == elbow:
-            theta2 = target_angle_deg
-        else:
-            # Jeśli to nie bark ani łokieć – nie ma wpływu na z, wykonuj bez sprawdzania
-            self.move_servo(servo_id, target_angle_deg)
-            return True
-
-        # 3. Wywołanie forward kinematics (FK)
-        try:
-            x, y, z = self.kin.forward(theta1, theta2)
-        except Exception as e:
-            print(f"[ERROR] Błąd kinematyki prostej: {e}")
-            return False
-
-        # 4. Sprawdzenie bezpieczeństwa
-        if z < -50.0:
-            print(f"[WARN] Ruch odrzucony – zbyt nisko: z = {z:.1f} mm")
-            return False
-
-        # 5. Ruch jest bezpieczny – wykonaj
-        self.move_servo(servo_id, target_angle_deg)
-        return True
 
     def move_servo(self, servo_id, angle_deg):
         position = self.deg_to_raw(angle_deg)
