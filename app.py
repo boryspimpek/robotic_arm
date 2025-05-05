@@ -3,6 +3,7 @@ from config import L1, L2, port
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
+from sc_controll import open_gripper, close_gripper
 import subprocess
 import signal
 
@@ -89,7 +90,6 @@ def stop_pad():
         print("Pad is not running.")
     return '', 204
 
-
 @app.route('/save_position', methods=['POST'])
 def save_position():
     return run_script('save_position.py')
@@ -98,7 +98,6 @@ def save_position():
 @app.route('/reset_positions', methods=['POST'])
 def reset_positions():
     return run_script('reset_positions.py')
-
 
 @app.route('/play_positions', methods=['POST'])
 def play_positions():
@@ -111,6 +110,14 @@ def play_positions():
             return 'Sekwencja już trwa.', 409
     except Exception as e:
         return f'Błąd: {e}', 500
+
+@app.route('/play_status', methods=['GET'])
+def play_status():
+    import os
+    if os.path.exists('play_done.txt'):
+        os.remove('play_done.txt')  # czyścimy znacznik
+        return 'done', 200
+    return 'pending', 200
 
 @app.route('/stop_positions', methods=['POST'])
 def stop_positions():
@@ -133,7 +140,6 @@ def torque_on():
     except Exception as e:
         return f'Error: {e}', 500
 
-
 @app.route('/torque_off', methods=['POST'])
 def torque_off():
     try:
@@ -142,6 +148,17 @@ def torque_off():
     except Exception as e:
         return f'Error: {e}', 500
 
+@app.route('/open_gripper', methods=['POST'])
+def gripper_open():
+    # Tutaj wywołujesz metodę do otwierania grippera
+    open_gripper()
+    return "Gripper otwarty", 200
+
+@app.route('/close_gripper', methods=['POST'])
+def gripper_close():
+    # Tutaj wywołujesz metodę do zamykania grippera
+    close_gripper()
+    return "Gripper zamknięty", 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

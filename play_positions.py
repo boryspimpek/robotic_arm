@@ -1,3 +1,4 @@
+import os
 import json
 import time
 import sys
@@ -18,16 +19,19 @@ try:
 
     with open('recorded_positions.json', 'r') as f:
         positions = json.load(f)
+    
+    if os.path.exists('play_done.txt'):
+        os.remove('play_done.txt')
+
 
     last_pose = servo_ctrl.get_all_servo_positions_deg([
         base, schoulder, elbow, wrist
     ])
     
-    for key in sorted(positions.keys()):
+    for i, key in enumerate(sorted(positions.keys())):
         print(f"Odtwarzam: {key} → {positions[key]}")
         angles = {int(k): v for k, v in positions[key].items()}
         
-        # Oddziel ST (ramię) od SC (chwytak)
         arm_angles = {
             base: angles[base],
             schoulder: angles[schoulder],
@@ -39,13 +43,15 @@ try:
         servo_ctrl.sync_angles(last_pose, arm_angles, tempo_dps=TEMPO_DPS)
         sc_servo(gripper, gripper_angle, sc_speed, sc_acc)
 
-        # oblicz czas ruchu
         delta = max(abs(arm_angles[sid] - last_pose.get(sid, arm_angles[sid])) for sid in arm_angles)
         move_time = delta / TEMPO_DPS
 
-        time.sleep(move_time + 0.1)
-
+        time.sleep(move_time + 1)
         last_pose = arm_angles
+
+    # ✅ Dopiero po całej pętli:
+    with open('play_done.txt', 'w') as f:
+        f.write('done')
 
     print("Wszystkie pozycje odtworzone.")
     sys.exit(0)

@@ -1,3 +1,28 @@
+
+let gripperState = 'closed';
+
+const toggleGripper = () => {
+    if (gripperState === 'closed') {
+        // Jeśli gripper jest zamknięty, otwieramy go
+        postRequest('/open_gripper')
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                gripperState = 'opened'; // Zmieniamy stan na 'opened'
+            })
+            .catch(() => alert('Błąd przy otwieraniu grippera.'));
+    } else {
+        // Jeśli gripper jest otwarty, zamykamy go
+        postRequest('/close_gripper')
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                gripperState = 'closed'; // Zmieniamy stan na 'closed'
+            })
+            .catch(() => alert('Błąd przy zamykaniu grippera.'));
+    }
+};
+
 // Helper function for POST requests
 const postRequest = (url, body = null) => {
     const options = {
@@ -71,9 +96,26 @@ const resetPositions = () => {
 const playPositions = () => {
     postRequest('/play_positions')
         .then(response => response.text())
-        .then(alert)
+        .then(msg => {
+            alert(msg);
+            waitForPlayDone();  // start sprawdzania
+        })
         .catch(() => alert('Błąd przy odtwarzaniu.'));
 };
+
+function waitForPlayDone() {
+    const interval = setInterval(() => {
+        fetch('/play_status')
+            .then(res => res.text())
+            .then(text => {
+                if (text === 'done') {
+                    clearInterval(interval);
+                    updateSliders();  // 🟢 Odśwież suwaki
+                    alert('Sekwencja zakończona');
+                }
+            });
+    }, 1000); // sprawdzaj co sekundę
+}
 
 const stopPositions = () => {
     postRequest('/stop_positions')
