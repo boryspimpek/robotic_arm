@@ -26,7 +26,7 @@ class ServoController:
 
     def move_servo(self, servo_id, angle_deg):
         position = self.deg_to_raw(angle_deg)
-        print(f"Servo {servo_id}: {angle_deg}° → raw {position}")
+        # print(f"Servo {servo_id}: {angle_deg}° → raw {position}")
 
         self.ctrl.WritePosEx(servo_id, position, st_speed, st_acc)
         # self.last_positions[servo_id] = angle_deg
@@ -70,18 +70,6 @@ class ServoController:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
                 return False
             
-            # if x < 10.0:
-            #     print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
-            #     return False
-
-            # if int(round(t2)) == 180 and t1 > 117:
-            #     print(f"[WARN] Niedozwolona konfiguracja: elbow=180°, schoulder={t1:.1f}° > 117°")
-            #     return False
-
-            # if t1 > 117 and t2 > 160:
-            #     print(f"[WARN] Niedozwolona konfiguracja: schoulder={t1:.1f}° > 117°, a elbow={t2:.1f}° > 160°")
-            #     return False
-        
         # Jeśli cały tor jest bezpieczny – wykonaj ruch
         self.move_to(angles)
         return True

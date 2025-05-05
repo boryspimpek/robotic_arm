@@ -17,7 +17,7 @@ class ArmPS4Controller(Controller):
 
         # Inicjalizacja komponentów
         self.kinematics = Kinematics(L1, L2)
-        self.servo_controller = ServoController("/dev/ttyACM0")
+        self.servo_controller = ServoController(port)
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
         # Stan kontrolera
@@ -57,7 +57,12 @@ class ArmPS4Controller(Controller):
     def on_L3_down(self, val): self.joystick_ly = -self.apply_deadzone(val / 32767)
     def on_R3_up(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
     def on_R3_down(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
-
+    def on_L3_y_at_rest(self): pass
+    def on_R3_right(self, value): pass
+    def on_R3_left(self, value): pass
+    def on_R3_x_at_rest(self): pass
+    def on_R3_y_at_rest(self): pass
+    
     def on_x_press(self):
         pass  # HybridController przypisuje tutaj switch_mode
 
@@ -89,7 +94,7 @@ class ArmPS4Controller(Controller):
             self.elbow_angle = max(0, min(180, self.elbow_angle))
 
             # Wysłanie do serw
-            self.servo_controller.move_to({
+            self.servo_controller.safe_move_to({
                 base: self.base_angle,
                 schoulder: self.shoulder_angle,
                 elbow: self.elbow_angle,

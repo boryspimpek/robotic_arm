@@ -114,7 +114,7 @@ class ArmPS4Controller(Controller):
                 new_x = max(5.0, self.x + delta_x)
 
                 # Ustal maksymalne ograniczenie dla Z w zależności od trybu nadgarstka
-                z_limit = -50.0 if self.wrist_horizontal else -10.0
+                z_limit = -20.0 if self.wrist_horizontal else -20.0
                 new_z = max(z_limit, self.z + delta_z)
 
                 new_phi = max(-90, min(90, self.phi + delta_phi))
@@ -131,8 +131,6 @@ class ArmPS4Controller(Controller):
 
             time.sleep(refresh_rate)
 
-
-# --- Start aplikacji ---
 
 if __name__ == "__main__":
     pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)
