@@ -32,13 +32,10 @@ class HybridController:
             print("[INFO] Przełączanie do trybu bezpośredniego sterowania kątami...")
             self.ik_controller.running = False
             self.ik_controller.control_thread.join()
-            self.ik_controller.servo_controller.torque_off_all()
+            # self.ik_controller.servo_controller.torque_off_all()
 
             self.mode = "angle"
             self.angle_controller = AngleController(interface="/dev/input/js0", connecting_using_ds4drv=False)
-            # self.angle_controller.base_angle = 90
-            # self.angle_controller.shoulder_angle = 90
-            # self.angle_controller.elbow_angle = 90
             self.angle_controller.on_x_press = self.switch_mode
             self.angle_controller.on_exit = self.exit_program
             self.current_controller = self.angle_controller
@@ -48,7 +45,7 @@ class HybridController:
             print("[INFO] Przełączanie z powrotem do trybu IK...")
             self.angle_controller.running = False
             self.angle_controller.control_thread.join()
-            self.angle_controller.servo_controller.torque_off_all()
+            # self.angle_controller.servo_controller.torque_off_all()
 
             self.mode = "ik"
             self.ik_controller = IKController(interface="/dev/input/js0", connecting_using_ds4drv=False)

@@ -56,7 +56,7 @@ class ServoController:
         for t1, t2 in zip(theta1_traj, theta2_traj):
             try:
                 x, y, z = self.kin.forward(t1, t2)
-                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
+                # print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
 
             except Exception as e:
                 print(f"[ERROR] Błąd FK: {e}")
