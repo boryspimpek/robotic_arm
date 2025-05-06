@@ -2,7 +2,7 @@ import math
 import threading
 import time
 from pyPS4Controller.controller import Controller
-from config import L1, L2, base, schoulder, elbow, wrist, port
+from config import L1, L2, base, schoulder, elbow, wrist, port, angle_limits
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
@@ -19,7 +19,7 @@ class ArmPS4Controller(Controller):
         super().__init__(**kwargs)
         self._initialize_components()
         self._initialize_state()
-        self._move_to_start_position()
+        # self._move_to_start_position()
         self._start_control_thread()
 
     def _initialize_components(self):
@@ -91,6 +91,7 @@ class ArmPS4Controller(Controller):
         self.base_angle = max(0, min(180, self.base_angle))
         self.shoulder_angle = max(0, min(180, self.shoulder_angle))
         self.elbow_angle = max(0, min(180, self.elbow_angle))
+        self.wrist_angle = max(0, min(180, self.wrist_angle))
 
     def _send_servo_commands(self):
         self.servo_controller.safe_move_to({
