@@ -7,49 +7,51 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 
+
 def scaled_step(value, base_step=5.0, exponent=2.0):
+    """Scale joystick input for smoother control."""
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
+
 
 class ArmPS4Controller(Controller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._initialize_components()
+        self._initialize_state()
+        self._move_to_start_position()
+        self._start_control_thread()
 
-        # Inicjalizacja komponentów
+    def _initialize_components(self):
         self.kinematics = Kinematics(L1, L2)
         self.servo_controller = ServoController(port)
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
-        # Stan kontrolera
+    def _initialize_state(self):
         self.deadzone = 0.3
         self.running = True
+        self.joystick_lx = 0.0  # Base rotation
+        self.joystick_ly = 0.0  # Shoulder
+        self.joystick_rz = 0.0  # Elbow
+        self._initialize_angles()
 
-        # Osie joysticka
-        self.joystick_lx = 0.0  # obrót podstawy
-        self.joystick_ly = 0.0  # ramię
-        self.joystick_rz = 0.0  # łokieć
-
-        # Pozycja startowa (dla czytelności, nie steruje kątami bezpośrednio)
-        print("[INFO] Przechodzę do pozycji startowej...")
-        self.arm.move_to_point_dps((142.0, 0.0, 0.0), tempo_dps=60)
-
-        # Odczyt aktualnych kątów z serw
-        angles = self.servo_controller.get_all_servo_positions_deg([
-            base, schoulder, elbow, wrist
-        ])
+    def _initialize_angles(self):
+        angles = self.servo_controller.get_all_servo_positions_deg([base, schoulder, elbow, wrist])
         self.base_angle = angles.get(base, 90)
         self.shoulder_angle = angles.get(schoulder, 90)
         self.elbow_angle = angles.get(elbow, 90)
         self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
 
-        # Wątek sterowania
-        self.control_thread = threading.Thread(target=self.update_loop)
+    def _move_to_start_position(self):
+        print("[INFO] Moving to start position...")
+        self.arm.move_to_point_dps((142.0, 0.0, 0.0), tempo_dps=60)
+
+    def _start_control_thread(self):
+        self.control_thread = threading.Thread(target=self._update_loop)
         self.control_thread.start()
 
     def apply_deadzone(self, value):
         return value if abs(value) > self.deadzone else 0.0
-
-    # --- Mapa przycisków i joysticków ---
 
     def on_L3_left(self, val): self.joystick_lx = self.apply_deadzone(val / 32767)
     def on_L3_right(self, val): self.joystick_lx = self.apply_deadzone(val / 32767)
@@ -62,45 +64,41 @@ class ArmPS4Controller(Controller):
     def on_R3_left(self, value): pass
     def on_R3_x_at_rest(self): pass
     def on_R3_y_at_rest(self): pass
-    def on_x_press(self): pass  # HybridController przypisuje tutaj switch_mode
+    def on_x_press(self): pass  # Reserved for HybridController
 
     def on_circle_press(self):
-        print("[INFO] Zamykanie...")
+        print("[INFO] Stopping...")
         self.running = False
-        # self.servo_controller.torque_off_all()
-        self.stop = True
         if hasattr(self, 'on_exit'):
             self.on_exit()
 
-    # --- Główna pętla aktualizacji kątów ---
-
-    def update_loop(self):
+    def _update_loop(self):
         refresh_rate = 0.05
 
         while self.running:
-            # Aktualizacja kątów
-            self.base_angle += scaled_step(self.joystick_lx, base_step=2.0, exponent=5.0)
-            self.shoulder_angle += scaled_step(self.joystick_ly, base_step=2.0, exponent=5.0)
-            self.elbow_angle += scaled_step(self.joystick_rz, base_step=2.0, exponent=5.0)
-            
-            # Wylicz nadgarstek (poziomy)
-            self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
-
-            # Ograniczenia mechaniczne
-            self.base_angle = max(0, min(180, self.base_angle))
-            self.shoulder_angle = max(0, min(180, self.shoulder_angle))
-            self.elbow_angle = max(0, min(180, self.elbow_angle))
-
-            # Wysłanie do serw
-            self.servo_controller.safe_move_to({
-                base: self.base_angle,
-                schoulder: self.shoulder_angle,
-                elbow: self.elbow_angle,
-                wrist: self.wrist_angle
-            })
-
+            self._update_angles()
+            self._apply_mechanical_limits()
+            self._send_servo_commands()
             time.sleep(refresh_rate)
 
+    def _update_angles(self):
+        self.base_angle += scaled_step(self.joystick_lx, base_step=2.0, exponent=5.0)
+        self.shoulder_angle += scaled_step(self.joystick_ly, base_step=2.0, exponent=5.0)
+        self.elbow_angle += scaled_step(self.joystick_rz, base_step=2.0, exponent=5.0)
+        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
+
+    def _apply_mechanical_limits(self):
+        self.base_angle = max(0, min(180, self.base_angle))
+        self.shoulder_angle = max(0, min(180, self.shoulder_angle))
+        self.elbow_angle = max(0, min(180, self.elbow_angle))
+
+    def _send_servo_commands(self):
+        self.servo_controller.safe_move_to({
+            base: self.base_angle,
+            schoulder: self.shoulder_angle,
+            elbow: self.elbow_angle,
+            wrist: self.wrist_angle
+        })
 
 if __name__ == "__main__":
     pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)

@@ -22,20 +22,20 @@ class ArmPS4Controller(Controller):
         self.servo_controller = ServoController(port)
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
-        self.wrist_horizontal = True  # Default to horizontal
-
         # Initial position
         self.x = 142.0
         self.z = 0.0
         self.phi = 0.0  # Base rotation
-        self.deadzone = 0.5
 
         # Input states
         self.joystick_rx = 0.0  # X-axis
         self.joystick_lz = 0.0  # Z-axis
         self.joystick_lphi = 0.0  # Base rotation
+        self.deadzone = 0.5
 
         self.gripper_closed = True
+        self.wrist_horizontal = True  # Default to horizontal
+
         self.running = True
 
         print("[INFO] Moving to start position...")
@@ -106,35 +106,50 @@ class ArmPS4Controller(Controller):
         z_thresholds = self.calculate_z_thresholds(start_z=-50, step_z=0.1, num_points=500)
 
         while self.running:
-            step_x = self.dynamic_base_step_x(self.x)
-            step_z = self.dynamic_base_step_z(self.z)
-            step_phi = 2  # Constant base step for rotation
-
-            delta_x = scaled_step(self.joystick_rx, step_x, exponent=5.0)
-            delta_z = scaled_step(self.joystick_lz, step_z, exponent=5.0)
-            delta_phi = scaled_step(self.joystick_lphi, step_phi, exponent=5.0)
-
+            delta_x, delta_z, delta_phi = self.calculate_deltas()
             if delta_x or delta_z or delta_phi:
-                new_x = self.x + delta_x
-                for z_limit, min_x in z_thresholds:
-                    if self.z <= z_limit:
-                        new_x = max(min_x, new_x)
-                        break
-                else:
-                    new_x = max(5.0, new_x)
-
-                z_limit = -50.0 if self.wrist_horizontal else -10.0
-                new_z = max(z_limit, self.z + delta_z)
-                new_phi = max(-90, min(90, self.phi + delta_phi))
-
-                if self.arm.pad_ik(new_x, new_z, new_phi, wrist_horizontal=self.wrist_horizontal):
-                    self.x, self.z, self.phi = new_x, new_z, new_phi
-                    print(f"x={self.x:.1f}, z={self.z:.1f}, phi={self.phi:.1f}°")
-                    print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
-                else:
-                    print("[INFO] Movement not allowed.")
-
+                self.update_position(delta_x, delta_z, delta_phi, z_thresholds)
             time.sleep(refresh_rate)
+
+    def calculate_deltas(self):
+        step_x = self.dynamic_base_step_x(self.x)
+        step_z = self.dynamic_base_step_z(self.z)
+        step_phi = 2  # Constant base step for rotation
+
+        delta_x = scaled_step(self.joystick_rx, step_x, exponent=5.0)
+        delta_z = scaled_step(self.joystick_lz, step_z, exponent=5.0)
+        delta_phi = scaled_step(self.joystick_lphi, step_phi, exponent=5.0)
+
+        return delta_x, delta_z, delta_phi
+
+    def update_position(self, delta_x, delta_z, delta_phi, z_thresholds):
+        new_x = self.calculate_new_x(delta_x, z_thresholds)
+        new_z = self.calculate_new_z(delta_z)
+        new_phi = self.calculate_new_phi(delta_phi)
+
+        if self.arm.pad_ik(new_x, new_z, new_phi, wrist_horizontal=self.wrist_horizontal):
+            self.x, self.z, self.phi = new_x, new_z, new_phi
+            print(f"x={self.x:.1f}, z={self.z:.1f}, phi={self.phi:.1f}°")
+            print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
+        else:
+            print("[INFO] Movement not allowed.")
+
+    def calculate_new_x(self, delta_x, z_thresholds):
+        new_x = self.x + delta_x
+        for z_limit, min_x in z_thresholds:
+            if self.z <= z_limit:
+                new_x = max(min_x, new_x)
+                break
+        else:
+            new_x = max(10.0, new_x)
+        return new_x
+
+    def calculate_new_z(self, delta_z):
+        z_limit = -50.0 if self.wrist_horizontal else -10.0
+        return max(z_limit, self.z + delta_z)
+
+    def calculate_new_phi(self, delta_phi):
+        return max(-90, min(90, self.phi + delta_phi))
 
 
 if __name__ == "__main__":
