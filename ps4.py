@@ -35,7 +35,7 @@ class ArmPS4Controller(Controller):
         self.joystick_lz = 0.0  # oś Z
         self.joystick_lphi = 0.0  # obrót podstawy
 
-        self.gripper_closed = False
+        self.gripper_closed = True
         self.running = True
 
         print("[INFO] Przechodzę do pozycji startowej...")
@@ -60,8 +60,9 @@ class ArmPS4Controller(Controller):
     def on_R3_left(self, value): pass
     def on_R3_x_at_rest(self): pass
     def on_R3_y_at_rest(self): pass
-    def on_R1_press(self):
+    def on_x_press(self): pass  # Zarezerwowane na przyszłość
 
+    def on_R1_press(self):
         self.gripper_closed = not self.gripper_closed
         if self.gripper_closed:
             print("[INFO] Zamykam chwytak")
@@ -71,14 +72,13 @@ class ArmPS4Controller(Controller):
             open_gripper()
 
     def on_triangle_press(self):
-        if not self.wrist_horizontal and self.z < -10.0:
-            print("[WARN] Za nisko, nie można obrócić nadgarstka do pionu (z < -10)")
+        if self.wrist_horizontal and self.z < -10.0:
+            print("[WARN] Za nisko, nie można obrócić nadgarstka do pionu")
             return
 
         self.wrist_horizontal = not self.wrist_horizontal
         mode = "poziomy" if self.wrist_horizontal else "pionowy"
         print(f"[INFO] Zmieniono tryb nadgarstka na: {mode}")
-
 
     def on_circle_press(self):
         print("[INFO] Zamykanie kontrolera...")
@@ -88,9 +88,6 @@ class ArmPS4Controller(Controller):
         self.stop = True
         if hasattr(self, 'on_exit'):
             self.on_exit()
-
-    def on_x_press(self):
-        pass  # Zarezerwowane na przyszłość
 
     # --- Funkcje pomocnicze ---
 
@@ -116,10 +113,13 @@ class ArmPS4Controller(Controller):
 
             # Jeśli jest zmiana
             if delta_x or delta_z or delta_phi:
-                new_x = max(5.0, self.x + delta_x)
+                if self.z < 0:
+                    new_x = max(50.0, self.x + delta_x)
+                else:
+                    new_x = max(10.0, self.x + delta_x)
 
                 # Ustal maksymalne ograniczenie dla Z w zależności od trybu nadgarstka
-                z_limit = -50.0 if self.wrist_horizontal else 20.0
+                z_limit = -50.0 if self.wrist_horizontal else -10.0
                 new_z = max(z_limit, self.z + delta_z)
 
                 new_phi = max(-90, min(90, self.phi + delta_phi))

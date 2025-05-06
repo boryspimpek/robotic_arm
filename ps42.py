@@ -53,18 +53,16 @@ class ArmPS4Controller(Controller):
 
     def on_L3_left(self, val): self.joystick_lx = self.apply_deadzone(val / 32767)
     def on_L3_right(self, val): self.joystick_lx = self.apply_deadzone(val / 32767)
-    def on_L3_up(self, val): self.joystick_ly = -self.apply_deadzone(val / 32767)
-    def on_L3_down(self, val): self.joystick_ly = -self.apply_deadzone(val / 32767)
-    def on_R3_up(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
-    def on_R3_down(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
+    def on_R3_up(self, val): self.joystick_ly = self.apply_deadzone(val / 32767)
+    def on_R3_down(self, val): self.joystick_ly = self.apply_deadzone(val / 32767)
+    def on_L3_up(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
+    def on_L3_down(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
     def on_L3_y_at_rest(self): pass
     def on_R3_right(self, value): pass
     def on_R3_left(self, value): pass
     def on_R3_x_at_rest(self): pass
     def on_R3_y_at_rest(self): pass
-    
-    def on_x_press(self):
-        pass  # HybridController przypisuje tutaj switch_mode
+    def on_x_press(self): pass  # HybridController przypisuje tutaj switch_mode
 
     def on_circle_press(self):
         print("[INFO] Zamykanie...")
