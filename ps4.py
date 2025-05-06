@@ -56,6 +56,7 @@ class ArmPS4Controller(Controller):
     def on_L3_left(self, val): self.joystick_lphi = -self.apply_deadzone(val / 32767)
     def on_L3_right(self, val): self.joystick_lphi = -self.apply_deadzone(val / 32767)
     def on_L3_y_at_rest(self): pass
+    def on_L3_x_at_rest(self): pass
     def on_R3_right(self, value): pass
     def on_R3_left(self, value): pass
     def on_R3_x_at_rest(self): pass
@@ -113,10 +114,31 @@ class ArmPS4Controller(Controller):
 
             # Jeśli jest zmiana
             if delta_x or delta_z or delta_phi:
-                if self.z < 0:
-                    new_x = max(50.0, self.x + delta_x)
+                # Definiujemy początkową wartość dla z oraz krok
+                start_z = -50
+                step_z = 0.1  # Zmiana w z_limit
+                num_points = 500  # Liczba punktów do wygenerowania
+
+                # Generujemy z_thresholds na podstawie wzoru dla x
+                z_thresholds = []
+                for i in range(num_points):
+                    z = start_z + i * step_z  # Obliczamy wartość z w każdej iteracji
+                    # Obliczamy x na podstawie wzoru
+                    x = 6.59 - 3.9 * z - 0.0689 * z**2 - 4.81E-04 * z**3
+                    z_thresholds.append((z, x))  # Dodajemy punkt (z, x) do listy
+
+                # Obliczamy nową wartość x na podstawie delta_x
+                new_x = self.x + delta_x
+
+                # Iterujemy przez z_thresholds, aby dostosować nową wartość x
+                for z_limit, min_x in z_thresholds:
+                    if self.z <= z_limit:  # Jeśli aktualna wartość z jest mniejsza lub równa limitowi
+                        new_x = max(min_x, new_x)  # Ustawiamy new_x na maksymalną z wartości: min_x i current new_x
+                        break  # Przerywamy pętlę, ponieważ znaleźliśmy odpowiedni limit
+
+                # Jeśli nie znaleziono żadnego limitu z_thresholds, ustawiamy minimalną wartość new_x
                 else:
-                    new_x = max(10.0, self.x + delta_x)
+                    new_x = max(5.0, new_x)
 
                 # Ustal maksymalne ograniczenie dla Z w zależności od trybu nadgarstka
                 z_limit = -50.0 if self.wrist_horizontal else -10.0
@@ -130,7 +152,10 @@ class ArmPS4Controller(Controller):
                     self.phi = new_phi
 
                     print(f"x={self.x:.1f}, z={self.z:.1f}, phi={self.phi:.1f}°")
-                    print(f"[DEBUG] step_x={step_x}, step_z={step_z}")
+                    print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
+                    # print(f"[DEBUG] step_x={step_x}, step_z={step_z}")
+                    # print(f"[DEBUG] dynamic_base_step_z: {z} -> {step_z}")
+                    # print(f"[DEBUG] dynamic_base_step_x: {x} -> {step_x}")
                 else:
                     print("[INFO] Ruch niedozwolony.")
 
