@@ -93,7 +93,7 @@ class ArmPS4Controller(Controller):
     # --- Funkcje pomocnicze ---
 
     def dynamic_base_step_x(self, x):
-        return max(1, round(3.87 + 0.0114 * x - 2.69e-4 * x**2 + 2.39e-6 * x**3 - 7.23e-9 * x**4))
+        return max(1, round(-0.0494 + 0.116 * x - 1.24E-03* x**2 + 6.23E-06 * x**3 - 1.27E-08 * x**4))
 
     def dynamic_base_step_z(self, z):
         return max(1, round(8 + 7.53e-3 * z - 3.67e-4 * z**2 + 4.7e-6 * z**3 - 2.1e-8 * z**4))
