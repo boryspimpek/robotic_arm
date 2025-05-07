@@ -163,3 +163,45 @@ class ArmController:
 
         print("[INFO] Ruch zakończony.")
         return True
+    
+    def move_to_point_dps_ikpy(self, target_xyz, elbow_up=True, tempo_dps=60.0):
+        current_angles = self.servo.get_all_servo_positions_deg([
+            base, schoulder, elbow, wrist
+        ])
+
+        for sid in [base, schoulder, elbow, wrist]:
+            if sid not in current_angles:
+                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
+                return
+
+        try:
+            ik_angles = self.kin.ikpy(target_xyz)
+            s1, s2, s3, s4 = self.kin.to_servo_angles_ikpy(ik_angles)
+            print("[INFO] Obliczone kąty serw (°):")
+            print(f"  base:     {s1:.2f}")
+            print(f"  shoulder: {s2:.2f}")
+            print(f"  elbow:    {s3:.2f}")
+            print(f"  wrist:    {s4:.2f}")
+        except Exception as e:
+            print(f"[ERROR] Nie udało się obliczyć kinematyki odwrotnej: {e}")
+            return False
+
+        start_angles = current_angles
+        end_angles = {
+            base: s1,
+            schoulder: s2,
+            elbow: s3,
+            wrist: s4
+        }
+
+        angle_deltas = {sid: abs(end_angles[sid] - start_angles[sid]) for sid in end_angles}
+        max_delta = max(angle_deltas.values())  
+        time_to_move = max_delta / tempo_dps  
+
+        self.servo.sync_angles(start_angles, end_angles, tempo_dps)
+
+        print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
+        time.sleep(time_to_move)
+
+        print("[INFO] Ruch zakończony.")
+        return True

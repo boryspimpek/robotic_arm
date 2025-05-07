@@ -12,6 +12,11 @@ servo_ctrl = ServoController(port)
 arm = ArmController(kin, servo_ctrl)
 
 
+
+# servo_ctrl.ikpy([0.0, 0.58, 0.115])
+
+
+
 # GRIPPER
 # while True:
 #     open_gripper()
@@ -38,13 +43,13 @@ arm = ArmController(kin, servo_ctrl)
 # print(f"Wrist: {angles[wrist]:.1f}°")
 
 ####### SET ANGELS
-home = {
-    base: 90,
-    schoulder: 90,
-    elbow: 90,
-    wrist: 90,
-}
-servo_ctrl.safe_move_to(home)
+# home = {
+#     base: 90,
+#     schoulder: 90,
+#     elbow: 90,
+#     wrist: 90,
+# }
+# servo_ctrl.safe_move_to(home)
 
 
 # servo_ctrl.safe_move_servo(schoulder, 150)
@@ -63,14 +68,14 @@ servo_ctrl.safe_move_to(home)
 
 
 # MOVE TO POINT
-# a = (10, 0, 20)
+a = (0.0, 0.0, 0.6)
 # b = (0, 0, 200)
 # c = (100, 0, 100)
 # d = (123, 75, 0)
 # e = (143.266, 0, 138)
 
 
-# arm.move_to_point_dps(a, tempo_dps=30)
+arm.move_to_point_dps_ikpy(a, tempo_dps=30)
 # time.sleep(1)
 # arm.move_to_point_dps(b, tempo_dps=30)
 # time.sleep(1)
