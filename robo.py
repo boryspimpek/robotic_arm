@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 import ikpy.utils.plot as plot_utils
 import serial
 
-my_chain = ikpy.chain.Chain.from_urdf_file("robo.urdf",active_links_mask=[False, True, True, True, True, True])
+my_chain = ikpy.chain.Chain.from_urdf_file("robo.urdf",active_links_mask=[False, True, True, True, True])
 
 
-target_position = [ 0.5, 0.0, 0.103]
+target_position = [ 0., 0.05, 0.125]
 
 target_orientation = [0, 0, 0]
 

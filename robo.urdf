@@ -21,8 +21,8 @@
   <joint name="base_joint" type="revolute">
     <parent link="base_link" />
     <child link="base_rot" />
-    <origin xyz="0 0 0.065" rpy="0 0 0" />
-    <axis xyz="0 0 1" />
+    <origin xyz="0 0 0.065" rpy="0 0 0" />.
+    <axis xyz="0 0 -1" />
   </joint>
 
   <!-- Arm segment 1 -->
@@ -58,7 +58,7 @@
     <child link="arm2" />
     <origin xyz="0 0 0.120" rpy="0 0 0" />
     <axis xyz="1 0 0" />
-    <limit lower="-1.57" upper="1.57" />
+    <limit lower="-3.14" upper="0.01" />
   </joint>
 
   <!-- Tilt segment -->
@@ -75,11 +75,11 @@
     <parent link="arm2" />
     <child link="arm3" />
     <origin xyz="0 0 0.12" rpy="0 0 0" />
-    <axis xyz="1 0 0" />
+    <axis xyz="-1 0 0" />
     <limit lower="-1.57" upper="1.57" />
   </joint>
 
-  <link name="top">
+  <!-- <link name="top">
     <visual>
       <origin xyz="0 0 0.02" rpy="0 0 0" />
       <geometry>
@@ -94,7 +94,7 @@
     <origin xyz="0 0 0.045" rpy="0 0 0" />
     <axis xyz="-1 0 0" />
     <limit lower="-1.57" upper="1.57" />
-  </joint>
+  </joint> -->
 
 
 </robot>

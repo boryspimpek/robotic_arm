@@ -57,7 +57,6 @@ class Kinematics:
         # Zakładamy ramię w płaszczyźnie X/Z, y = 0
         return x, 0.0, z
 
-
     def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True, apply_trim=True):
         s_base = 90 - phi
         s_shoulder = 180 - theta1
@@ -93,22 +92,22 @@ class Kinematics:
 
     def ikpy(self, target_position):
         my_chain = ikpy.chain.Chain.from_urdf_file(
-            "robo.urdf", active_links_mask=[False, True, True, True, True, True]
+            "robo.urdf", active_links_mask=[False, True, True, True, True]
         )
         target_orientation = [0, 0, 0]
         ik = my_chain.inverse_kinematics(target_position, target_orientation, orientation_mode="Y")
         angles_deg = list(map(math.degrees, ik.tolist()))
         formatted_angles = [f"{angle:.2f}" for angle in angles_deg]
-        selected_angles = formatted_angles[2:6]
-        print("Joint angles 2-5 (in degrees):", selected_angles)
-        return angles_deg[2:6]
+        selected_angles = formatted_angles[1:4]
+        print("Joint angles (in degrees):", selected_angles)
+        return angles_deg[1:4]
 
     def to_servo_angles_ikpy(self, ik_angles_deg, apply_trim=True):
-        base_angle, shoulder_angle, elbow_angle, wrist_angle = ik_angles_deg
-        s_base = base_angle + 180
-        s_shoulder = shoulder_angle + 180
-        s_elbow = elbow_angle
-        s_wrist = wrist_angle + 180
+        base_angle, shoulder_angle, elbow_angle = ik_angles_deg
+        s_base = 90 - base_angle
+        s_shoulder = 90 - shoulder_angle
+        s_elbow = 90 - elbow_angle - 90
+        s_wrist = 90 - (((s_shoulder-90) + s_elbow)-90)
 
         angles = {
             base: s_base,
@@ -117,17 +116,12 @@ class Kinematics:
             wrist: s_wrist
         }
 
-        # Walidacja przed trimem
         for sid, angle in angles.items():
             min_angle, max_angle = angle_limits
             if not (min_angle <= angle <= max_angle):
-                if sid == wrist:
-                    # Przycinamy tylko nadgarstek
-                    clipped = max(min(angle, max_angle), min_angle)
-                    print(f"[WARN] Kąt nadgarstka poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
-                    angles[sid] = clipped
-                else:
-                    raise ValueError(f"Kąt serwa ID {sid} poza zakresem: {angle:.2f}° (przed trimem)")
+                clipped = max(min(angle, max_angle), min_angle)
+                angles[sid] = clipped
+                print(f"[WARN] Kąt serwa ID {sid} poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
 
         # Trim dodajemy dopiero po walidacji
         if apply_trim:
