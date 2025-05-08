@@ -89,7 +89,6 @@ class Kinematics:
 
         return angles[base], angles[schoulder], angles[elbow], angles[wrist]
 
-
     def ikpy(self, target_position):
         my_chain = ikpy.chain.Chain.from_urdf_file(
             "robo.urdf", active_links_mask=[False, True, True, True, True]
@@ -99,10 +98,10 @@ class Kinematics:
         angles_deg = list(map(math.degrees, ik.tolist()))
         formatted_angles = [f"{angle:.2f}" for angle in angles_deg]
         selected_angles = formatted_angles[1:4]
-        print("Joint angles (in degrees):", selected_angles)
+        # print("Joint angles (in degrees):", selected_angles)
         return angles_deg[1:4]
 
-    def to_servo_angles_ikpy(self, ik_angles_deg, apply_trim=True):
+    def to_servo_angles_ikpy(self, ik_angles_deg, wrist_horizontal=True, apply_trim=True):
         base_angle, shoulder_angle, elbow_angle = ik_angles_deg
         s_base = 90 - base_angle
         s_shoulder = 90 - shoulder_angle

@@ -205,3 +205,60 @@ class ArmController:
 
         print("[INFO] Ruch zakończony.")
         return True
+    
+    def pad_ik_ikpy(self, x, y, z, elbow_up=True, wrist_horizontal=True):
+        try:
+            target_position = (x, y, z)
+            t1, t2, t3 = self.kin.ikpy(target_position)
+
+            ik_angles_deg = t1, t2, t3
+
+            s1, s2, s3, s4 = self.kin.to_servo_angles_ikpy(ik_angles_deg, wrist_horizontal=wrist_horizontal, apply_trim=True)
+            # print("[INFO] Obliczone kąty serw (°):")
+            # print(f"  base:     {s1:.2f}")
+            # print(f"  shoulder: {s2:.2f}")
+            # print(f"  elbow:    {s3:.2f}")
+            # print(f"  wrist:    {s4:.2f}")
+            
+            angles = {
+                base: s1,
+                schoulder: s2,
+                elbow: s3,
+                wrist: s4
+            }
+
+            current_angles = self.servo.get_all_servo_positions_deg(list(angles.keys()))
+            for sid in angles:
+                if sid not in current_angles:
+                    print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
+                    return False
+
+            deltas = {}  # Słownik do przechowywania delty dla każdego serwa
+            for sid in angles:
+                current_angle = current_angles[sid]
+                target_angle = angles[sid]
+                delta = abs(target_angle - current_angle)  # Delta pomiędzy aktualnym a docelowym kątem
+                deltas[sid] = delta
+                # print(f"Serwo {sid}: Delta = {delta:.2f}°")
+
+            max_delta = max(deltas.values())  # Największa zmiana kąta
+            steps = - round(-2.05 * math.exp(0.06 * max_delta))
+
+            import numpy as np
+            interpolations = {
+                sid: np.linspace(current_angles[sid], angles[sid], steps)
+                for sid in angles
+            }
+
+            for i in range(steps):
+                step_angles = {sid: interpolations[sid][i] for sid in angles}
+                self.servo.sync_points(step_angles)
+                time.sleep(0.001)
+
+            self.servo.last_positions.update(angles)
+
+            return True
+
+        except Exception as e:
+            print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
+            return False

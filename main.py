@@ -13,6 +13,6 @@ arm = ArmController(kin, servo_ctrl)
 
 
 
-a = (0.0, 0.01, 0.28)
+a = (0.0, 0.142, 0.087)
 
 arm.move_to_point_dps_ikpy(a, tempo_dps=30)
