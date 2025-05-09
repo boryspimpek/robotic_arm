@@ -1,29 +1,5 @@
-
 let gripperState = 'closed';
 
-const toggleGripper = () => {
-    if (gripperState === 'closed') {
-        // Jeśli gripper jest zamknięty, otwieramy go
-        postRequest('/open_gripper')
-            .then(response => response.text())
-            .then(msg => {
-                alert(msg);
-                gripperState = 'opened'; // Zmieniamy stan na 'opened'
-            })
-            .catch(() => alert('Błąd przy otwieraniu grippera.'));
-    } else {
-        // Jeśli gripper jest otwarty, zamykamy go
-        postRequest('/close_gripper')
-            .then(response => response.text())
-            .then(msg => {
-                alert(msg);
-                gripperState = 'closed'; // Zmieniamy stan na 'closed'
-            })
-            .catch(() => alert('Błąd przy zamykaniu grippera.'));
-    }
-};
-
-// Helper function for POST requests
 const postRequest = (url, body = null) => {
     const options = {
         method: 'POST',
@@ -33,15 +9,24 @@ const postRequest = (url, body = null) => {
     return fetch(url, options);
 };
 
-
 const setStatus = msg => {
     const el = document.getElementById('status');
     if (el) el.innerText = msg;
 };
 
+const toggleGripper = () => {
+    const action = gripperState === 'closed' ? 'open_gripper' : 'close_gripper';
+    const newState = gripperState === 'closed' ? 'opened' : 'closed';
 
+    postRequest(`/${action}`)
+        .then(response => response.text())
+        .then(msg => {
+            alert(msg);
+            gripperState = newState;
+        })
+        .catch(() => alert(`Błąd przy ${action === 'open_gripper' ? 'otwieraniu' : 'zamykaniu'} grippera.`));
+};
 
-// Servo control functions
 const moveServo = (id, angle) => {
     document.getElementById(`angle${id}`).innerText = angle;
     postRequest('/move_servo', { id, angle });
@@ -49,7 +34,6 @@ const moveServo = (id, angle) => {
 
 const goHome = () => {
     setStatus("Przesuwanie do pozycji domowej...");
-
     postRequest('/home_position')
         .then(r => r.text())
         .then(seconds => {
@@ -57,23 +41,18 @@ const goHome = () => {
             setTimeout(() => {
                 updateSliders();
                 setStatus("Pozycja domowa ustawiona.");
-            }, ms + 200); // + bufor
+            }, ms + 200);
         });
 };
 
-
-const movePreset = (presetName) => {
+const movePreset = presetName => {
     postRequest(`/move_preset/${presetName}`)
         .then(response => {
-            if (response.ok) {
-                updateSliders();
-            } else {
-                console.error('Preset error!');
-            }
+            if (response.ok) updateSliders();
+            else console.error('Preset error!');
         });
 };
 
-// Slider update function
 const updateSliders = () => {
     fetch('/get_angles')
         .then(response => response.json())
@@ -87,15 +66,13 @@ const updateSliders = () => {
         });
 };
 
-// Controller functions
 const startPad = () => postRequest('/start_pad');
-
 
 const stopPad = () => {
     postRequest('/stop_pad')
         .then(response => {
             if (response.ok) {
-                updateSliders();  // ← odśwież suwaki
+                updateSliders();
                 alert('Sterowanie padem wyłączone.');
             } else {
                 alert('Błąd podczas wyłączania pada.');
@@ -123,31 +100,31 @@ const playPositions = () => {
         .then(response => response.text())
         .then(msg => {
             alert(msg);
-            waitForPlayDone();  // start sprawdzania
+            waitForPlayDone();
         })
         .catch(() => alert('Błąd przy odtwarzaniu.'));
 };
 
-function waitForPlayDone() {
+const waitForPlayDone = () => {
     const interval = setInterval(() => {
         fetch('/play_status')
             .then(res => res.text())
             .then(text => {
                 if (text === 'done') {
                     clearInterval(interval);
-                    updateSliders();  // 🟢 Odśwież suwaki
+                    updateSliders();
                     alert('Sekwencja zakończona');
                 }
             });
-    }, 1000); // sprawdzaj co sekundę
-}
+    }, 1000);
+};
 
 const stopPositions = () => {
     postRequest('/stop_positions')
         .then(response => response.text())
         .then(msg => {
             alert(msg);
-            setTimeout(updateSliders, 2000); 
+            setTimeout(updateSliders, 2000);
         })
         .catch(() => alert('Błąd przy zatrzymywaniu sekwencji.'));
 };
@@ -167,13 +144,11 @@ const torqueOff = () => {
 };
 
 const enableManualControl = () => {
-    // Wyślij żądanie do funkcji start()
     postRequest('/start_manual')
         .then(r => r.text())
         .then(seconds => {
             const ms = parseFloat(seconds) * 1000;
 
-            // Odblokuj suwaki
             [1, 2, 3, 4].forEach(id => {
                 const slider = document.getElementById(`slider${id}`);
                 if (slider) slider.disabled = false;
@@ -181,7 +156,6 @@ const enableManualControl = () => {
 
             setStatus("Sterowanie ręczne aktywne");
 
-            // Poczekaj aż ruch się zakończy i odśwież suwaki
             setTimeout(() => {
                 updateSliders();
                 setStatus("Pozycja startowa gotowa – steruj ręcznie");
@@ -190,8 +164,6 @@ const enableManualControl = () => {
         .catch(() => alert("Błąd podczas uruchamiania sterowania ręcznego."));
 };
 
-
-// Initialize sliders on page load
 window.onload = () => {
     fetch('/get_angles')
         .then(response => response.json())
@@ -202,7 +174,6 @@ window.onload = () => {
                 if (slider) slider.value = angle;
                 if (angleDisplay) angleDisplay.innerText = angle;
 
-                // Add event listener for slider input
                 if (slider) {
                     slider.oninput = () => moveServo(id, slider.value);
                 }

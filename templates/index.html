@@ -6,7 +6,6 @@
     <title>Robotic Arm</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
     <!-- ############################### NAVIGATION BAR ############################### -->
     <nav class="navbar">
@@ -23,7 +22,7 @@
     </header>
 
     <hr>
-        
+
     <main>
         <!-- ############################### PRESETS SECTION ############################### -->
         <section id="presets">
@@ -35,9 +34,7 @@
                 <button onclick="movePreset('3')">3</button>
                 <button onclick="movePreset('4')">4</button>
                 <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
-                <button onclick="enableManualControl()">Start sterowania ręcznego</button>
-
-
+                <button onclick="enableManualControl()">Manual Controll</button>
             </div>
         </section>
 
@@ -98,7 +95,6 @@
                 <input type="range" min="0" max="180" value="90" id="slider4" disabled>
             </div>
         </section>
-
     </main>
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>

@@ -28,6 +28,17 @@ h1 {
         -2px 2px 0px #000000;
 }
 
+h2 {
+    font-size: 24px;
+    margin: 20px 0;
+    color: #ffffff;
+    text-shadow: 
+        2px 2px 0px #000000,
+        -2px -2px 0px #000000,
+        2px -2px 0px #000000,
+        -2px 2px 0px #000000;
+}
+
 /* ############################### Button Styles ############################### */
 .preset-buttons {
     display: flex;
