@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import ikpy.utils.plot as plot_utils
 import serial
 import math
-from config import trims, base, schoulder, elbow, angle_limits, wrist
+from config import trims, base, shoulder, elbow, angle_limits, wrist
 
 
 class Kinematics:
@@ -65,7 +65,7 @@ class Kinematics:
 
         angles = {
             base: s_base,
-            schoulder: s_shoulder,
+            shoulder: s_shoulder,
             elbow: s_elbow,
             wrist: s_wrist
         }
@@ -87,4 +87,4 @@ class Kinematics:
             for sid in angles:
                 angles[sid] += trims.get(sid, 0.0)
 
-        return angles[base], angles[schoulder], angles[elbow], angles[wrist]
+        return angles[base], angles[shoulder], angles[elbow], angles[wrist]

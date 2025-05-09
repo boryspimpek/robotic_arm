@@ -3,7 +3,7 @@
 import math
 import time
 import numpy as np
-from config import base, schoulder, elbow, wrist
+from config import base, shoulder, elbow, wrist
 
 class ArmController:
     def __init__(self, kinematics, servo_ctrl):
@@ -28,7 +28,7 @@ class ArmController:
 
     #             self.servo.sync_points({
     #                 base: s1,
-    #                 schoulder: s2,
+    #                 sholuder: s2,
     #                 elbow: s3,
     #                 wrist: s4
     #             })
@@ -48,7 +48,7 @@ class ArmController:
             # 3. Przypisz cele do serw
             angles = {
                 base: s1,
-                schoulder: s2,
+                shoulder: s2,
                 elbow: s3,
                 wrist: s4
             }
@@ -99,11 +99,11 @@ class ArmController:
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         # Odczytanie aktualnych kątów serw (4 serwa)
         current_angles = self.servo.get_all_servo_positions_deg([
-            base, schoulder, elbow, wrist
+            base, shoulder, elbow, wrist
         ])
 
         # Walidacja — brak pozycji z któregoś serwa
-        for sid in [base, schoulder, elbow, wrist]:
+        for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_angles:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return
@@ -120,7 +120,7 @@ class ArmController:
         start_angles = current_angles
         end_angles = {
             base: s1,
-            schoulder: s2,
+            shoulder: s2,
             elbow: s3,
             wrist: s4
         }

@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 from kinematics import Kinematics
-from config import L1, L2, baudrate, st_speed, st_acc, base, elbow, schoulder, wrist
+from config import L1, L2, baudrate, st_speed, st_acc, base, elbow, shoulder, wrist
 
 # Add the Library path to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
@@ -32,16 +32,16 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-        current = self.get_all_servo_positions_deg([schoulder, elbow])
+        current = self.get_all_servo_positions_deg([shoulder, elbow])
         
-        if schoulder not in current or elbow not in current:
+        if shoulder not in current or elbow not in current:
             print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
             return False
 
-        target_theta1 = angles.get(schoulder, current[schoulder])
+        target_theta1 = angles.get(shoulder, current[shoulder])
         target_theta2 = angles.get(elbow, current[elbow])
         
-        current_theta1 = current[schoulder]
+        current_theta1 = current[shoulder]
         current_theta2 = current[elbow]
 
         steps = 30
@@ -143,10 +143,10 @@ class ServoController:
         self.ctrl.write1ByteTxRx(servo_id, 40, 1)
 
     def torque_off_all(self):
-        for sid in [base, schoulder, elbow, wrist]:
+        for sid in [base, shoulder, elbow, wrist]:
             self.torque_off(sid)
 
     def torque_on_all(self):
-        for sid in [base, schoulder, elbow, wrist]:
+        for sid in [base, shoulder, elbow, wrist]:
             self.torque_on(sid)
 

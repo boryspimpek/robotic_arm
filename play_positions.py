@@ -5,7 +5,7 @@ import sys
 from kinematics import Kinematics
 from sc_controll import sc_servo
 from servos import ServoController
-from config import L1, L2, sc_acc, sc_speed, base, elbow, gripper, schoulder, wrist, port
+from config import L1, L2, sc_acc, sc_speed, base, elbow, gripper, shoulder, wrist, port
 from controller import ArmController
 
 servo_ctrl = ServoController(port)
@@ -25,7 +25,7 @@ try:
 
 
     last_pose = servo_ctrl.get_all_servo_positions_deg([
-        base, schoulder, elbow, wrist
+        base, shoulder, elbow, wrist
     ])
     
     for i, key in enumerate(sorted(positions.keys())):
@@ -34,7 +34,7 @@ try:
         
         arm_angles = {
             base: angles[base],
-            schoulder: angles[schoulder],
+            shoulder: angles[shoulder],
             elbow: angles[elbow],
             wrist: angles[wrist]
         }

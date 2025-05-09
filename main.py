@@ -5,7 +5,7 @@ from kinematics import Kinematics
 from servos import ServoController
 from controller import ArmController
 from sc_controll import open_gripper, sc_servo, close_gripper, sc_servo_position
-from config import L1, L2, gripper, wrist, port, base, schoulder, elbow
+from config import L1, L2, gripper, wrist, port, base, shoulder, elbow
 
 kin = Kinematics(L1, L2)
 servo_ctrl = ServoController(port)

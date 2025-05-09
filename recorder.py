@@ -2,7 +2,7 @@ import time
 import json
 from config import (
     L1, L2, sc_acc, sc_speed, base, gripper,
-    schoulder, elbow, wrist
+    shoulder, elbow, wrist
 )
 from servos import ServoController
 from controller import ArmController
@@ -58,7 +58,7 @@ def record_positions(ctrl, predefined_positions):
 
         elif user_input == '':
             angles = ctrl.get_all_servo_positions_deg([
-                base, schoulder, elbow, wrist
+                base, shoulder, elbow, wrist
             ])
             sc_angle = sc_servo_position(gripper)
 
@@ -68,7 +68,7 @@ def record_positions(ctrl, predefined_positions):
 
             recorded_poses.append({
                 str(base): int(angles[base]),
-                str(schoulder): int(angles[schoulder]),
+                str(shoulder): int(angles[shoulder]),
                 str(elbow): int(angles[elbow]),
                 str(wrist): int(angles[wrist]),
                 str(gripper): int(sc_angle)
@@ -76,7 +76,7 @@ def record_positions(ctrl, predefined_positions):
 
             print(f"[ZAPISANO] {len(recorded_poses)}: "
                 f"S1={angles[base]:.1f}°, "
-                f"S2={angles[schoulder]:.1f}°, "
+                f"S2={angles[shoulder]:.1f}°, "
                 f"S3={angles[elbow]:.1f}°, "
                 f"S4={angles[wrist]:.1f}°, "
                 f"Gripper={sc_angle}")
@@ -105,7 +105,7 @@ def playback(ctrl):
     ctrl.torque_on_all()
 
     last_pose = ctrl.get_all_servo_positions_deg([
-        base, schoulder, elbow, wrist
+        base, shoulder, elbow, wrist
     ])
 
     for idx, pose in enumerate(recorded_poses, start=1):
@@ -113,7 +113,7 @@ def playback(ctrl):
 
         arm_angles = {
             base: angles[base],
-            schoulder: angles[schoulder],
+            shoulder: angles[shoulder],
             elbow: angles[elbow],
             wrist: angles[wrist]
         }
@@ -124,7 +124,7 @@ def playback(ctrl):
 
         print(f"Poz. {idx}: "
               f"S1={arm_angles[base]:.1f}°, "
-              f"S2={arm_angles[schoulder]:.1f}°, "
+              f"S2={arm_angles[shoulder]:.1f}°, "
               f"S3={arm_angles[elbow]:.1f}°, "
               f"S4={arm_angles[wrist]:.1f}°, "
               f"Gripper={gripper_angle:.1f}°")

@@ -7,7 +7,7 @@ L3 = 70
 
 # Servo IDs for different parts of the robotic arm
 base = 1        
-schoulder = 2   
+shoulder = 2   
 elbow = 3       
 wrist = 4       
 gripper = 5     
@@ -26,7 +26,7 @@ angle_limits = (0, 180)
 # Servo trims (adjustments for alignment)
 trims = {
     base: 0,        
-    schoulder: 0,   
+    shoulder: 0,   
     elbow: 0,       
     wrist: 0        
 }
