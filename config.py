@@ -28,5 +28,5 @@ trims = {
     base: 0,        
     shoulder: 0,   
     elbow: 0,       
-    wrist: 0        
+    wrist: 5        
 }
