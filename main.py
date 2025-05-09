@@ -13,10 +13,27 @@ arm = ArmController(kin, servo_ctrl)
 
 
 
-# a = (142, 0, 00)
+# a = (10, 0, 10)
 
 # arm.move_to_point_dps(a, tempo_dps=30)
 
-ids = [base, shoulder, elbow, wrist, gripper]
-servo_ctrl.get_all_servo_positions_deg(ids)
-print(servo_ctrl.get_all_servo_positions_deg(ids))
+# ids = [base, shoulder, elbow, wrist, gripper]
+# servo_ctrl.get_all_servo_positions_deg(ids)
+# print(servo_ctrl.get_all_servo_positions_deg(ids))
+
+# current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+# print(current_angles)    
+
+# start_angles = current_angles
+# end_angles = {
+#     1: 90,
+#     2: 6,
+#     3: 180,
+#     4: 22
+# }
+
+# print(kin.forward(0, 180))
+
+# servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+
+arm.homepos()

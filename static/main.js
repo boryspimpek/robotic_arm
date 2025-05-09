@@ -33,11 +33,34 @@ const postRequest = (url, body = null) => {
     return fetch(url, options);
 };
 
+
+const setStatus = msg => {
+    const el = document.getElementById('status');
+    if (el) el.innerText = msg;
+};
+
+
+
 // Servo control functions
 const moveServo = (id, angle) => {
     document.getElementById(`angle${id}`).innerText = angle;
     postRequest('/move_servo', { id, angle });
 };
+
+const goHome = () => {
+    setStatus("Przesuwanie do pozycji domowej...");
+
+    postRequest('/home_position')
+        .then(r => r.text())
+        .then(seconds => {
+            const ms = parseFloat(seconds) * 1000;
+            setTimeout(() => {
+                updateSliders();
+                setStatus("Pozycja domowa ustawiona.");
+            }, ms + 200); // + bufor
+        });
+};
+
 
 const movePreset = (presetName) => {
     postRequest(`/move_preset/${presetName}`)
@@ -66,6 +89,8 @@ const updateSliders = () => {
 
 // Controller functions
 const startPad = () => postRequest('/start_pad');
+
+
 const stopPad = () => {
     postRequest('/stop_pad')
         .then(response => {

@@ -3,7 +3,12 @@
 import math
 import time
 import numpy as np
-from config import base, shoulder, elbow, wrist
+from config import base, shoulder, elbow, wrist, port
+from sc_controll import close_gripper
+from servos import ServoController
+
+servo_ctrl = ServoController(port)
+
 
 class ArmController:
     def __init__(self, kinematics, servo_ctrl):
@@ -134,3 +139,19 @@ class ArmController:
         print("[INFO] Ruch zakończony.")
         return True
     
+    def homepos(self):
+        current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+        print(current_angles)    
+
+        start_angles = current_angles
+        end_angles = {
+            1: 90,
+            2: 6,
+            3: 179,
+            4: 140
+        }
+
+        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        close_gripper()
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        return total_time

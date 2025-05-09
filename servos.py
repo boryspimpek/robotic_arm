@@ -121,6 +121,7 @@ class ServoController:
             acc = st_acc
             self.ctrl.WritePosEx(sid, raw_pos, raw_speed, acc)
             self.last_positions[sid] = end
+        return total_time
 
     def get_all_servo_positions_deg(self, ids):
         positions = {}

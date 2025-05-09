@@ -41,6 +41,13 @@ def load_positions():
 def index():
     return render_template('index.html')
 
+@app.route('/home_position', methods=['POST'])
+def home_position():
+    try:
+        total_time = arm.homepos()  # ← odbieramy wartość
+        return str(total_time), 200
+    except Exception as e:
+        return f"Błąd: {e}", 500
 
 @app.route('/move_servo', methods=['POST'])
 def move_servo():
@@ -50,13 +57,11 @@ def move_servo():
     servo_ctrl.safe_move_to({servo_id: angle})
     return '', 204
 
-
 @app.route('/get_angles', methods=['GET'])
 def get_angles():
     positions = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
     positions_int = {sid: int(round(angle)) for sid, angle in positions.items()}
     return jsonify(positions_int)
-
 
 @app.route('/move_preset/<preset_name>', methods=['POST'])
 def move_preset(preset_name):
@@ -67,7 +72,6 @@ def move_preset(preset_name):
         return '', 204
     return 'Preset not found', 404
 
-
 @app.route('/start_pad', methods=['POST'])
 def start_pad():
     global pad_process
@@ -77,7 +81,6 @@ def start_pad():
     else:
         print("Pad is already running.")
     return '', 204
-
 
 @app.route('/stop_pad', methods=['POST'])
 def stop_pad():
@@ -93,7 +96,6 @@ def stop_pad():
 @app.route('/save_position', methods=['POST'])
 def save_position():
     return run_script('save_position.py')
-
 
 @app.route('/reset_positions', methods=['POST'])
 def reset_positions():
