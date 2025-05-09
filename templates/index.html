@@ -35,6 +35,8 @@
                 <button onclick="movePreset('3')">3</button>
                 <button onclick="movePreset('4')">4</button>
                 <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
+                <button onclick="enableManualControl()">Start sterowania ręcznego</button>
+
 
             </div>
         </section>
@@ -81,19 +83,19 @@
             <h2>Set Angle</h2>
             <div class="servo-block">
                 <div class="servo-label">BASE: <span id="angle1">90</span>°</div>
-                <input type="range" min="0" max="180" value="90" id="slider1">
+                <input type="range" min="0" max="180" value="90" id="slider1" disabled>
             </div>
             <div class="servo-block">
                 <div class="servo-label">SHOULDER: <span id="angle2">90</span>°</div>
-                <input type="range" min="0" max="180" value="90" id="slider2">
+                <input type="range" min="0" max="180" value="90" id="slider2" disabled>
             </div>
             <div class="servo-block">
                 <div class="servo-label">ELBOW: <span id="angle3">90</span>°</div>
-                <input type="range" min="0" max="180" value="90" id="slider3">
+                <input type="range" min="0" max="180" value="90" id="slider3" disabled>
             </div>
             <div class="servo-block">
                 <div class="servo-label">WRIST: <span id="angle4">90</span>°</div>
-                <input type="range" min="0" max="180" value="90" id="slider4">
+                <input type="range" min="0" max="180" value="90" id="slider4" disabled>
             </div>
         </section>
 

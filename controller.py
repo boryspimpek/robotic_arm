@@ -15,33 +15,6 @@ class ArmController:
         self.kin = kinematics
         self.servo = servo_ctrl
 
-    # def point_to_point(self, start, end, steps=300, elbow_up=True):
-    #     print("[INFO] Przejście do punktu startowego trajektorii...")
-    #     self.move_to_point_dps(start, tempo_dps=30, elbow_up=elbow_up)
-
-    #     x0, y0, z0 = start
-    #     x1, y1, z1 = end
-    #     ts = 0.5 - 0.5 * np.cos(np.linspace(0, np.pi, steps))
-    #     xs = x0 + (x1 - x0) * ts
-    #     ys = y0 + (y1 - y0) * ts
-    #     zs = z0 + (z1 - z0) * ts
-
-    #     for x, y, z in zip(xs, ys, zs):
-    #         try:
-    #             phi, t1, t2, t3 = self.kin.inverse(x, y, z, elbow_up)
-    #             s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
-
-    #             self.servo.sync_points({
-    #                 base: s1,
-    #                 sholuder: s2,
-    #                 elbow: s3,
-    #                 wrist: s4
-    #             })
-    #             time.sleep(0.003)
-
-    #         except Exception as e:
-    #             print(f"[OSTRZEŻENIE] Punkt ({x:.1f}, {y:.1f}, {z:.1f}) pominięty: {e}")
-
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
         try:
             # 1. Wylicz kąty (ustawiamy y=0 bo poruszamy się w XZ)
@@ -149,6 +122,23 @@ class ArmController:
             2: 6,
             3: 179,
             4: 140
+        }
+
+        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        close_gripper()
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        return total_time
+    
+    def start(self):
+        current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+        print(current_angles)    
+
+        start_angles = current_angles
+        end_angles = {
+            1: 90,
+            2: 6,
+            3: 179,
+            4: 25
         }
 
         servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)

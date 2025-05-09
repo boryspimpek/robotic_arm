@@ -162,5 +162,14 @@ def gripper_close():
     close_gripper()
     return "Gripper zamknięty", 200
 
+@app.route('/start_manual', methods=['POST'])
+def start_manual():
+    try:
+        total_time = arm.start()  # ← Twoja metoda start() w ArmController
+        return str(total_time), 200
+    except Exception as e:
+        return f"Błąd: {e}", 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -166,6 +166,31 @@ const torqueOff = () => {
         .catch(() => alert('Błąd przy wyłączaniu torque'));
 };
 
+const enableManualControl = () => {
+    // Wyślij żądanie do funkcji start()
+    postRequest('/start_manual')
+        .then(r => r.text())
+        .then(seconds => {
+            const ms = parseFloat(seconds) * 1000;
+
+            // Odblokuj suwaki
+            [1, 2, 3, 4].forEach(id => {
+                const slider = document.getElementById(`slider${id}`);
+                if (slider) slider.disabled = false;
+            });
+
+            setStatus("Sterowanie ręczne aktywne");
+
+            // Poczekaj aż ruch się zakończy i odśwież suwaki
+            setTimeout(() => {
+                updateSliders();
+                setStatus("Pozycja startowa gotowa – steruj ręcznie");
+            }, ms + 200);
+        })
+        .catch(() => alert("Błąd podczas uruchamiania sterowania ręcznego."));
+};
+
+
 // Initialize sliders on page load
 window.onload = () => {
     fetch('/get_angles')
