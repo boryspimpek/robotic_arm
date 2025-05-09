@@ -90,12 +90,13 @@ class ArmPS4Controller(Controller):
         return max(1, round(-0.0494 + 0.116 * x - 1.24E-03 * x**2 + 6.23E-06 * x**3 - 1.27E-08 * x**4))
 
     def dynamic_base_step_z(self, z):
-        return max(1, round(8 + 7.53e-3 * z - 3.67e-4 * z**2 + 4.7e-6 * z**3 - 2.1e-8 * z**4))
+        # return max(1, round(8 + 7.53e-3 * z - 3.67e-4 * z**2 + 4.7e-6 * z**3 - 2.1e-8 * z**4))
+        return max(1, round(7.97 + -4.28E-03 * z + 1.21E-04 * z**2 + -9.23E-07 * z**3))    
 
-    def calculate_z_thresholds(self, start_z, step_z, num_points):
+    def calculate_z_thresholds(self):
         z_thresholds = []
-        for i in range(num_points):
-            z = start_z + i * step_z
+        for i in range(1000):
+            z = -100 + i * 0.1
             x = 6.59 - 3.9 * z - 0.0689 * z**2 - 4.81E-04 * z**3
             z_thresholds.append((z, x))
         return z_thresholds
@@ -103,7 +104,7 @@ class ArmPS4Controller(Controller):
     # --- Main control loop ---
     def update_loop(self):
         refresh_rate = 0.05
-        z_thresholds = self.calculate_z_thresholds(start_z=-50, step_z=0.1, num_points=500)
+        z_thresholds = self.calculate_z_thresholds()
 
         while self.running:
             delta_x, delta_z, delta_phi = self.calculate_deltas()

@@ -32,27 +32,22 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-
-        # Pobierz aktualne kąty serw barku i łokcia
         current = self.get_all_servo_positions_deg([schoulder, elbow])
         
         if schoulder not in current or elbow not in current:
             print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
             return False
 
-        # Ustal docelowe kąty lub użyj obecnych, jeśli nie podano
         target_theta1 = angles.get(schoulder, current[schoulder])
         target_theta2 = angles.get(elbow, current[elbow])
         
         current_theta1 = current[schoulder]
         current_theta2 = current[elbow]
 
-        # Interpolacja w N krokach
         steps = 30
         theta1_traj = np.linspace(current_theta1, target_theta1, steps)
         theta2_traj = np.linspace(current_theta2, target_theta2, steps)
 
-        # Sprawdź całą trajektorię pod kątem bezpieczeństwa
         for t1, t2 in zip(theta1_traj, theta2_traj):
             try:
                 x, y, z = self.kin.forward(t1, t2)
@@ -70,7 +65,6 @@ class ServoController:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
                 return False
             
-        # Jeśli cały tor jest bezpieczny – wykonaj ruch
         self.move_to(angles)
         return True
 

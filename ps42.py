@@ -9,7 +9,6 @@ from servos import ServoController
 
 
 def scaled_step(value, base_step=5.0, exponent=2.0):
-    """Scale joystick input for smoother control."""
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
 
@@ -19,7 +18,6 @@ class ArmPS4Controller(Controller):
         super().__init__(**kwargs)
         self._initialize_components()
         self._initialize_state()
-        # self._move_to_start_position()
         self._start_control_thread()
 
     def _initialize_components(self):
