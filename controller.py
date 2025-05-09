@@ -97,18 +97,15 @@ class ArmController:
             return False
 
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
-        # Odczytanie aktualnych kątów serw (4 serwa)
         current_angles = self.servo.get_all_servo_positions_deg([
             base, shoulder, elbow, wrist
         ])
 
-        # Walidacja — brak pozycji z któregoś serwa
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_angles:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return
 
-        # Obliczenie kątów serw na podstawie punktu docelowego
         try:
             phi, t1, t2, t3 = self.kin.inverse(*target_xyz, elbow_up)
             s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
@@ -116,7 +113,6 @@ class ArmController:
             print(f"[ERROR] Punkt docelowy nieosiągalny: {e}")
             return False
 
-        # Synchronizacja kątów za pomocą sync_angles
         start_angles = current_angles
         end_angles = {
             base: s1,
@@ -125,17 +121,13 @@ class ArmController:
             wrist: s4
         }
 
-        # Obliczanie różnicy kątów
         angle_deltas = {sid: abs(end_angles[sid] - start_angles[sid]) for sid in end_angles}
 
-        # Obliczanie czasu dla każdego serwa na podstawie dps
         max_delta = max(angle_deltas.values())  # Maksymalna różnica kątów (najdłuższy ruch)
         time_to_move = max_delta / tempo_dps  # Czas ruchu w sekundach
 
-        # Wywołanie sync_angles z odpowiednim tempem (dps)
         self.servo.sync_angles(start_angles, end_angles, tempo_dps)
 
-        # Czekanie na zakończenie ruchu
         print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
         time.sleep(time_to_move)
 

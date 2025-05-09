@@ -40,9 +40,9 @@ class ArmPS4Controller(Controller):
         self.elbow_angle = angles.get(elbow, 90)
         self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
 
-    def _move_to_start_position(self):
-        print("[INFO] Moving to start position...")
-        self.arm.move_to_point_dps((142.0, 0.0, 0.0), tempo_dps=60)
+    # def _move_to_start_position(self):
+    #     print("[INFO] Moving to start position...")
+    #     self.arm.move_to_point_dps((142.0, 0.0, 0.0), tempo_dps=60)
 
     def _start_control_thread(self):
         self.control_thread = threading.Thread(target=self._update_loop)
@@ -92,7 +92,7 @@ class ArmPS4Controller(Controller):
         self.wrist_angle = max(0, min(180, self.wrist_angle))
 
     def _send_servo_commands(self):
-        self.servo_controller.safe_move_to({
+        self.servo_controller.move_to({
             base: self.base_angle,
             shoulder: self.shoulder_angle,
             elbow: self.elbow_angle,
