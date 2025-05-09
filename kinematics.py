@@ -1,13 +1,5 @@
 # robot_arm/kinematics.py
-import ikpy.chain
-import ikpy.utils.plot as plot_utils
 import numpy as np
-import time
-import math
-import matplotlib
-import matplotlib.pyplot as plt
-import ikpy.utils.plot as plot_utils
-import serial
 import math
 from config import trims, base, shoulder, elbow, angle_limits, wrist
 
@@ -88,3 +80,56 @@ class Kinematics:
                 angles[sid] += trims.get(sid, 0.0)
 
         return angles[base], angles[shoulder], angles[elbow], angles[wrist]
+
+class FullKinematics:
+    def __init__(self, l1, l2, l3):
+        self.l1 = l1  # Długość pierwszego ramienia
+        self.l2 = l2  # Długość drugiego ramienia
+        self.l3 = l3  # Długość trzeciego ramienia
+        
+    def full_inverse(self, x, y, z, elbow_up=True):
+        # Obliczanie kąta phi - obrót podstawy w płaszczyźnie XY
+        phi = math.atan2(y, x)
+
+        # R = odległość w płaszczyźnie XY
+        r = math.hypot(x, y)
+
+        # Projekcja na płaszczyznę XZ
+        px = r
+        py = z
+
+        # Obliczenie d - odległość 2D
+        d = math.hypot(px, py)
+
+        # Sprawdzamy, czy punkt jest w zasięgu
+        if d > (self.l1 + self.l2 + self.l3) or d < abs(self.l1 - self.l2 - self.l3):
+            raise ValueError("Punkt poza zasięgiem")
+
+        # Obliczanie kąta theta3 (kąt dla trzeciego ramienia)
+        cos_theta3 = (px**2 + py**2 - self.l1**2 - self.l2**2 - self.l3**2) / (2 * self.l1 * self.l2 * self.l3)
+        cos_theta3 = max(-1.0, min(1.0, cos_theta3))  # Ograniczamy, aby uniknąć błędu w acos
+        theta3 = math.acos(cos_theta3)
+
+        # Zmiana orientacji ramienia dla "elbow_up" w przypadku trzeciego ramienia
+        if elbow_up:
+            theta3 = -theta3  # Zmiana orientacji ramienia, gdy łokieć skierowany w górę
+
+        # Kąt dla drugiego ramienia (theta2)
+        k1 = self.l1 + self.l2 * math.cos(theta3)
+        k2 = self.l2 * math.sin(theta3)
+        theta2 = math.atan2(py, px) - math.atan2(k2, k1)
+
+        # Zmiana orientacji dla drugiego ramienia
+        if elbow_up:
+            theta2 = -theta2  # Zmiana orientacji dla drugiego ramienia
+
+        # Kąt dla pierwszego ramienia (theta1)
+        theta1 = math.atan2(py, px)
+
+        # Zwracamy wszystkie kąty w stopniach
+        phi_deg = math.degrees(phi)
+        theta1_deg = math.degrees(theta1)
+        theta2_deg = math.degrees(theta2)
+        theta3_deg = math.degrees(theta3)
+
+        return phi_deg, theta1_deg, theta2_deg, theta3_deg
