@@ -154,8 +154,8 @@ class FullKinematics:
                 best_angles = (theta0, theta1, theta2, theta3)
                 best_positions = self.calculate_positions_3d(theta0, theta1, theta2, theta3)
 
-        if best_positions:
-            self.plot_positions_3d(best_positions, x_target, y_target, z_target)
+        # if best_positions:
+        #     self.plot_positions_3d(best_positions, x_target, y_target, z_target)
 
         return best_angles, best_positions
 

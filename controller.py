@@ -3,7 +3,8 @@
 import math
 import time
 import numpy as np
-from config import base, shoulder, elbow, wrist, port
+from config import L1, L2, L3, base, shoulder, elbow, wrist, port
+from kinematics_full import FullKinematics
 from sc_controll import close_gripper
 from servos import ServoController
 
@@ -14,6 +15,7 @@ class ArmController:
     def __init__(self, kinematics, servo_ctrl):
         self.kin = kinematics
         self.servo = servo_ctrl
+        self.fullkin = FullKinematics(L1, L2, L3)
 
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
         try:
@@ -136,3 +138,53 @@ class ArmController:
         close_gripper()
         total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
         return total_time
+    
+    def pad_ik_full(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
+        try:
+            end_angles, positions = self.fullkin.solve_ik_3d(x, 0.0, z)
+            servo_angles = self.fullkin.ik_3d_to_servo_angles(end_angles)
+
+            angles = {
+                base: servo_angles[base],
+                shoulder: servo_angles[shoulder],
+                elbow: servo_angles[elbow],
+                wrist: servo_angles[wrist]
+            }
+
+            current_angles = self.servo.get_all_servo_positions_deg(list(angles.keys()))
+            for sid in angles:
+                if sid not in current_angles:
+                    print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
+                    return False
+
+            deltas = {}  
+            for sid in angles:
+                current_angle = current_angles[sid]
+                target_angle = angles[sid]
+                delta = abs(target_angle - current_angle)  
+                deltas[sid] = delta
+                # print(f"Serwo {sid}: Delta = {delta:.2f}°")
+
+            max_delta = max(deltas.values())  
+            # print(f"max delta steps = {max_delta:.2f}°")
+            steps = - round(-2.05 * math.exp(0.06 * max_delta))
+            # print(f"steps  = {steps:.2f}°")
+
+            import numpy as np
+            interpolations = {
+                sid: np.linspace(current_angles[sid], angles[sid], steps)
+                for sid in angles
+            }
+
+            for i in range(steps):
+                step_angles = {sid: interpolations[sid][i] for sid in angles}
+                self.servo.sync_points(step_angles)
+                time.sleep(0.001)
+
+            self.servo.last_positions.update(angles)
+
+            return True
+
+        except Exception as e:
+            print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
+            return False
