@@ -129,16 +129,12 @@ def start_manual():
 
 @app.route('/move_to_point', methods=['POST'])
 def move_to_point():
-    try:
-        data = request.json
-        x = float(data.get('x'))
-        y = float(data.get('y'))
-        z = float(data.get('z'))
+    data = request.json
+    x = float(data.get('x'))
+    y = float(data.get('y'))
+    z = float(data.get('z'))
 
-        arm.move_to_point_dps([x, y, z], tempo_dps=30)  # zakładam, że masz tę funkcję
-        return 'Ruch wykonany', 200
-    except Exception as e:
-        return f'Błąd: {e}', 500
+    return handle_action(lambda: arm.move_to_point_ik_full(x, y, z), "Ruch wykonany")
 
 def handle_action(action, success_message):
     """Handle an action and return a response."""

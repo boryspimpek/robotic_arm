@@ -1,3 +1,4 @@
+import math
 from matplotlib import pyplot as plt
 from config import base, shoulder, elbow, wrist
 import numpy as np
@@ -122,6 +123,13 @@ class FullKinematics:
         theta3_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
         r_target = np.hypot(x_target, y_target)
+        px = r_target
+        py = z_target
+
+        d = math.hypot(px, py)
+        if d > (self.l1 + self.l2 + self.l3):
+            raise ValueError("Punkt poza zasięgiem")
+
         theta0 = np.arctan2(y_target, x_target)
 
         min_cost = np.inf
@@ -154,8 +162,8 @@ class FullKinematics:
                 best_angles = (theta0, theta1, theta2, theta3)
                 best_positions = self.calculate_positions_3d(theta0, theta1, theta2, theta3)
 
-        # if best_positions:
-        #     self.plot_positions_3d(best_positions, x_target, y_target, z_target)
+        if best_positions:
+            self.plot_positions_3d(best_positions, x_target, y_target, z_target)
 
         return best_angles, best_positions
 

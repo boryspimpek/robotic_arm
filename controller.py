@@ -106,7 +106,7 @@ class ArmController:
         print("[INFO] Ruch zakończony.")
         return True
     
-    def homepos(self):
+    def homepos(self, tempo_dps=60):
         current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
         print(current_angles)    
 
@@ -118,12 +118,12 @@ class ArmController:
             4: 140
         }
 
-        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         close_gripper()
-        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
-    def start(self):
+    def start(self, tempo_dps=60):
         current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
         print(current_angles)    
 
@@ -135,9 +135,9 @@ class ArmController:
             4: 25
         }
 
-        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         close_gripper()
-        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
     def pad_ik_full(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
@@ -190,11 +190,11 @@ class ArmController:
             print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
             return False
 
-    def move_to_point_ik_full(self, x, y, z):
+    def move_to_point_ik_full(self, x, y, z, tempo_dps=60):
         angles, positions = fullkin.solve_ik_3d(x, y, z)
         end_angles = fullkin.ik_3d_to_servo_angles(angles)
         start_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
         servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
-        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
 

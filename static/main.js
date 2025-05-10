@@ -176,8 +176,13 @@ const moveToPoint = () => {
 
     postRequest('/move_to_point', { x, y, z })
         .then(response => response.text())
-        .then(alert)
-        .updateSliders()
+        .then(text => {
+            alert(text);
+            const duration = parseFloat(text);
+            if (!isNaN(duration)) {
+                setTimeout(updateSliders, duration * 1000);
+            }
+        })
         .catch(() => alert("Błąd podczas ruchu do punktu."));
 };
 
