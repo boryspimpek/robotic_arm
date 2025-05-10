@@ -164,6 +164,24 @@ const enableManualControl = () => {
         .catch(() => alert("Błąd podczas uruchamiania sterowania ręcznego."));
 };
 
+const moveToPoint = () => {
+    const x = parseFloat(document.getElementById('inputX').value);
+    const y = parseFloat(document.getElementById('inputY').value);
+    const z = parseFloat(document.getElementById('inputZ').value);
+
+    if (isNaN(x) || isNaN(y) || isNaN(z)) {
+        alert("Wprowadź poprawne wartości X, Y, Z");
+        return;
+    }
+
+    postRequest('/move_to_point', { x, y, z })
+        .then(response => response.text())
+        .then(alert)
+        .updateSliders()
+        .catch(() => alert("Błąd podczas ruchu do punktu."));
+};
+
+
 window.onload = () => {
     fetch('/get_angles')
         .then(response => response.json())

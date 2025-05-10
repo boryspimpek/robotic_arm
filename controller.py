@@ -9,6 +9,7 @@ from sc_controll import close_gripper
 from servos import ServoController
 
 servo_ctrl = ServoController(port)
+fullkin = FullKinematics(L1, L2, L3)
 
 
 class ArmController:
@@ -188,3 +189,12 @@ class ArmController:
         except Exception as e:
             print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
             return False
+
+    def move_to_point_ik_full(self, x, y, z):
+        angles, positions = fullkin.solve_ik_3d(x, y, z)
+        end_angles = fullkin.ik_3d_to_servo_angles(angles)
+        start_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
+        return total_time
+
