@@ -59,7 +59,9 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_x) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
-            cost = theta1**2 + theta2**2 + theta3**2
+            # cost = theta1**2 + theta2**2 + theta3**2
+            cost = (theta2)**2 + (theta3)**2
+
             if cost < min_cost:
                 min_cost = cost
                 best_angles = (theta1, theta2, theta3)
@@ -69,6 +71,19 @@ class FullKinematics:
             self.plot_positions_2d(best_positions, x_target, z_target)
 
         return best_angles, best_positions
+
+    def ik_2d_to_servo_angles(self, angles):
+        if angles is None:
+            return None
+
+        theta1, theta2, theta3 = angles
+        servo_angles = {
+            shoulder: 180 - np.degrees(theta1),
+            elbow: -1 * np.degrees(theta2),
+            wrist: 90 - np.degrees(theta3),
+        }
+
+        return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
 
     def calculate_positions_3d(self, theta0, theta1, theta2, theta3):
         x0, y0, z0 = 0, 0, 0
@@ -131,6 +146,7 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
+            # cost = theta1**2 + theta2**2 + theta3**2
             cost = (theta2)**2 + (theta3)**2
 
             if cost < min_cost:
@@ -143,7 +159,7 @@ class FullKinematics:
 
         return best_angles, best_positions
 
-    def ik_to_servo_angles(self, angles):
+    def ik_3d_to_servo_angles(self, angles):
         if angles is None:
             return None
 

@@ -16,15 +16,19 @@ servo_ctrl = ServoController(port)
 arm = ArmController(kin, servo_ctrl)
 
 
-angles, positions = fullkin.solve_ik_3d(150, 50, 200)
-end_angles = fullkin.ik_to_servo_angles(angles)
+# angles, positions = fullkin.solve_ik_3d(150, 50, 50)
+# end_angles = fullkin.ik_3d_to_servo_angles(angles)
+# for sid, angle in end_angles.items():
+#     print(f"  Servo {sid}: {angle:.2f}°")
+# # plt.show()
+# start_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+# servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
 
+
+angles, positions = fullkin.solve_ik_2d(100, 0)
+end_angles = fullkin.ik_2d_to_servo_angles(angles)
 for sid, angle in end_angles.items():
     print(f"  Servo {sid}: {angle:.2f}°")
-
-plt.show()
-
-
-start_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
-
+# plt.show()
+start_angles = servo_ctrl.get_all_servo_positions_deg([shoulder, elbow, wrist])
 servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps=30)
