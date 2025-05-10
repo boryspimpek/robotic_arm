@@ -128,7 +128,7 @@ class ArmPS4Controller(Controller):
         new_z = self.calculate_new_z(delta_z)
         new_phi = self.calculate_new_phi(delta_phi)
 
-        if self.arm.pad_ik_full(new_x, new_z, new_phi, wrist_horizontal=self.wrist_horizontal):
+        if self.arm.pad_ik(new_x, new_z, new_phi, wrist_horizontal=self.wrist_horizontal):
             self.x, self.z, self.phi = new_x, new_z, new_phi
             print(f"x={self.x:.1f}, z={self.z:.1f}, phi={self.phi:.1f}°")
             print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
