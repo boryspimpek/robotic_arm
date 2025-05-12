@@ -162,74 +162,66 @@ class ArmController:
         total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
-    def pad_ik_full(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
-        current_servo_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+    def pad_ik_full(self, x, z, phi_deg, cost_mode):
+        current_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
-            if sid not in current_servo_angles:
-                print(
-                    f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
+            if sid not in current_angles:
+                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return False
 
-            try:
-                ik_result = self.fullkin.solve_ik_3d(x, 0, z)
-            except ValueError as e:
-                print(f"[ERROR] Błąd obliczeń IK: {e}")
-                return False
+        try:
+            ik_result = self.fullkin.solve_ik_3d(x, 0, z, cost_mode)
+        except ValueError as e:
+            print(f"[ERROR] Błąd obliczeń IK: {e}")
+            return False
 
-            if ik_result is None or ik_result[0] is None:
-                print("[WARN] Solver nie znalazł rozwiązania IK (None).")
-                return False
+        if ik_result is None or ik_result[0] is None:
+            print("[WARN] Solver nie znalazł rozwiązania IK (None).")
+            return False
 
-            angles, positions = ik_result
+        ik_angles, positions = ik_result  
 
-            try:
-                target_servo_angles = self.fullkin.ik_3d_to_servo_angles(
-                    angles)
-            except Exception as e:
-                print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
-                return False
+        try:
+            target_servo_angles = self.fullkin.ik_3d_to_servo_angles(ik_angles)
+        except Exception as e:
+            print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
+            return False
 
-            target_servo_angles = {
-                base: target_servo_angles[base],
-                shoulder: target_servo_angles[shoulder],
-                elbow: target_servo_angles[elbow],
-                wrist: target_servo_angles[wrist]
-            }
+        angles = {
+            base: target_servo_angles[base],
+            shoulder: target_servo_angles[shoulder], 
+            elbow: target_servo_angles[elbow], 
+            wrist: target_servo_angles[wrist]
+        }
 
-            current_angles = self.servo.get_all_servo_positions_deg(list(angles.keys()))
-            for sid in angles:
-                if sid not in current_angles:
-                    print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
-                    return False
+        deltas = {}  
+        for sid in angles:
+            current_angle = current_angles[sid]
+            target_angle = angles[sid]
+            delta = abs(target_angle - current_angle)  
+            deltas[sid] = delta
+            # print(f"Serwo {sid}: Delta = {delta:.2f}°")
 
-            deltas = {}  
-            for sid in angles:
-                current_angle = current_angles[sid]
-                target_angle = angles[sid]
-                delta = abs(target_angle - current_angle)  
-                deltas[sid] = delta
-                # print(f"Serwo {sid}: Delta = {delta:.2f}°")
+        max_delta = max(deltas.values())  
+        # print(f"max delta steps = {max_delta:.2f}°")
+        steps = - round(-2.05 * math.exp(0.06 * max_delta))
+        # print(f"steps  = {steps:.2f}°")
 
-            max_delta = max(deltas.values())  
-            # print(f"max delta steps = {max_delta:.2f}°")
-            steps = - round(-2.05 * math.exp(0.06 * max_delta))
-            # print(f"steps  = {steps:.2f}°")
+        import numpy as np
+        interpolations = {
+            sid: np.linspace(current_angles[sid], angles[sid], steps)
+            for sid in angles
+        }
 
-            import numpy as np
-            interpolations = {
-                sid: np.linspace(current_angles[sid], angles[sid], steps)
-                for sid in angles
-            }
+        for i in range(steps):
+            step_angles = {sid: interpolations[sid][i] for sid in angles}
+            self.servo.sync_points(step_angles)
+            time.sleep(0.001)
 
-            for i in range(steps):
-                step_angles = {sid: interpolations[sid][i] for sid in angles}
-                self.servo.sync_points(step_angles)
-                time.sleep(0.001)
+        self.servo.last_positions.update(angles)
 
-            self.servo.last_positions.update(angles)
-
-            return True
+        return True
 
     def move_to_point_ik_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
         current_servo_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
