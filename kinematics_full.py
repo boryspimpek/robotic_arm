@@ -119,7 +119,7 @@ class FullKinematics:
             ax.set_ylim(-300, 300)
             ax.set_zlim(0, 300)
 
-    def solve_ik_3d(self, x_target, y_target, z_target):
+    def solve_ik_3d(self, x_target, y_target, z_target, cost_mode):
         delta_theta = np.radians(self.delta_deg)
         theta3_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
@@ -155,9 +155,20 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
-            # cost = theta1**2 + theta2**2 + theta3**2
-            cost = (theta2)**2 + (theta3)**2
-
+            if cost_mode == "min_angle_sum":
+                cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
+            elif cost_mode == "vertical_end_effector":
+                end_orientation = theta1 + theta2 + theta3
+                cost = (end_orientation - np.pi/2)**2    
+            elif cost_mode == "inverted_vertical_end_effector":
+                end_orientation = theta1 + theta2 + theta3
+                cost = (end_orientation + np.pi/2)**2            
+            elif cost_mode == "flat_end_effector":
+                end_orientation = theta1 + theta2 + theta3
+                cost = (end_orientation)**2  # minimalizujemy odchylenie końcówki od 0°
+            else:
+                raise ValueError("Nieznany tryb kosztu")
+            
             if cost < min_cost:
                 min_cost = cost
                 best_angles = (theta0, theta1, theta2, theta3)

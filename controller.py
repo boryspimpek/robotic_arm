@@ -33,7 +33,7 @@ class ArmController:
 
         # Konwersja do serwo
         try:
-            s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
+            s1, s2, s3, s4 = self.kin.to_servo_angles(phi_deg, t1, t2, t3, wrist_horizontal=wrist_horizontal, apply_trim=True)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
@@ -163,15 +163,38 @@ class ArmController:
         return total_time
     
     def pad_ik_full(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
-        try:
-            end_angles, positions = self.fullkin.solve_ik_3d(x, 0.0, z)
-            servo_angles = self.fullkin.ik_3d_to_servo_angles(end_angles)
+        current_servo_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 
-            angles = {
-                base: servo_angles[base],
-                shoulder: servo_angles[shoulder],
-                elbow: servo_angles[elbow],
-                wrist: servo_angles[wrist]
+        for sid in [base, shoulder, elbow, wrist]:
+            if sid not in current_servo_angles:
+                print(
+                    f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
+                return False
+
+            try:
+                ik_result = self.fullkin.solve_ik_3d(x, 0, z)
+            except ValueError as e:
+                print(f"[ERROR] Błąd obliczeń IK: {e}")
+                return False
+
+            if ik_result is None or ik_result[0] is None:
+                print("[WARN] Solver nie znalazł rozwiązania IK (None).")
+                return False
+
+            angles, positions = ik_result
+
+            try:
+                target_servo_angles = self.fullkin.ik_3d_to_servo_angles(
+                    angles)
+            except Exception as e:
+                print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
+                return False
+
+            target_servo_angles = {
+                base: target_servo_angles[base],
+                shoulder: target_servo_angles[shoulder],
+                elbow: target_servo_angles[elbow],
+                wrist: target_servo_angles[wrist]
             }
 
             current_angles = self.servo.get_all_servo_positions_deg(list(angles.keys()))
@@ -208,13 +231,8 @@ class ArmController:
 
             return True
 
-        except Exception as e:
-            print(f"[ERROR] Nie udało się wykonać ruchu: {e}")
-            return False
-
-    def move_to_point_ik_full(self, x, y, z, tempo_dps=60):
-        current_servo_angles = servo_ctrl.get_all_servo_positions_deg(
-            [base, shoulder, elbow, wrist])
+    def move_to_point_ik_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
+        current_servo_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
@@ -223,7 +241,7 @@ class ArmController:
                 return False
 
             try:
-                ik_result = self.fullkin.solve_ik_3d(x, y, z)
+                ik_result = self.fullkin.solve_ik_3d(x, y, z, cost_mode)
             except ValueError as e:
                 print(f"[ERROR] Błąd obliczeń IK: {e}")
                 return False
