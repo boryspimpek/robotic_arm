@@ -166,6 +166,8 @@ class FullKinematics:
             elif cost_mode == "flat_end_effector":
                 end_orientation = theta1 + theta2 + theta3
                 cost = (end_orientation)**2  # minimalizujemy odchylenie końcówki od 0°
+            elif cost_mode == "standard":
+                cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
             else:
                 raise ValueError("Nieznany tryb kosztu")
             

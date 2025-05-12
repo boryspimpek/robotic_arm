@@ -260,6 +260,9 @@ class ArmController:
         time_to_move = max_delta / tempo_dps    # Szacowany czas ruchu
 
         self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
+        total_time = servo_ctrl.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
+        return total_time
+
 
         print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
         time.sleep(time_to_move)

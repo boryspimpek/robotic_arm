@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robotic Arm</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <!-- ############################### NAVIGATION BAR ############################### -->
     <nav class="navbar">
@@ -45,9 +47,12 @@
             <input type="number" id="inputX" placeholder="X">
             <input type="number" id="inputY" placeholder="Y">
             <input type="number" id="inputZ" placeholder="Z">
-            <button onclick="moveToPoint()">Rusz do punktu</button>
+            <button onclick="moveToPoint('flat')">Rusz (Flat)</button>
+            <button onclick="moveToPoint('vertical')">Rusz (Vertical)</button>
+            <button onclick="moveToPoint('custom')">Rusz (Custom)</button>
         </div>
 
+        <hr>
 
         <!-- ############################### RECORD SECTION ############################### -->
         <section id="record">
@@ -108,4 +113,5 @@
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
+
 </html>

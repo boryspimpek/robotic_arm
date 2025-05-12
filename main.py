@@ -20,19 +20,19 @@ a = "min_angle_sum"
 b = "flat_end_effector"
 c = "vertical_end_effector"
 d = "inverted_vertical_end_effector"
-x = 120
+e = "standard"
+x = 150
 y = 0
-z = 200
+z = -50
 tempo_dps=60
 
-while True:
-    arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=b)
-    time.sleep(2)
-    arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
-    time.sleep(2)
-    # arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
-    # time.sleep(2)
-    # arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=d)
+arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=b)
+time.sleep(2)
+# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
+# time.sleep(2)
+# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
+# time.sleep(2)
+# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=d)
 
 
 # point = (100, 0, 0)
