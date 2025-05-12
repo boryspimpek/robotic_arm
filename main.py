@@ -26,7 +26,7 @@ y = 0
 z = -50
 tempo_dps=60
 
-arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=b)
+arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode="min_angle_sum")
 time.sleep(2)
 # arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
 # time.sleep(2)

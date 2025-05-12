@@ -164,7 +164,7 @@ const enableManualControl = () => {
         .catch(() => alert("Błąd podczas uruchamiania sterowania ręcznego."));
 };
 
-const moveToPoint = () => {
+const moveToPoint = (costMode = 'standard') => {
     const x = parseFloat(document.getElementById('inputX').value);
     const y = parseFloat(document.getElementById('inputY').value);
     const z = parseFloat(document.getElementById('inputZ').value);
@@ -174,7 +174,7 @@ const moveToPoint = () => {
         return;
     }
 
-    postRequest('/move_to_point', { x, y, z })
+    postRequest('/move_to_point', { x, y, z, cost_mode: costMode })
         .then(response => response.text())
         .then(text => {
             alert(text);

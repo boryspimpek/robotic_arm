@@ -80,6 +80,42 @@ h2 {
     }
 }
 
+/* ############################### Input Styles ############################### */
+.point-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+    flex-wrap: wrap;
+}
+
+.point-input input {
+    width: 80px;
+    padding: 8px 10px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.point-input input:focus {
+    border-color: #3498db;
+}
+
+@media (max-width: 768px) {
+    .point-input {
+        flex-direction: column;
+    }
+
+    .point-input input {
+        width: 100px;
+        font-size: 18px;
+    }
+}
+
 /* ############################### Servo Block Styles ############################### */
 .servo-block {
     margin-bottom: 40px;

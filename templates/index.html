@@ -43,14 +43,20 @@
         <hr>
 
         <!-- ############################### MANUAL CONTROL SECTION ############################### -->
-        <div class="point-input">
-            <input type="number" id="inputX" placeholder="X">
-            <input type="number" id="inputY" placeholder="Y">
-            <input type="number" id="inputZ" placeholder="Z">
-            <button onclick="moveToPoint('flat')">Rusz (Flat)</button>
-            <button onclick="moveToPoint('vertical')">Rusz (Vertical)</button>
-            <button onclick="moveToPoint('custom')">Rusz (Custom)</button>
-        </div>
+        <section id="manual">
+            <h2>Manual Control</h2>
+            <div class="point-input">
+                <input type="number" id="inputX" placeholder="X">
+                <input type="number" id="inputY" placeholder="Y">
+                <input type="number" id="inputZ" placeholder="Z">
+            </div>
+            <div class="preset-buttons">
+                <button onclick="moveToPoint('standard')">Standard</button>
+                <button onclick="moveToPoint('flat_end_effector')">Flat</button>
+                <button onclick="moveToPoint('inverted_vertical_end_effector')">Vertical down</button>
+                <button onclick="moveToPoint('vertical_end_effector')">Vertical up</button>
+            </div>    
+        <section>
 
         <hr>
 

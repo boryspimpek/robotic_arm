@@ -133,8 +133,12 @@ def move_to_point():
     x = float(data.get('x'))
     y = float(data.get('y'))
     z = float(data.get('z'))
+    cost_mode = data.get('cost_mode', 'standard')  # domyślnie 'flat'
 
-    return handle_action(lambda: arm.move_to_point_ik_full(x, y, z), "Ruch wykonany")
+    return handle_action(
+        lambda: arm.move_to_point_ik_full(x, y, z, cost_mode=cost_mode),
+        f"Ruch do punktu ({cost_mode})"
+    )
 
 def handle_action(action, success_message):
     """Handle an action and return a response."""
