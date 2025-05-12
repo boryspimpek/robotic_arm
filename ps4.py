@@ -131,7 +131,7 @@ class ArmPS4Controller(Controller):
         if self.arm.pad_ik(new_x, new_z, new_phi, wrist_horizontal=self.wrist_horizontal):
             self.x, self.z, self.phi = new_x, new_z, new_phi
             print(f"x={self.x:.1f}, z={self.z:.1f}, phi={self.phi:.1f}°")
-            print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
+            # print(f"[DEBUG] delta_x={delta_x:.1f}, delta_z={delta_z:.1f}, delta_phi={delta_phi:.1f}")
         else:
             print("[INFO] Movement not allowed.")
 

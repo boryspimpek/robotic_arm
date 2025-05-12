@@ -1,3 +1,4 @@
+import logging
 import math
 from matplotlib import pyplot as plt
 from config import base, shoulder, elbow, wrist
@@ -179,5 +180,10 @@ class FullKinematics:
             wrist: 90 - np.degrees(theta3),
         }
 
-        # Clamp to range 0–180°
-        return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
+        ############################ Clamp to range 0–180° ############################
+        # return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
+
+        for sid, angle in servo_angles.items():
+            if not (0 <= angle <= 180):
+                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        return servo_angles
