@@ -194,9 +194,9 @@ class FullKinematics:
         }
 
         ############################ Clamp to range 0–180° ############################
-        # return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
+        return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
 
-        for sid, angle in servo_angles.items():
-            if not (0 <= angle <= 180):
-                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        # for sid, angle in servo_angles.items():
+        #     if not (0 <= angle <= 180):
+        #         raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
         return servo_angles
