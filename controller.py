@@ -228,28 +228,29 @@ class ArmController:
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
-                print(
-                    f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
+                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return False
 
-            try:
-                ik_result = self.fullkin.solve_ik_3d(x, y, z, cost_mode)
-            except ValueError as e:
-                print(f"[ERROR] Błąd obliczeń IK: {e}")
-                return False
+        try:
+            ik_result = self.fullkin.solve_ik_3d(x, y, z, cost_mode)
+        except ValueError as e:
+            print(f"[ERROR] Błąd obliczeń IK: {e}")
+            return False
 
-            if ik_result is None or ik_result[0] is None:
-                print("[WARN] Solver nie znalazł rozwiązania IK (None).")
-                return False
+        if ik_result is None or ik_result[0] is None:
+            print("[WARN] Solver nie znalazł rozwiązania IK (None).")
+            return False
 
-            angles, positions = ik_result
+        angles, angles_deg, positions = ik_result
 
-            try:
-                target_servo_angles = self.fullkin.ik_3d_to_servo_angles(
-                    angles)
-            except Exception as e:
-                print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
-                return False
+        theta0, theta1, theta2, theta3 = angles_deg
+
+        target_servo_angles = {
+            base: theta0,
+            shoulder: theta1,
+            elbow: theta2,
+            wrist: theta3
+        }
 
         angle_deltas = {
             sid: abs(target_servo_angles[sid] - current_servo_angles[sid])
@@ -257,12 +258,14 @@ class ArmController:
         }
 
         max_delta = max(angle_deltas.values())  # Największa różnica kąta
-        time_to_move = max_delta / tempo_dps    # Szacowany czas ruchu
+        time_to_move = max_delta / tempo_dps  # Szacowany czas ruchu
 
         self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
         total_time = servo_ctrl.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
-        return total_time
 
+        target_servo_angles = {int(sid): float(angle) for sid, angle in target_servo_angles.items()}
+        target_servo_angles = {sid: round(angle, 2) for sid, angle in target_servo_angles.items()}
+        print(f"[INFO] Targets: {target_servo_angles}")
 
         print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
         time.sleep(time_to_move)

@@ -61,18 +61,31 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_x) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
-            # cost = theta1**2 + theta2**2 + theta3**2
-            cost = (theta2)**2 + (theta3)**2
+            # Konwersja do zakresu serwa
+            servo_angles = {
+                "shoulder": 180 - np.degrees(theta1),
+                "elbow": -np.degrees(theta2),
+                "wrist": 90 - np.degrees(theta3),
+            }
+
+            if any(not (0 <= angle <= 180) for angle in servo_angles.values()):
+                continue
+
+            cost = theta1**2 + theta2**2 + theta3**2            
+            # cost = (theta2)**2 + (theta3)**2
 
             if cost < min_cost:
                 min_cost = cost
                 best_angles = (theta1, theta2, theta3)
+                best_angles_deg = (180 - np.degrees(theta1), -np.degrees(theta2), 90 - np.degrees(theta3))
                 best_positions = self.calculate_positions_2d(theta1, theta2, theta3)
 
         if best_positions:
             self.plot_positions_2d(best_positions, x_target, z_target)
 
-        return best_angles, best_positions
+        print(f"Best angles: {best_angles}")
+        print(f"Best angles (degrees): {best_angles_deg}")
+        return best_angles, best_angles_deg, best_positions
 
     def ik_2d_to_servo_angles(self, angles):
         if angles is None:
@@ -85,8 +98,11 @@ class FullKinematics:
             wrist: 90 - np.degrees(theta3),
         }
 
-        return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
-
+        for sid, angle in servo_angles.items():
+            if not (0 <= angle <= 180):
+                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        return servo_angles
+    
     def calculate_positions_3d(self, theta0, theta1, theta2, theta3):
         x0, y0, z0 = 0, 0, 0
         x1 = self.l1 * np.cos(theta1) * np.cos(theta0)
@@ -155,31 +171,45 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
+            # Konwersja do zakresu serwa
+            servo_angles = {
+                "base": np.degrees(theta0) + 90,
+                "shoulder": 180 - np.degrees(theta1),
+                "elbow": -np.degrees(theta2),
+                "wrist": 90 - np.degrees(theta3),
+            }
+
+            if any(not (0 <= angle <= 180) for angle in servo_angles.values()):
+                continue
+
             if cost_mode == "min_angle_sum":
                 cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
-            elif cost_mode == "vertical_end_effector":
+            elif cost_mode == "vertical_up":
                 end_orientation = theta1 + theta2 + theta3
                 cost = (end_orientation - np.pi/2)**2    
-            elif cost_mode == "inverted_vertical_end_effector":
+            elif cost_mode == "vertical_down":
                 end_orientation = theta1 + theta2 + theta3
                 cost = (end_orientation + np.pi/2)**2            
-            elif cost_mode == "flat_end_effector":
+            elif cost_mode == "flat":
                 end_orientation = theta1 + theta2 + theta3
                 cost = (end_orientation)**2  # minimalizujemy odchylenie końcówki od 0°
             elif cost_mode == "standard":
-                cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
+                cost = (theta2)**2 + (theta3)**2
             else:
                 raise ValueError("Nieznany tryb kosztu")
             
             if cost < min_cost:
                 min_cost = cost
                 best_angles = (theta0, theta1, theta2, theta3)
+                best_angles_deg = (np.degrees(theta0) + 90, 180 - np.degrees(theta1), -np.degrees(theta2), 90 - np.degrees(theta3))
                 best_positions = self.calculate_positions_3d(theta0, theta1, theta2, theta3)
-
+            
         if best_positions:
             self.plot_positions_3d(best_positions, x_target, y_target, z_target)
 
-        return best_angles, best_positions
+        # print(f"Best angles: {best_angles}")
+        # print(f"Best angles (degrees): {best_angles_deg}")
+        return best_angles, best_angles_deg, best_positions
 
     def ik_3d_to_servo_angles(self, angles):
         if angles is None:
@@ -190,13 +220,13 @@ class FullKinematics:
             base: np.degrees(theta0) + 90,
             shoulder: 180 - np.degrees(theta1),
             elbow: -1 * np.degrees(theta2),
-            wrist: 90 - np.degrees(theta3),
+            wrist: 90 - np.degrees(theta3)
         }
 
         ############################ Clamp to range 0–180° ############################
-        return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
+        # return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
 
-        # for sid, angle in servo_angles.items():
-        #     if not (0 <= angle <= 180):
-        #         raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        for sid, angle in servo_angles.items():
+            if not (0 <= angle <= 180):
+                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
         return servo_angles

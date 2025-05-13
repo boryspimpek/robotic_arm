@@ -133,7 +133,7 @@ def move_to_point():
     x = float(data.get('x'))
     y = float(data.get('y'))
     z = float(data.get('z'))
-    cost_mode = data.get('cost_mode', 'standard')  # domyślnie 'flat'
+    cost_mode = data.get('cost_mode', 'standard')  
 
     return handle_action(
         lambda: arm.move_to_point_ik_full(x, y, z, cost_mode=cost_mode),

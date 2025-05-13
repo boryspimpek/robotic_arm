@@ -17,25 +17,39 @@ arm = ArmController(kin, servo_ctrl)
 
 
 a = "min_angle_sum"
-b = "flat_end_effector"
-c = "vertical_end_effector"
-d = "inverted_vertical_end_effector"
+b = "flat"
+c = "vertical_up"
+d = "vertical_down"
 e = "standard"
-x = 150
-y = 0
-z = -50
 tempo_dps=60
 
-arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode="min_angle_sum")
-time.sleep(2)
-# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
-# time.sleep(2)
-# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=c)
-# time.sleep(2)
-# arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode=d)
+
+def move_arm_sequentially(start_x, end_x, y, z, tempo_dps, cost_mode):
+
+    step = 5 if start_x <= end_x else -5
+    for x in range(start_x, end_x + step, step):
+        arm.move_to_point_ik_full(x, y, z, tempo_dps, cost_mode)
+
+# Call the function
+while True:
+    a = "min_angle_sum"
+    b = "flat"
+    c = "vertical_up"
+    d = "vertical_down"
+    e = "standard"
+    tempo_dps=160
+    cost_mode = d
+
+    move_arm_sequentially(240, 70, 0, -50, tempo_dps, cost_mode)
+    move_arm_sequentially(70, 240, 0, -50, tempo_dps, cost_mode)
+
+# arm.move_to_point_ik_full(x, 0, 0, tempo_dps, cost_mode="standard")
 
 
-# point = (100, 0, 0)
-# arm.move_to_point_dps(point, tempo_dps=30)
+# ik_angles, angles_deg, positions = fullkin.solve_ik_2d(x, y)
+# plt.show()
 
+# ik_angles, angles_deg, positions = fullkin.solve_ik_3d(x, y, z, cost_mode=d)
+# print(f"[INFO] Targets: {angles_deg}")
 
+# plt.show()
