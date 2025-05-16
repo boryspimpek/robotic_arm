@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robotic Arm</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <!-- NAVIGATION BAR -->
+    <!-- ############################### NAVIGATION BAR ############################### -->
     <nav class="navbar">
         <a href="#presets">Presets</a>
         <a href="#setpoint">Point</a>
@@ -17,37 +19,42 @@
         <a href="#angles">Manual</a>
     </nav>
 
-    <!-- HEADER SECTION -->
+    <!-- ############################### HEADER SECTION ############################### -->
     <header>
         <h1>TAJFUNEK ROBOTIC ARM</h1>
     </header>
+
     <hr>
 
     <main>
-        <!-- CENTER SELECT SECTION -->
+    <!-- ############################### CENTER SELECT SECTION ############################### -->
         <section class="center-select">
             <div class="track-wrapper">
                 <div class="button-track" id="scrollTrack">
-                    {% for i in range(1, 10) %}
-                        <button>{{ i }}</button>
-                    {% endfor %}
+                    <button onclick="goHome()">Home</button>
+                    <button onclick="movePreset('1')">1</button>
+                    <button onclick="movePreset('2')">2</button>
+                    <button onclick="movePreset('3')">3</button>
+                    <button onclick="movePreset('4')">4</button>
                 </div>
             </div>
         </section>
 
-        <!-- PRESETS SECTION -->
+        <!-- ############################### PRESETS SECTION ############################### -->
         <section id="presets" class="scroll-buttons">
             <h2>Fire Preset</h2>
             <div class="preset-buttons">
                 <button onclick="goHome()">Home</button>
-                {% for i in range(1, 5) %}
-                    <button onclick="movePreset('{{ i }}')">{{ i }}</button>
-                {% endfor %}
+                <button onclick="movePreset('1')">1</button>
+                <button onclick="movePreset('2')">2</button>
+                <button onclick="movePreset('3')">3</button>
+                <button onclick="movePreset('4')">4</button>
             </div>
         </section>
+
         <hr>
 
-        <!-- SET POINT SECTION -->
+        <!-- ############################### SET POINT ############################### -->
         <section id="setpoint">
             <h2>Set Point</h2>
             <div class="point-input">
@@ -62,11 +69,12 @@
                 <button onclick="moveToPoint('flat')">Flat</button>
                 <button onclick="moveToPoint('vertical_down')">Down</button>
                 <button onclick="moveToPoint('vertical_up')">Up</button>
-            </div>
-        </section>
+            </div>    
+        <section>
+
         <hr>
 
-        <!-- RECORD SECTION -->
+        <!-- ############################### RECORD SECTION ############################### -->
         <section id="record" class="shrink-buttons">
             <h2>Record</h2>
             <div class="preset-buttons">
@@ -76,9 +84,10 @@
                 <button onclick="stopPositions()">Stop</button>
             </div>
         </section>
+
         <hr>
 
-        <!-- TORQUE CONTROL SECTION -->
+        <!-- ############################### TORQUE CONTROL SECTION ############################### -->
         <section id="torque" class="shrink-buttons">
             <h2>Torque Control</h2>
             <div class="preset-buttons">
@@ -86,9 +95,10 @@
                 <button onclick="torqueOff()">Torque OFF</button>
             </div>
         </section>
+
         <hr>
 
-        <!-- CONTROLLER SECTION -->
+        <!-- ############################### CONTROLLER SECTION ############################### -->
         <section id="controller" class="shrink-buttons">
             <h2>Dualshock PS4 Controller</h2>
             <div class="preset-buttons">
@@ -96,31 +106,39 @@
                 <button onclick="stopPad()">Stop</button>
             </div>
         </section>
+
         <hr>
 
-        <!-- ANGLES SECTION -->
+        <!-- ############################### ANGLES SECTION ############################### -->
         <section id="angles" class="shrink-buttons">
             <h2>Set Angle</h2>
             <div class="preset-buttons">
-                <button onclick="enableManualControl()">Manual Control</button>
+                <button onclick="enableManualControl()">Manual Controll</button>
                 <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
+
             </div>
         </section>
         <section id="angles">
-            {% set servos = [
-                {'label': 'BASE', 'id': 1},
-                {'label': 'SHOULDER', 'id': 2},
-                {'label': 'ELBOW', 'id': 3},
-                {'label': 'WRIST', 'id': 4}
-            ] %}
-            {% for servo in servos %}
             <div class="servo-block">
-                <div class="servo-label">{{ servo.label }}: <span id="angle{{ servo.id }}">90</span>°</div>
-                <input type="range" min="0" max="180" value="90" id="slider{{ servo.id }}" disabled>
+                <div class="servo-label">BASE: <span id="angle1">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider1" disabled>
             </div>
-            {% endfor %}
+            <div class="servo-block">
+                <div class="servo-label">SHOULDER: <span id="angle2">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider2" disabled>
+            </div>
+            <div class="servo-block">
+                <div class="servo-label">ELBOW: <span id="angle3">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider3" disabled>
+            </div>
+            <div class="servo-block">
+                <div class="servo-label">WRIST: <span id="angle4">90</span>°</div>
+                <input type="range" min="0" max="180" value="90" id="slider4" disabled>
+            </div>
         </section>
     </main>
+
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
+
 </html>
