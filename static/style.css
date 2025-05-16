@@ -234,11 +234,11 @@ input[type=range]::-webkit-slider-thumb {
 }
 .center-select button {
     flex: 0 0 auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+    width: 95px;
+    height: 50px;
+    border-radius: 10%;
     font-size: 20px;
-    background: #3498db;
+    background: rgba(0, 0, 0, 0.4);
     color: #fff;
     border: none;
     transition: transform 0.3s, box-shadow 0.3s;
