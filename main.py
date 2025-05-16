@@ -15,10 +15,17 @@ fullkin = FullKinematics(L1, L2, L3)
 servo_ctrl = ServoController(port)
 arm = ArmController(kin, servo_ctrl)
 
-servo_ctrl.move_servo(base, 90)
-servo_ctrl.move_servo(shoulder, 90)
+
+# angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+# print(f"[INFO] Current angles: {angles}")
+
+# point=(220, 0, 0)
+# arm.move_to_point_dps(point)
+
+# servo_ctrl.move_servo(base, 90)
+# servo_ctrl.move_servo(shoulder, 90)
 servo_ctrl.move_servo(elbow, 90)
-servo_ctrl.move_servo(wrist, 90)
+# servo_ctrl.move_servo(wrist, 90)
 
 # a = "min_angle_sum"
 # b = "flat"

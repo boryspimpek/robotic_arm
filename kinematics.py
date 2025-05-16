@@ -1,8 +1,8 @@
 # robot_arm/kinematics.py
 import numpy as np
 import math
-from config import trims, base, shoulder, elbow, angle_limits, wrist
-
+from config import base, shoulder, elbow, wrist, trims 
+from utilis import Utilis
 
 class Kinematics:
     def __init__(self, l1, l2):
@@ -35,6 +35,7 @@ class Kinematics:
         theta1_deg = math.degrees(theta1)
         theta2_deg = math.degrees(theta2)
         theta3_deg = math.degrees(theta3)
+        print(f"[INFO] Inverse kinematics: phi={phi_deg:.2f}°, theta1={theta1_deg:.2f}°, theta2={theta2_deg:.2f}°, theta3={theta3_deg:.2f}°")
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
     def forward(self, theta1_deg, theta2_deg):
@@ -50,33 +51,16 @@ class Kinematics:
         return x, 0.0, z
 
     def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True, apply_trim=True):
-        s_base = 90 - phi
-        s_shoulder = 180 - theta1
-        s_elbow = 180 - (90 + theta2) - 90
-        s_wrist = (90 if wrist_horizontal else 180) + theta3
-
         angles = {
-            base: s_base,
-            shoulder: s_shoulder,
-            elbow: s_elbow,
-            wrist: s_wrist
+            base: 90 - phi,
+            shoulder: 180 - theta1,
+            elbow: -theta2 + 90,
+            wrist: (90 if wrist_horizontal else 180) + theta3
         }
 
-        # Walidacja przed trimem
-        for sid, angle in angles.items():
-            min_angle, max_angle = angle_limits
-            if not (min_angle <= angle <= max_angle):
-                if sid == wrist:
-                    # Przycinamy tylko nadgarstek
-                    clipped = max(min(angle, max_angle), min_angle)
-                    print(f"[WARN] Kąt nadgarstka poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
-                    angles[sid] = clipped
-                else:
-                    raise ValueError(f"Kąt serwa ID {sid} poza zakresem: {angle:.2f}° (przed trimem)")
+        angles = Utilis.validate_and_clip_angles(angles)
 
-        # Trim dodajemy dopiero po walidacji
         if apply_trim:
-            for sid in angles:
-                angles[sid] += trims.get(sid, 0.0)
+            angles = Utilis.apply_trims(angles, trims)
 
         return angles[base], angles[shoulder], angles[elbow], angles[wrist]

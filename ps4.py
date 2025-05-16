@@ -23,7 +23,7 @@ class ArmPS4Controller(Controller):
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
         # Initial position
-        self.x = 142.0
+        self.x = 200.0
         self.z = 0.0
         self.phi = 0.0  # Base rotation
 

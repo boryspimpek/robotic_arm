@@ -20,8 +20,13 @@ baudrate = 1000000
 st_speed = 500         
 sc_speed = 500         
 st_acc = 25            
-sc_acc = 25            
-angle_limits = (0, 180)  
+sc_acc = 25      
+
+angle_limits = (0, 180)      
+base_angle_limits = (0, 180)
+shoulder_angle_limits = (0, 180)
+elbow_angle_limits = (0, 240)
+wrist_angle_limits = (0, 180)  
 
 # Servo trims (adjustments for alignment)
 trims = {
