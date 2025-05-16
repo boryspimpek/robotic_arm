@@ -26,7 +26,7 @@ class ArmController:
 
         # Konwersja do serwo
         try:
-            s1, s2, s3, s4 = self.kin.to_servo_angles(phi_deg, t1, t2, t3, wrist_horizontal=wrist_horizontal, apply_trim=True)
+            s1, s2, s3, s4 = self.kin.to_servo_angles(phi_deg, t1, t2, t3, wrist_horizontal=wrist_horizontal)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
@@ -91,7 +91,7 @@ class ArmController:
 
         # Konwersja do serwo
         try:
-            s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3, apply_trim=True)
+            s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False

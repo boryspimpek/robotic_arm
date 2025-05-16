@@ -35,7 +35,6 @@ class Kinematics:
         theta1_deg = math.degrees(theta1)
         theta2_deg = math.degrees(theta2)
         theta3_deg = math.degrees(theta3)
-        
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
     def forward(self, theta1_deg, theta2_deg):
@@ -50,17 +49,14 @@ class Kinematics:
         # Zakładamy ramię w płaszczyźnie X/Z, y = 0
         return x, 0.0, z
 
-    def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True, apply_trim=True):
+    def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True):
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
-            elbow: - theta2 + 90,
+            elbow: -theta2 + 90,
             wrist: (90 if wrist_horizontal else 180) + theta3
         }
 
         angles = Utilis.validate_and_clip_angles(angles)
-
-        if apply_trim:
-            angles = Utilis.apply_trims(angles, trims)
 
         return angles[base], angles[shoulder], angles[elbow], angles[wrist]
