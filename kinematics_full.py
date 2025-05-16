@@ -212,12 +212,12 @@ class FullKinematics:
 
     def ik_3d_to_servo_angles(self, best_angles):
         theta0, theta1, theta2, theta3 = best_angles
-        servo_angles = {
+        angles = {
             base: np.degrees(theta0) + 90,
             shoulder: 180 - np.degrees(theta1),
-            elbow: -1 * np.degrees(theta2),
+            elbow: -np.degrees(theta2),
             wrist: 90 - np.degrees(theta3)
         }
 
-        servo_angles = Utilis.validate_and_clip_angles(servo_angles)
-        return servo_angles
+        angles = Utilis.validate_and_clip_angles(angles)
+        return angles[base], angles[shoulder], angles[elbow], angles[wrist]

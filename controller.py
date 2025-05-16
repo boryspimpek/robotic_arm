@@ -174,16 +174,16 @@ class ArmController:
         ik_angles, positions = ik_result  
 
         try:
-            target_servo_angles = self.fullkin.ik_3d_to_servo_angles(ik_angles)
+            s1, s2, s3, s4 = self.fullkin.ik_3d_to_servo_angles(ik_angles)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
 
         angles = {
-            base: target_servo_angles[base],
-            shoulder: target_servo_angles[shoulder], 
-            elbow: target_servo_angles[elbow], 
-            wrist: target_servo_angles[wrist]
+            base: s1,
+            shoulder: s2, 
+            elbow: s3, 
+            wrist: s4
         }
 
         deltas = {}  
