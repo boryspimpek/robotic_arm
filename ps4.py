@@ -6,8 +6,7 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
-from config import L1, L2, port
-
+from config import L1, L2, L3, port
 
 def scaled_step(value, base_step, exponent):
     scaled = abs(value) ** exponent
@@ -18,9 +17,7 @@ class ArmPS4Controller(Controller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.kinematics = Kinematics(L1, L2)
-        self.servo_controller = ServoController(port)
-        self.arm = ArmController(self.kinematics, self.servo_controller)
+        self.arm=ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port))
 
         # Initial position
         self.x = 200.0

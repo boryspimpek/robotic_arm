@@ -18,8 +18,8 @@ class ServoController:
         self.port.openPort()
         self.port.setBaudRate(baudrate)
         self.ctrl = sts(self.port)
-        self.last_positions = {}  # zapamiętanie poprzednich pozycji
-        self.kin = Kinematics(L1, L2)  # Initialize kinematics (ensure Kinematics is imported or defined)
+        self.last_positions = {}  
+        # self.kin = Kinematics(L1, L2)  
 
     def deg_to_raw(self, angle_deg):
         return int(angle_deg * 4095 / 2 / 180)
@@ -73,7 +73,7 @@ class ServoController:
             self.move_servo(sid, angle)
 
     def sync_points(self, angles: dict):
-        max_delta = 0.01  # zabezpieczenie przed dzieleniem przez zero
+        max_delta = 0.01  
         # print("[SYNC] Obliczanie max_delta:")
         for sid, target in angles.items():
             previous = self.last_positions.get(sid, target)

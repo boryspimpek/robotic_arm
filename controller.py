@@ -1,26 +1,19 @@
-### robot_arm/controller.py
-
-import logging
 import math
 import time
 import numpy as np
-from config import L1, L2, L3, base, shoulder, elbow, wrist, port
-from kinematics_full import FullKinematics
+from config import base, shoulder, elbow, wrist, port
 from sc_controll import close_gripper
-from servos import ServoController
-
-servo_ctrl = ServoController(port)
-fullkin = FullKinematics(L1, L2, L3)
-
 
 class ArmController:
-    def __init__(self, kinematics, servo_ctrl):
-        self.kin = kinematics
+    def __init__(self, servo_ctrl, kinematics=None, fullkin=None):
+        if not kinematics and not fullkin:
+            raise ValueError("ArmController wymaga przynajmniej jednego z: kinematics lub fullkin.")
+
         self.servo = servo_ctrl
-        self.fullkin = FullKinematics(L1, L2, L3)
+        self.kin = kinematics
+        self.fullkin = fullkin
 
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
-        # Inverse kinematics
         try:
             ik_angles = self.kin.inverse(x, 0.0, z, elbow_up)
             if ik_angles is None:
@@ -64,7 +57,6 @@ class ArmController:
         steps = - round(-2.05 * math.exp(0.06 * max_delta))
         # print(f"steps  = {steps:.2f}°")
 
-        import numpy as np
         interpolations = {
             sid: np.linspace(current_angles[sid], angles[sid], steps)
             for sid in angles
@@ -75,7 +67,7 @@ class ArmController:
             self.servo.sync_points(step_angles)
             time.sleep(0.001)
 
-        self.servo.last_positions.update(angles)
+        # self.servo.last_positions.update(angles)
 
         return True
 
@@ -87,7 +79,6 @@ class ArmController:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
                 return False
 
-        # Inverse kinematics
         try:
             ik_angles = self.kin.inverse(*target_xyz, elbow_up)
             if ik_angles is None:
@@ -129,7 +120,7 @@ class ArmController:
         return True
     
     def homepos(self, tempo_dps=60):
-        current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+        current_angles = self.servo.get_all_servo_positions_deg([1, 2, 3, 4])
         print(current_angles)    
 
         start_angles = current_angles
@@ -140,13 +131,13 @@ class ArmController:
             4: 140
         }
 
-        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
+        self.servo.sync_angles(start_angles, end_angles, tempo_dps)
         close_gripper()
-        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
+        total_time = self.servo.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
     def start(self, tempo_dps=60):
-        current_angles = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+        current_angles = self.servo.get_all_servo_positions_deg([1, 2, 3, 4])
         print(current_angles)    
 
         start_angles = current_angles
@@ -157,13 +148,13 @@ class ArmController:
             4: 25
         }
 
-        servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
+        self.servo.sync_angles(start_angles, end_angles, tempo_dps)
         close_gripper()
-        total_time = servo_ctrl.sync_angles(start_angles, end_angles, tempo_dps)
+        total_time = self.servo.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
     def pad_ik_full(self, x, z, phi_deg, cost_mode):
-        current_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_angles:
@@ -224,7 +215,7 @@ class ArmController:
         return True
 
     def move_to_point_ik_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
-        current_servo_angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_servo_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
@@ -261,7 +252,7 @@ class ArmController:
         time_to_move = max_delta / tempo_dps  # Szacowany czas ruchu
 
         self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
-        total_time = servo_ctrl.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
+        total_time = self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
 
         target_servo_angles = {int(sid): float(angle) for sid, angle in target_servo_angles.items()}
         target_servo_angles = {sid: round(angle, 2) for sid, angle in target_servo_angles.items()}
