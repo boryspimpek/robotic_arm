@@ -167,37 +167,94 @@ input[type=range]::-webkit-slider-thumb {
 
 /* ############################### Navigation Bar ################################## */
 .navbar {
-    position: sticky;
-    top: 0;
-    background: none;
-    border-bottom: none;
-    padding: 10px;
-    z-index: 999;
+  position: sticky;
+  top: 0;
+  background-color: #2c3e50;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+  max-width: 100%;
+  z-index: 999;
+}
+
+/* Styl dla linków w nav */
+.navbar a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hover efekt */
+.navbar a:hover {
+  background-color: #34495e;
+  transform: scale(1.05);
+}
+
+/* Dodatkowe style dla urządzeń mobilnych */
+@media (max-width: 600px) {
+  .navbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
   }
+
+  .navbar a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
 
 /* ############################### Points Styles ################################## */  
 .point-input {
     display: flex;
+    flex-direction: row; /* poziomy układ */
     justify-content: center;
     align-items: center;
     gap: 10px;
     margin: 30px auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* ZAKAZ łamania do nowej linii */
+    overflow-x: auto;   /* pozwala na przewijanie w poziomie */
+    -webkit-overflow-scrolling: touch; /* płynne scrollowanie na iOS */
+    padding: 0 10px;
+    max-width: 100%;
 }
 
+/* Pola input */
 .point-input input {
     width: 80px;
     padding: 8px;
     font-size: 16px;
     text-align: center;
+    min-width: 60px;
+    flex-shrink: 0; /* zapobiega zmniejszaniu */
 }
 
+/* Przycisk */
 .point-input button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
+    flex-shrink: 0; /* zapobiega zmniejszaniu */
 }
 
+/* Możesz opcjonalnie dodać styl scrollbarów dla lepszego UX */
+.point-input::-webkit-scrollbar {
+    height: 6px;
+}
+.point-input::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 3px;
+}
 
 /* ############################### Responsive Styles ############################### */
 @media (max-width: 768px) {
