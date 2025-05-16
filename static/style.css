@@ -260,6 +260,55 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 3px;
 }
 
+
+
+
+
+
+
+/* ############################### Center Select Styles ############################### */
+
+.center-select {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    padding: 20px 0;
+}
+
+.track-wrapper {
+    display: flex;
+    padding: 0 50vw; /* zostawia miejsce po obu stronach */
+}
+
+.button-track {
+    display: flex;
+    gap: 20px;
+}
+
+.center-select button {
+    flex: 0 0 auto;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    font-size: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    scroll-snap-align: center;
+}
+
+.center-select button.active {
+    transform: scale(1.4);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+
+
+
+
 /* ############################### Responsive Styles ############################### */
 @media (max-width: 768px) {
     body {

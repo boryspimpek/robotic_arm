@@ -1,3 +1,6 @@
+const track = document.getElementById('scrollTrack');
+const buttons = track.querySelectorAll('button');
+
 let gripperState = 'closed';
 
 const postRequest = (url, body = null) => {
@@ -203,3 +206,37 @@ window.onload = () => {
             });
         });
 };
+
+
+
+
+
+
+function updateActiveButton() {
+    let centerX = window.innerWidth / 2;
+
+    let closestBtn = null;
+    let closestDistance = Infinity;
+
+    buttons.forEach(btn => {
+        const rect = btn.getBoundingClientRect();
+        const btnCenter = rect.left + rect.width / 2;
+        const distance = Math.abs(btnCenter - centerX);
+
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestBtn = btn;
+        }
+    });
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (closestBtn) {
+        closestBtn.classList.add('active');
+    }
+}
+
+document.querySelector('.center-select').addEventListener('scroll', () => {
+    requestAnimationFrame(updateActiveButton);
+});
+
+window.addEventListener('load', updateActiveButton);
