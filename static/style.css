@@ -68,6 +68,46 @@ h2 {
     transition: background-color 0.3s ease;
 }
 
+/* --- Wersja 1: przyciski w poziomie z przewijaniem (scroll) --- */
+.scroll-buttons .preset-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.scroll-buttons .preset-buttons button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-width: 100px;
+    max-width: 100px;
+}
+
+/* Scrollbar opcjonalnie */
+.scroll-buttons .preset-buttons::-webkit-scrollbar {
+    height: 6px;
+}
+.scroll-buttons .preset-buttons::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 3px;
+}
+
+
+/* --- Wersja 2: przyciski w poziomie z dopasowaniem szerokości (shrink) --- */
+.shrink-buttons .preset-buttons {
+    flex-wrap: nowrap;
+    overflow-x: hidden; /* ukrywa przewijanie */
+    justify-content: center;
+    gap: 10px;
+}
+
+.shrink-buttons .preset-buttons button {
+    flex: 1 1 0; /* pozwala na kurczenie i rozciąganie */
+    min-width: 80px;
+    max-width: 200px;
+    white-space: nowrap;
+}
+
 @media (min-width: 768px) {
     .preset-buttons button:hover {
         background-color: #2980b9;
