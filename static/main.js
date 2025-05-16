@@ -189,7 +189,6 @@ const moveToPoint = (costMode = 'standard') => {
         .catch(() => alert("Błąd podczas ruchu do punktu."));
 };
 
-
 window.onload = () => {
     fetch('/get_angles')
         .then(response => response.json())
