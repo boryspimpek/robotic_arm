@@ -88,11 +88,14 @@
         <hr>
 
         <!-- ############################### CONTROLLER SECTION ############################### -->
-        <section id="controller" class="shrink-buttons">
-            <h2>Dualshock PS4 Controller</h2>
+        <section id="controller" class="scroll-buttons">
+            <h2>Controller</h2>
             <div class="preset-buttons">
-                <button onclick="startPad()">Go</button>
-                <button onclick="stopPad()">Stop</button>
+                <button onclick="startPad()">Go PS4</button>
+                <button onclick="stopPad()">Stop PS4</button>
+                <button onclick="enableManualControl()">Manual</button>
+                <button id="toggleGripper" onclick="toggleGripper()">Gripper</button>
+
             </div>
         </section>
 
@@ -101,11 +104,6 @@
         <!-- ############################### ANGLES SECTION ############################### -->
         <section id="angles" class="shrink-buttons">
             <h2>Set Angle</h2>
-            <div class="preset-buttons">
-                <button onclick="enableManualControl()">Manual Controll</button>
-                <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
-
-            </div>
         </section>
         <section id="angles">
             <div class="servo-block">
