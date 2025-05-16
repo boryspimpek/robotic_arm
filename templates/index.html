@@ -36,8 +36,6 @@
                 <button onclick="movePreset('2')">2</button>
                 <button onclick="movePreset('3')">3</button>
                 <button onclick="movePreset('4')">4</button>
-                <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
-                <button onclick="enableManualControl()">Manual Controll</button>
             </div>
         </section>
 
@@ -91,16 +89,23 @@
         <section id="controller" class="shrink-buttons">
             <h2>Dualshock PS4 Controller</h2>
             <div class="preset-buttons">
-                <button onclick="startPad()">GO</button>
-                <button onclick="stopPad()">STOP</button>
+                <button onclick="startPad()">Go</button>
+                <button onclick="stopPad()">Stop</button>
             </div>
         </section>
 
         <hr>
 
         <!-- ############################### ANGLES SECTION ############################### -->
-        <section id="angles">
+        <section id="angles" class="shrink-buttons">
             <h2>Set Angle</h2>
+            <div class="preset-buttons">
+                <button onclick="enableManualControl()">Manual Controll</button>
+                <button id="toggleGripper" onclick="toggleGripper()">Toggle Gripper</button>
+
+            </div>
+        </section>
+        <section id="angles">
             <div class="servo-block">
                 <div class="servo-label">BASE: <span id="angle1">90</span>°</div>
                 <input type="range" min="0" max="180" value="90" id="slider1" disabled>

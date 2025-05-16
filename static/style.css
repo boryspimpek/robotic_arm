@@ -87,11 +87,11 @@ h2 {
 .scroll-buttons .preset-buttons::-webkit-scrollbar {
     height: 6px;
 }
+
 .scroll-buttons .preset-buttons::-webkit-scrollbar-thumb {
     background-color: #555;
     border-radius: 3px;
 }
-
 
 /* --- Wersja 2: przyciski w poziomie z dopasowaniem szerokości (shrink) --- */
 .shrink-buttons .preset-buttons {
@@ -122,11 +122,11 @@ h2 {
 
 /* ############################### Servo Block Styles ############################### */
 .servo-block {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: rgb(255, 255, 255);
     /* background-color: rgba(0, 0, 0, 0.5); */
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
     font-size: 18px;
 }
 
