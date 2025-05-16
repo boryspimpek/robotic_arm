@@ -35,7 +35,7 @@ class Kinematics:
         theta1_deg = math.degrees(theta1)
         theta2_deg = math.degrees(theta2)
         theta3_deg = math.degrees(theta3)
-        print(f"[INFO] Inverse kinematics: phi={phi_deg:.2f}°, theta1={theta1_deg:.2f}°, theta2={theta2_deg:.2f}°, theta3={theta3_deg:.2f}°")
+        
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
     def forward(self, theta1_deg, theta2_deg):
@@ -54,7 +54,7 @@ class Kinematics:
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
-            elbow: -theta2 + 90,
+            elbow: - theta2 + 90,
             wrist: (90 if wrist_horizontal else 180) + theta3
         }
 

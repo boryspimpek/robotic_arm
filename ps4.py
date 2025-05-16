@@ -6,7 +6,7 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
-from config import L1, L2, L3, port
+from config import L1, L2, port
 
 def scaled_step(value, base_step, exponent):
     scaled = abs(value) ** exponent

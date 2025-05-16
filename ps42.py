@@ -7,7 +7,6 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 
-
 def scaled_step(value, base_step=5.0, exponent=2.0):
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
@@ -39,10 +38,6 @@ class ArmPS4Controller(Controller):
         self.shoulder_angle = angles.get(shoulder, 90)
         self.elbow_angle = angles.get(elbow, 90)
         self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
-
-    # def _move_to_start_position(self):
-    #     print("[INFO] Moving to start position...")
-    #     self.arm.move_to_point_dps((142.0, 0.0, 0.0), tempo_dps=60)
 
     def _start_control_thread(self):
         self.control_thread = threading.Thread(target=self._update_loop)

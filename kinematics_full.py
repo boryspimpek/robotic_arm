@@ -1,8 +1,8 @@
-import logging
 import math
 from matplotlib import pyplot as plt
-from config import base, shoulder, elbow, wrist
 import numpy as np
+from config import base, shoulder, elbow, wrist
+from utilis import Utilis
 
 
 class FullKinematics:
@@ -201,7 +201,6 @@ class FullKinematics:
             if cost < min_cost:
                 min_cost = cost
                 best_angles = (theta0, theta1, theta2, theta3)
-                best_angles_deg = (np.degrees(theta0) + 90, 180 - np.degrees(theta1), -np.degrees(theta2), 90 - np.degrees(theta3))
                 best_positions = self.calculate_positions_3d(theta0, theta1, theta2, theta3)
             
         if best_positions:
@@ -209,13 +208,10 @@ class FullKinematics:
 
         # print(f"Best angles: {best_angles}")
         # print(f"Best angles (degrees): {best_angles_deg}")
-        return best_angles, best_angles_deg, best_positions
+        return best_angles, best_positions
 
-    def ik_3d_to_servo_angles(self, angles):
-        if angles is None:
-            return None
-
-        theta0, theta1, theta2, theta3 = angles
+    def ik_3d_to_servo_angles(self, best_angles):
+        theta0, theta1, theta2, theta3 = best_angles
         servo_angles = {
             base: np.degrees(theta0) + 90,
             shoulder: 180 - np.degrees(theta1),
@@ -223,10 +219,5 @@ class FullKinematics:
             wrist: 90 - np.degrees(theta3)
         }
 
-        ############################ Clamp to range 0–180° ############################
-        # return {sid: min(max(angle, 0), 180) for sid, angle in servo_angles.items()}
-
-        for sid, angle in servo_angles.items():
-            if not (0 <= angle <= 180):
-                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        servo_angles = Utilis.validate_and_clip_angles(servo_angles)
         return servo_angles
