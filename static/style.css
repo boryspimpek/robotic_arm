@@ -142,14 +142,14 @@ input[type=range]::-webkit-slider-thumb {
 .navbar {
     position: sticky;
     top: 0;
-    background: #2c3e50;
+    background: rgba(0, 0, 0, 0.5);
     padding: 1rem 2rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     margin: 0 auto;
     max-width: 100%;
     z-index: 999;
@@ -222,11 +222,11 @@ input[type=range]::-webkit-slider-thumb {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     display: flex;
-    padding: 20px 0;
+    padding: 10px 0;
 }
 .track-wrapper {
     display: flex;
-    padding: 0 50vw;
+    padding: 0 20vw;
 }
 .button-track {
     display: flex;
@@ -237,8 +237,8 @@ input[type=range]::-webkit-slider-thumb {
     width: 95px;
     height: 50px;
     border-radius: 10%;
-    font-size: 20px;
-    background: rgba(0, 0, 0, 0.4);
+    font-size: 18px;
+    background: rgba(0, 0, 0, 0.5);
     color: #fff;
     border: none;
     transition: transform 0.3s, box-shadow 0.3s;
@@ -246,7 +246,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 .center-select button.active {
     transform: scale(1.4);
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
     z-index: 10;
 }
 
