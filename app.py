@@ -1,7 +1,8 @@
 from flask import Flask, json, jsonify, render_template, request
-from config import L1, L2, port
+from config import L1, L2, L3, port
 from controller import ArmController
 from kinematics import Kinematics
+from kinematics_full import FullKinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
 import subprocess
@@ -12,8 +13,9 @@ app = Flask(__name__)
 
 # Initialize components
 kin = Kinematics(L1, L2)
+fullkin = FullKinematics(L1, L2, L3)
 servo_ctrl = ServoController(port)
-arm = ArmController(kin, servo_ctrl)
+arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port), fullkin=FullKinematics(L1, L2, L3))
 positions_process = None
 pad_process = None
 

@@ -173,7 +173,7 @@ class FullKinematics:
             servo_angles = {
                 "base": np.degrees(theta0) + 90,
                 "shoulder": 180 - np.degrees(theta1),
-                "elbow": -np.degrees(theta2),
+                "elbow": -np.degrees(theta2) + 90,
                 "wrist": 90 - np.degrees(theta3),
             }
 
@@ -204,18 +204,21 @@ class FullKinematics:
         if best_positions:
             self.plot_positions_3d(best_positions, x_target, y_target, z_target)
 
-        # print(f"Best angles: {best_angles}")
-        # print(f"Best angles (degrees): {best_angles_deg}")
         return best_angles, best_positions
 
-    def ik_3d_to_servo_angles(self, best_angles):
-        theta0, theta1, theta2, theta3 = best_angles
-        angles = {
+    def ik_3d_to_servo_angles(self, angles):
+        if angles is None:
+            return None
+
+        theta0, theta1, theta2, theta3 = angles
+        servo_angles = {
             base: np.degrees(theta0) + 90,
             shoulder: 180 - np.degrees(theta1),
-            elbow: -np.degrees(theta2),
-            wrist: 90 - np.degrees(theta3)
+            elbow: -1 * np.degrees(theta2) + 90,
+            wrist: 90 - np.degrees(theta3),
         }
 
-        angles = Utilis.validate_and_clip_angles(angles)
-        return angles[base], angles[shoulder], angles[elbow], angles[wrist]
+        for sid, angle in servo_angles.items():
+            if not (0 <= angle <= 180):
+                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+        return servo_angles

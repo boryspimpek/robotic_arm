@@ -19,7 +19,7 @@ class ServoController:
         self.port.setBaudRate(baudrate)
         self.ctrl = sts(self.port)
         self.last_positions = {}  
-        # self.kin = Kinematics(L1, L2)  
+        self.kin = Kinematics(L1, L2)  
 
     def deg_to_raw(self, angle_deg):
         return int(angle_deg * 4095 / 2 / 180)

@@ -232,16 +232,11 @@ class ArmController:
             print("[WARN] Solver nie znalazł rozwiązania IK (None).")
             return False
 
-        angles, angles_deg, positions = ik_result
+        best_angles, positions = ik_result
 
-        theta0, theta1, theta2, theta3 = angles_deg
+        target_servo_angles = self.fullkin.ik_3d_to_servo_angles(best_angles)
 
-        target_servo_angles = {
-            base: theta0,
-            shoulder: theta1,
-            elbow: theta2,
-            wrist: theta3
-        }
+        print(f"[INFO] Obliczone kąty serw: {target_servo_angles}")
 
         angle_deltas = {
             sid: abs(target_servo_angles[sid] - current_servo_angles[sid])
@@ -252,7 +247,7 @@ class ArmController:
         time_to_move = max_delta / tempo_dps  # Szacowany czas ruchu
 
         self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
-        total_time = self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
+        # total_time = self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
 
         target_servo_angles = {int(sid): float(angle) for sid, angle in target_servo_angles.items()}
         target_servo_angles = {sid: round(angle, 2) for sid, angle in target_servo_angles.items()}
