@@ -94,13 +94,11 @@ class FullKinematics:
         theta1, theta2, theta3 = angles
         servo_angles = {
             shoulder: 180 - np.degrees(theta1),
-            elbow: -1 * np.degrees(theta2),
+            elbow: -np.degrees(theta2),
             wrist: 90 - np.degrees(theta3),
         }
+        servo_angles = Utilis.validate_and_clip_angles(servo_angles)
 
-        for sid, angle in servo_angles.items():
-            if not (0 <= angle <= 180):
-                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
         return servo_angles
     
     def calculate_positions_3d(self, theta0, theta1, theta2, theta3):
