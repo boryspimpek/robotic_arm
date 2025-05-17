@@ -49,7 +49,21 @@ class Kinematics:
         # Zakładamy ramię w płaszczyźnie X/Z, y = 0
         return x, 0.0, z
 
-    def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True):
+    # def to_servo_angles(self, phi, theta1, theta2, theta3, wrist_horizontal=True):
+    #     angles = {
+    #         base: 90 - phi,
+    #         shoulder: 180 - theta1,
+    #         elbow: -theta2 + 90,
+    #         wrist: (90 if wrist_horizontal else 180) + theta3
+    #     }
+
+    #     angles = Utilis.validate_and_clip_angles(angles)
+
+    #     return angles[base], angles[shoulder], angles[elbow], angles[wrist]
+
+    def to_servo_angles(self, angles_tuple, wrist_horizontal=True):
+        phi, theta1, theta2, theta3 = angles_tuple
+
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
@@ -58,5 +72,4 @@ class Kinematics:
         }
 
         angles = Utilis.validate_and_clip_angles(angles)
-
-        return angles[base], angles[shoulder], angles[elbow], angles[wrist]
+        return angles

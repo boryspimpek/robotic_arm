@@ -19,8 +19,8 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
 print(f"[INFO] Current angles: {angles}")
 
-# point=(220, 0, 0)
-# arm.move_to_point_dps(point)
+point=(220, 0, 0)
+arm.move_to_point_dps(point)
 
 # servo_ctrl.move_servo(1, 90)
 # servo_ctrl.move_servo(2, 90)

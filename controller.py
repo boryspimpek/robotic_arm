@@ -14,6 +14,12 @@ class ArmController:
         self.fullkin = fullkin
 
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
+        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        for sid in [base, shoulder, elbow, wrist]:
+            if sid not in current_angles:
+                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
+                return False
+            
         try:
             ik_angles = self.kin.inverse(x, 0.0, z, elbow_up)
             if ik_angles is None:
@@ -26,23 +32,11 @@ class ArmController:
 
         # Konwersja do serwo
         try:
-            s1, s2, s3, s4 = self.kin.to_servo_angles(phi_deg, t1, t2, t3, wrist_horizontal=wrist_horizontal)
+            angle_tuple = (phi_deg, t1, t2, t3)
+            angles = self.kin.to_servo_angles(angle_tuple, wrist_horizontal=wrist_horizontal)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
-        
-        angles = {
-            base: s1,
-            shoulder: s2,
-            elbow: s3,
-            wrist: s4
-        }
-
-        current_angles = self.servo.get_all_servo_positions_deg(list(angles.keys()))
-        for sid in angles:
-            if sid not in current_angles:
-                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
-                return False
 
         deltas = {}  
         for sid in angles:
@@ -73,7 +67,6 @@ class ArmController:
 
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         current_servo_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
-
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
@@ -91,17 +84,11 @@ class ArmController:
 
         # Konwersja do serwo
         try:
-            s1, s2, s3, s4 = self.kin.to_servo_angles(phi, t1, t2, t3)
+            angle_tuple = (phi, t1, t2, t3)
+            end_servo_angles = self.kin.to_servo_angles(angle_tuple)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
-
-        end_servo_angles = {
-            base: s1,
-            shoulder: s2,
-            elbow: s3,
-            wrist: s4
-        }
 
         # Obliczenie różnic kątów i czasu ruchu
         angle_deltas = {
@@ -245,7 +232,7 @@ class ArmController:
         time_to_move = max_delta / tempo_dps  # Szacowany czas ruchu
 
         self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
-        # total_time = self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
+        total_time = self.servo.sync_angles(current_servo_angles, target_servo_angles, tempo_dps)
 
         target_servo_angles = {int(sid): float(angle) for sid, angle in target_servo_angles.items()}
         target_servo_angles = {sid: round(angle, 2) for sid, angle in target_servo_angles.items()}
@@ -255,5 +242,5 @@ class ArmController:
         time.sleep(time_to_move)
 
         print("[INFO] Ruch zakończony.")
-        return True
+        return total_time
 
