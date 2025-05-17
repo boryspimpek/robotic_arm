@@ -1,7 +1,7 @@
 # robot_arm/kinematics.py
 import numpy as np
 import math
-from config import base, shoulder, elbow, wrist, trims 
+from config import base, shoulder, elbow, wrist
 from utilis import Utilis
 
 class Kinematics:
@@ -49,22 +49,22 @@ class Kinematics:
         # Zakładamy ramię w płaszczyźnie X/Z, y = 0
         return x, 0.0, z
 
-    def to_servo_angles(self, angles_tuple, wrist_horizontal=None):
-        phi, theta1, theta2, theta3 = angles_tuple
+    # def to_servo_angles(self, angles_tuple, wrist_horizontal=None):
+    #     phi, theta1, theta2, theta3 = angles_tuple
 
-        if wrist_horizontal == True:
-            wrist_angle = 90 + theta3
-        elif wrist_horizontal == False:
-            wrist_angle = 180 + theta3
-        else:
-            wrist_angle = 90 - theta3    
+    #     if wrist_horizontal == True:
+    #         wrist_angle = 90 + theta3
+    #     elif wrist_horizontal == False:
+    #         wrist_angle = 180 + theta3
+    #     else:
+    #         wrist_angle = 90 - theta3    
 
-        angles = {
-            base: 90 - phi,
-            shoulder: 180 - theta1,
-            elbow: -theta2 + 90,
-            wrist: wrist_angle
-        }
+    #     angles = {
+    #         base: 90 - phi,
+    #         shoulder: 180 - theta1,
+    #         elbow: -theta2 + 90,
+    #         wrist: wrist_angle
+    #     }
 
-        angles = Utilis.validate_and_clip_angles(angles)
-        return angles
+    #     angles = Utilis.validate_and_clip_angles(angles)
+    #     return angles

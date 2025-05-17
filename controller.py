@@ -26,7 +26,7 @@ class ArmController:
 
         try:
             angle_tuple = (phi_deg, ik_angles[1], ik_angles[2], ik_angles[3])
-            angles = self.kin.to_servo_angles(angle_tuple, wrist_horizontal=wrist_horizontal)
+            angles = self.utilis.ik_to_servo_angles(angle_tuple, wrist_horizontal=wrist_horizontal)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
@@ -56,7 +56,7 @@ class ArmController:
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
         try:
-            end_servo_angles = self.kin.to_servo_angles(ik_angles, wrist_horizontal=True)
+            end_servo_angles = self.utilis.ik_to_servo_angles(ik_angles, wrist_horizontal=True)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
@@ -191,7 +191,7 @@ class ArmController:
 
         best_angles, positions = ik_result
 
-        target_servo_angles = self.kin.to_servo_angles(best_angles)
+        target_servo_angles = self.utilis.ik_to_servo_angles(best_angles)
 
         angle_deltas = {
             sid: abs(target_servo_angles[sid] - current_servo_angles[sid])

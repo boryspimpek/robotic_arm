@@ -54,7 +54,7 @@ tempo_dps=60
 #     move_arm_sequentially(240, 70, 0, -50, tempo_dps, cost_mode)
 #     move_arm_sequentially(70, 240, 0, -50, tempo_dps, cost_mode)
 
-arm.move_to_point_ik_full(200, 0, 0, tempo_dps=60, cost_mode="flat")
+arm.move_to_point_ik_full(120, 100, 100, tempo_dps=60, cost_mode="vertical_down")
 
 
 # ik_angles, positions = fullkin.solve_ik_2d(x, y)

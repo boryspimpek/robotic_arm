@@ -201,18 +201,18 @@ class FullKinematics:
 
         return best_angles, best_positions
 
-    def ik_3d_to_servo_angles(self, angles):
-        if angles is None:
-            return None
+    # def ik_3d_to_servo_angles(self, angles):
+    #     if angles is None:
+    #         return None
 
-        theta0, theta1, theta2, theta3 = angles
-        servo_angles = {
-            base: 90 - theta0,
-            shoulder: 180 - theta1,
-            elbow: -1 * theta2 + 90,
-            wrist: 90 - theta3,
-        }
+    #     theta0, theta1, theta2, theta3 = angles
+    #     servo_angles = {
+    #         base: 90 - theta0,
+    #         shoulder: 180 - theta1,
+    #         elbow: -1 * theta2 + 90,
+    #         wrist: 90 - theta3,
+    #     }
 
-        servo_angles = Utilis.validate_and_clip_angles(servo_angles)
+    #     servo_angles = Utilis.validate_and_clip_angles(servo_angles)
 
-        return servo_angles
+    #     return servo_angles

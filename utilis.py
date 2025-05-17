@@ -54,3 +54,22 @@ class Utilis:
             return False
         return ik_angles, current_servo_angles
 
+    def ik_to_servo_angles(self, angles_tuple, wrist_horizontal=None):
+        phi, theta1, theta2, theta3 = angles_tuple
+
+        if wrist_horizontal == True:
+            wrist_angle = 90 + theta3
+        elif wrist_horizontal == False:
+            wrist_angle = 180 + theta3
+        else:
+            wrist_angle = 90 - theta3    
+
+        angles = {
+            base: 90 - phi,
+            shoulder: 180 - theta1,
+            elbow: -theta2 + 90,
+            wrist: wrist_angle
+        }
+
+        angles = self.validate_and_clip_angles(angles)
+        return angles
