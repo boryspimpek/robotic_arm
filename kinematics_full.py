@@ -180,7 +180,7 @@ class FullKinematics:
             elif cost_mode == "flat":
                 end_orientation = theta1 + theta2 + theta3
                 cost = (end_orientation)**2  
-            elif cost_mode == "standard":
+            elif cost_mode == "normal":
                 cost = (theta2)**2 + (theta3)**2
             else:
                 raise ValueError("Nieznany tryb kosztu")

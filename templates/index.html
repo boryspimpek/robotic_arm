@@ -32,18 +32,19 @@
         <section class="center-select">
             <div class="track-wrapper">
                 <div class="button-track" id="scrollTrack">
-                    <button onclick="movePreset('1')">1</button>
+                    <button onclick="movePreset('1')">Home</button>
                     <button onclick="movePreset('2')">2</button>
                     <button onclick="movePreset('3')">3</button>
                     <button onclick="movePreset('4')">4</button>
                 </div>
             </div>
         </section>
-                    <div>
-                <button onclick="savePreset('1')">Zapisz preset 1</button>
-                <button onclick="savePreset('2')">Zapisz preset 2</button>
-                <button onclick="savePreset('3')">Zapisz preset 3</button>
-                <button onclick="savePreset('4')">Zapisz preset 4</button>
+        <section id="presets" class="scroll-buttons">
+            <div class="preset-buttons">
+                <button onclick="savePreset('1')">Save 1</button>
+                <button onclick="savePreset('2')">Save 2</button>
+                <button onclick="savePreset('3')">Save 3</button>
+                <button onclick="savePreset('4')">Save 4</button>
             </div>
 
         <hr>
@@ -59,17 +60,18 @@
         </section>    
         <section id="setpoint" class="scroll-buttons">    
             <div class="preset-buttons">
-                <button onclick="moveToPoint('standard')">Normal</button>
+                <button onclick="moveToPoint('normal')">Normal</button>
                 <button onclick="moveToPoint('flat')">Flat</button>
                 <button onclick="moveToPoint('vertical_down')">Down</button>
                 <button onclick="moveToPoint('vertical_up')">Up</button>
+                <button onclick="moveToPoint('min_angle_angle')">Sum</button>
             </div>    
         <section>
 
         <hr>
 
         <!-- ############################### RECORD SECTION ############################### -->
-        <section id="record" class="shrink-buttons">
+        <section id="record" class="scroll-buttons">
             <h2>Record</h2>
             <div class="preset-buttons">
                 <button onclick="savePosition()">Save</button>
@@ -81,25 +83,17 @@
 
         <hr>
 
-        <!-- ############################### TORQUE CONTROL SECTION ############################### -->
-        <section id="torque" class="shrink-buttons">
-            <h2>Torque Control</h2>
-            <div class="preset-buttons">
-                <button onclick="torqueOn()">Torque ON</button>
-                <button onclick="torqueOff()">Torque OFF</button>
-            </div>
-        </section>
-
-        <hr>
-
         <!-- ############################### CONTROLLER SECTION ############################### -->
         <section id="controller" class="scroll-buttons">
             <h2>Controller</h2>
             <div class="preset-buttons">
+                <button id="toggleGripper" onclick="toggleGripper()">Gripper</button>
                 <button onclick="startPad()">Go PS4</button>
                 <button onclick="stopPad()">Stop PS4</button>
                 <button onclick="enableManualControl()">Manual</button>
-                <button id="toggleGripper" onclick="toggleGripper()">Gripper</button>
+                <button onclick="torqueOn()">Torque</button>
+                <button onclick="torqueOff()">Release</button>
+
 
             </div>
         </section>

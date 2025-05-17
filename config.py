@@ -3,7 +3,7 @@
 # Arm segment lengths (in mm)
 L1 = 120  
 L2 = 120
-L3 = 80  
+L3 = 110  
 
 # Servo IDs for different parts of the robotic arm
 base = 1        
