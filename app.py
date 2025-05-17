@@ -1,5 +1,6 @@
 from flask import Flask, json, jsonify, render_template, request
 from config import L1, L2, L3, port_bus
+from config import base, elbow, shoulder, wrist
 from controller import ArmController
 from kinematics import Kinematics
 from kinematics_full import FullKinematics
@@ -62,11 +63,35 @@ def get_angles():
 
 @app.route('/move_preset/<preset_name>', methods=['POST'])
 def move_preset(preset_name):
-    positions = load_positions()
-    if preset_name in positions:
-        arm.move_to_point_dps(positions[preset_name])
-        return '', 204
-    return 'Preset not found', 404
+    def action():
+        positions = load_positions()
+        if preset_name in positions:
+            angles = positions[preset_name]
+            if len(angles) == 4:
+                return arm.move_to_angle(*angles)
+            else:
+                raise ValueError("Invalid angle data")
+        else:
+            raise ValueError("Preset not found")
+    
+    return handle_action(action, "Preset moved")
+
+@app.route('/save_preset/<preset_name>', methods=['POST'])
+def save_preset(preset_name):
+    def action():
+        angles = servo_ctrl.get_current_angles()  # lub inna Twoja funkcja do pobrania kątów
+        if len(angles) != 4:
+            raise ValueError("Unexpected number of angles")
+        
+        positions = load_positions()
+        positions[preset_name] = angles
+
+        with open('positions.json', 'w') as f:
+            json.dump(positions, f, indent=2)
+
+        return "Zapisano preset"
+    
+    return handle_action(action, "Zapisano preset")
 
 @app.route('/start_pad', methods=['POST'])
 def start_pad():
@@ -148,6 +173,8 @@ def handle_action(action, success_message):
         result = action()
         return str(result) if result else success_message, 200
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return f"Error: {e}", 500
 
 def start_subprocess(process, script_name):

@@ -49,10 +49,24 @@ const goHome = () => {
 };
 
 const movePreset = presetName => {
+    setStatus(`Przesuwanie do pozycji ${presetName}...`);
     postRequest(`/move_preset/${presetName}`)
-        .then(response => {
-            if (response.ok) updateSliders();
-            else console.error('Preset error!');
+        .then(r => r.text())
+        .then(seconds => {
+            const ms = parseFloat(seconds) * 1000;
+            setTimeout(() => {
+                updateSliders();
+                setStatus(`Pozycja ${presetName} ustawiona.`);
+            }, ms + 200); // dodajemy lekki bufor
+        });
+};
+
+const savePreset = presetName => {
+    setStatus(`Zapisuję preset ${presetName}...`);
+    postRequest(`/save_preset/${presetName}`)
+        .then(r => r.text())
+        .then(msg => {
+            setStatus(msg);
         });
 };
 

@@ -136,6 +136,13 @@ class ServoController:
                 print(f"[WARN] Odczyt serwa ID {sid} nieudany: {e}")
         # print(f"[INFO] Odczytano pozycje serw {positions}")
         return positions
+    
+    def get_current_angles(self):
+        ids = [base, shoulder, elbow, wrist]
+        positions = self.get_all_servo_positions_deg(ids)
+        return [positions[i] for i in ids]
+
+
 
     def torque_off(self, servo_id):
         self.ctrl.write1ByteTxRx(servo_id, 40, 0)
