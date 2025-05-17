@@ -143,7 +143,7 @@ class ArmPS4Controller(Controller):
         return new_x
 
     def calculate_new_z(self, delta_z):
-        z_limit = -50.0 if self.wrist_horizontal else -10.0
+        z_limit = -80.0 if self.wrist_horizontal else 0.0
         return max(z_limit, self.z + delta_z)
 
     def calculate_new_phi(self, delta_phi):
