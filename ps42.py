@@ -2,7 +2,7 @@ import math
 import threading
 import time
 from pyPS4Controller.controller import Controller
-from config import L1, L2, base, shoulder, elbow, wrist, port, angle_limits
+from config import L1, L2, base, shoulder, elbow, wrist, port
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
