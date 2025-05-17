@@ -26,8 +26,8 @@ sc_acc = 25
 # angle_limits = (0, 180)      
 base_angle_limits = (0, 180)
 shoulder_angle_limits = (0, 180)
-elbow_angle_limits = (0, 240)
-wrist_angle_limits = (0, 220)  
+elbow_angle_limits = (0, 290)
+wrist_angle_limits = (0, 260)  
 
 # Servo trims (adjustments for alignment)
 trims = {

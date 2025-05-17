@@ -81,7 +81,7 @@ class ArmPS4Controller(Controller):
         self.base_angle += scaled_step(self.joystick_lx, base_step=2.0, exponent=5.0)
         self.shoulder_angle += scaled_step(self.joystick_ly, base_step=2.0, exponent=5.0)
         self.elbow_angle += scaled_step(self.joystick_rz, base_step=2.0, exponent=5.0)
-        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90 + 90
+        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90 + 90 + 90
 
     def _apply_mechanical_limits(self):
         angles = {

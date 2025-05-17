@@ -67,8 +67,8 @@ class Utilis:
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
-            elbow: -theta2 + 90,
-            wrist: wrist_angle
+            elbow: -theta2 + 90 + 50,
+            wrist: wrist_angle + 40
         }
 
         angles = self.validate_and_clip_angles(angles)

@@ -48,22 +48,22 @@ class ServoController:
         theta1_traj = np.linspace(current_theta1, target_theta1, steps)
         theta2_traj = np.linspace(current_theta2, target_theta2, steps)
 
-        for t1, t2 in zip(theta1_traj, theta2_traj):
-            try:
-                x, y, z = self.kin.forward(t1, t2)
-                # print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
+        # for t1, t2 in zip(theta1_traj, theta2_traj):
+        #     try:
+        #         x, y, z = self.kin.forward(t1, t2)
+        #         # print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
 
-            except Exception as e:
-                print(f"[ERROR] Błąd FK: {e}")
-                return False
+        #     except Exception as e:
+        #         print(f"[ERROR] Błąd FK: {e}")
+        #         return False
                 
-            if z < -20.0:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
-                return False
+        #     if z < -20.0:
+        #         print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
+        #         return False
             
-            if x > -10.0 and z < 0.0:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
-                return False
+        #     if x > -10.0 and z < 0.0:
+        #         print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
+        #         return False
             
         self.move_to(angles)
         return True
