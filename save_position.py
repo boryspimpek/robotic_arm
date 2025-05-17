@@ -2,10 +2,10 @@ import json
 import sys
 from sc_controll import sc_servo_position
 from servos import ServoController
-from config import base, elbow, gripper, shoulder, wrist, port
+from config import base, elbow, gripper, shoulder, wrist, port_bus
 
 try:
-    servo = ServoController(port)
+    servo = ServoController(port_bus)
     current_angles = servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
     current_angles = {str(k): int(round(v)) for k, v in current_angles.items()}
     

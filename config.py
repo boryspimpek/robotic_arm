@@ -13,7 +13,8 @@ wrist = 4
 gripper = 5     
 
 # Communication settings
-port = "/dev/ttyACM0"  
+port_bus = "/dev/ttyACM0" 
+port_ps4 = "/dev/input/js0" 
 baudrate = 1000000     
 
 # Motion settings

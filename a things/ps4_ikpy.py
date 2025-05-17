@@ -4,7 +4,7 @@ from pyPS4Controller.controller import Controller
 from controller import ArmController
 from kinematics_ikpy import IkpyKinematics
 from servos import ServoController
-from config import L1, L2, port
+from config import L1, L2, port_bus
 
 
 class ArmPS4Controller(Controller):
@@ -12,7 +12,7 @@ class ArmPS4Controller(Controller):
         super().__init__(**kwargs)
 
         self.kinematics = IkpyKinematics()
-        self.servo_controller = ServoController(port)
+        self.servo_controller = ServoController(port_bus)
         self.arm = ArmController(self.kinematics, self.servo_controller)
 
         self.x = 0.0
@@ -77,5 +77,5 @@ class ArmPS4Controller(Controller):
 
 
 if __name__ == "__main__":
-    pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)
+    pad = ArmPS4Controller(interface=port_bus, connecting_using_ds4drv=False)
     pad.listen()

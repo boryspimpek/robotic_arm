@@ -5,17 +5,17 @@ import sys
 from kinematics import Kinematics
 from sc_controll import sc_servo
 from servos import ServoController
-from config import L1, L2, sc_acc, sc_speed, base, elbow, gripper, shoulder, wrist, port
+from config import L1, L2, sc_acc, sc_speed, base, elbow, gripper, shoulder, wrist, port_bus
 from controller import ArmController
 
-servo_ctrl = ServoController(port)
+servo_ctrl = ServoController(port_bus)
 kin = Kinematics(L1, L2)
 controller = ArmController(kin, servo_ctrl)
 
 TEMPO_DPS = 50.0  # prędkość ruchu serw w °/s
 
 try:
-    servo = ServoController(port)
+    servo = ServoController(port_bus)
 
     with open('recorded_positions.json', 'r') as f:
         positions = json.load(f)

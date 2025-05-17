@@ -4,6 +4,7 @@ import sys
 import os
 import threading
 import time
+from config import port_ps4
 
 # Add the Library path to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
@@ -21,7 +22,7 @@ class HybridController:
 
     def start(self):
         print("[INFO] Uruchamianie kontrolera IK...")
-        self.ik_controller = IKController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+        self.ik_controller = IKController(interface=port_ps4, connecting_using_ds4drv=False)
         self.ik_controller.on_x_press = self.switch_mode
         self.ik_controller.on_exit = self.exit_program
         self.current_controller = self.ik_controller
@@ -35,7 +36,7 @@ class HybridController:
             # self.ik_controller.servo_controller.torque_off_all()
 
             self.mode = "angle"
-            self.angle_controller = AngleController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+            self.angle_controller = AngleController(interface=port_ps4, connecting_using_ds4drv=False)
             self.angle_controller.on_x_press = self.switch_mode
             self.angle_controller.on_exit = self.exit_program
             self.current_controller = self.angle_controller
@@ -48,7 +49,7 @@ class HybridController:
             # self.angle_controller.servo_controller.torque_off_all()
 
             self.mode = "ik"
-            self.ik_controller = IKController(interface="/dev/input/js0", connecting_using_ds4drv=False)
+            self.ik_controller = IKController(interface=port_ps4, connecting_using_ds4drv=False)
             self.ik_controller.on_x_press = self.switch_mode
             self.ik_controller.on_exit = self.exit_program
             self.current_controller = self.ik_controller

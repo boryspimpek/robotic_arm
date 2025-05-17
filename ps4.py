@@ -6,7 +6,7 @@ from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
-from config import L1, L2, port
+from config import L1, L2, port_bus
 
 def scaled_step(value, base_step, exponent):
     scaled = abs(value) ** exponent
@@ -17,7 +17,7 @@ class ArmPS4Controller(Controller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.arm=ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port))
+        self.arm=ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus))
 
         # Initial position
         self.x = 200.0
@@ -151,5 +151,5 @@ class ArmPS4Controller(Controller):
 
 
 if __name__ == "__main__":
-    pad = ArmPS4Controller(interface=port, connecting_using_ds4drv=False)
+    pad = ArmPS4Controller(interface=port_bus, connecting_using_ds4drv=False)
     pad.listen()

@@ -1,5 +1,5 @@
 from flask import Flask, json, jsonify, render_template, request
-from config import L1, L2, L3, port
+from config import L1, L2, L3, port_bus
 from controller import ArmController
 from kinematics import Kinematics
 from kinematics_full import FullKinematics
@@ -14,8 +14,8 @@ app = Flask(__name__)
 # Initialize components
 kin = Kinematics(L1, L2)
 fullkin = FullKinematics(L1, L2, L3)
-servo_ctrl = ServoController(port)
-arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port), fullkin=FullKinematics(L1, L2, L3))
+servo_ctrl = ServoController(port_bus)
+arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus), fullkin=FullKinematics(L1, L2, L3))
 positions_process = None
 pad_process = None
 
