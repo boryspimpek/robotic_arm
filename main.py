@@ -16,16 +16,16 @@ servo_ctrl = ServoController(port)
 arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port), fullkin=FullKinematics(L1, L2, L3))
 
 
-# angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
-# print(f"[INFO] Current angles: {angles}")
+angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+print(f"[INFO] Current angles: {angles}")
 
 # point=(220, 0, 0)
 # arm.move_to_point_dps(point)
 
 # servo_ctrl.move_servo(1, 90)
-# servo_ctrl.move_servo(2, 180)
+# servo_ctrl.move_servo(2, 90)
 # servo_ctrl.move_servo(3, 90)
-# servo_ctrl.move_servo(3, 90)
+# servo_ctrl.move_servo(4, 90)
 
 a = "min_angle_sum"
 b = "flat"
@@ -54,7 +54,7 @@ tempo_dps=60
 #     move_arm_sequentially(240, 70, 0, -50, tempo_dps, cost_mode)
 #     move_arm_sequentially(70, 240, 0, -50, tempo_dps, cost_mode)
 
-arm.move_to_point_ik_full(200, 0, 0, tempo_dps=60, cost_mode="standard")
+# arm.move_to_point_ik_full(200, 0, 0, tempo_dps=60, cost_mode="standard")
 
 
 # ik_angles, positions = fullkin.solve_ik_2d(x, y)

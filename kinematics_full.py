@@ -190,7 +190,7 @@ class FullKinematics:
                 cost = (end_orientation + np.pi/2)**2            
             elif cost_mode == "flat":
                 end_orientation = theta1 + theta2 + theta3
-                cost = (end_orientation)**2  # minimalizujemy odchylenie końcówki od 0°
+                cost = (end_orientation)**2  
             elif cost_mode == "standard":
                 cost = (theta2)**2 + (theta3)**2
             else:
@@ -218,7 +218,10 @@ class FullKinematics:
             wrist: 90 - np.degrees(theta3),
         }
 
-        for sid, angle in servo_angles.items():
-            if not (0 <= angle <= 180):
-                raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
+
+        servo_angles = Utilis.validate_and_clip_angles(servo_angles)
+
+        # for sid, angle in servo_angles.items():
+        #     if not (0 <= angle <= 180):
+        #         raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
         return servo_angles

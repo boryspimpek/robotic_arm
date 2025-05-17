@@ -236,8 +236,6 @@ class ArmController:
 
         target_servo_angles = self.fullkin.ik_3d_to_servo_angles(best_angles)
 
-        print(f"[INFO] Obliczone kąty serw: {target_servo_angles}")
-
         angle_deltas = {
             sid: abs(target_servo_angles[sid] - current_servo_angles[sid])
             for sid in target_servo_angles
