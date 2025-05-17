@@ -49,7 +49,6 @@ class Utilis:
             if ik_angles is None:
                 print("[WARN] Solver nie znalazł rozwiązania IK (None).")
                 return False
-            # phi, t1, t2, t3 = ik_angles
         except Exception as e:
             print(f"[ERROR] Błąd obliczeń IK: {e}")
             return False
