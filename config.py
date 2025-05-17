@@ -3,7 +3,7 @@
 # Arm segment lengths (in mm)
 L1 = 120  
 L2 = 120
-L3 = 100  
+L3 = 80  
 
 # Servo IDs for different parts of the robotic arm
 base = 1        
@@ -22,7 +22,7 @@ sc_speed = 500
 st_acc = 25            
 sc_acc = 25      
 
-angle_limits = (0, 180)      
+# angle_limits = (0, 180)      
 base_angle_limits = (0, 180)
 shoulder_angle_limits = (0, 180)
 elbow_angle_limits = (0, 240)

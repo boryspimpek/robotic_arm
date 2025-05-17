@@ -18,11 +18,11 @@ class Utilis:
             min_angle, max_angle = angle_limits_per_servo[sid]
 
             if not (min_angle <= angle <= max_angle):
-                # if sid == wrist:
-                #     clipped = max(min(angle, max_angle), min_angle)
-                #     print(f"[WARN] Kąt nadgarstka poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
-                #     angles[sid] = clipped
-                # else:
+                if sid == wrist:
+                    clipped = max(min(angle, max_angle), min_angle)
+                    print(f"[WARN] Kąt nadgarstka poza zakresem ({angle:.2f}°), przycinam do {clipped:.2f}°")
+                    angles[sid] = clipped
+                else:
                     raise ValueError(
                         f"Kąt serwa ID {sid} poza zakresem: {angle:.2f}° (dozwolony: {min_angle}°–{max_angle}°)"
                     )

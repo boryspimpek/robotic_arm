@@ -1,7 +1,7 @@
 import math
 from matplotlib import pyplot as plt
 import numpy as np
-from config import base, shoulder, elbow, wrist
+from config import base, shoulder, elbow, wrist, base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits 
 from utilis import Utilis
 
 
@@ -169,17 +169,6 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
-            # Konwersja do zakresu serwa
-            servo_angles = {
-                "base": np.degrees(theta0) + 90,
-                "shoulder": 180 - np.degrees(theta1),
-                "elbow": -np.degrees(theta2) + 90,
-                "wrist": 90 - np.degrees(theta3),
-            }
-
-            if any(not (0 <= angle <= 180) for angle in servo_angles.values()):
-                continue
-
             if cost_mode == "min_angle_sum":
                 cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
             elif cost_mode == "vertical_up":
@@ -218,10 +207,6 @@ class FullKinematics:
             wrist: 90 - np.degrees(theta3),
         }
 
-
         servo_angles = Utilis.validate_and_clip_angles(servo_angles)
 
-        # for sid, angle in servo_angles.items():
-        #     if not (0 <= angle <= 180):
-        #         raise ValueError(f"Kąt serwa '{sid}' poza zakresem: {angle:.2f}°")
         return servo_angles
