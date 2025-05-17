@@ -1,8 +1,9 @@
 import math
 import time
 import numpy as np
-from config import base, shoulder, elbow, wrist, port
+from config import base, shoulder, elbow, wrist
 from sc_controll import close_gripper
+from utilis import Utilis
 
 class ArmController:
     def __init__(self, servo_ctrl, kinematics=None, fullkin=None):
@@ -12,6 +13,7 @@ class ArmController:
         self.servo = servo_ctrl
         self.kin = kinematics
         self.fullkin = fullkin
+        self.utilis = Utilis(servo_ctrl, kinematics)
 
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
         current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
@@ -66,31 +68,13 @@ class ArmController:
         return True
 
     def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
-        current_servo_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
-        for sid in [base, shoulder, elbow, wrist]:
-            if sid not in current_servo_angles:
-                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")
-                return False
-
+        ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
         try:
-            ik_angles = self.kin.inverse(*target_xyz, elbow_up)
-            if ik_angles is None:
-                print("[WARN] Solver nie znalazł rozwiązania IK (None).")
-                return False
-            phi, t1, t2, t3 = ik_angles
-        except Exception as e:
-            print(f"[ERROR] Błąd obliczeń IK: {e}")
-            return False
-
-        # Konwersja do serwo
-        try:
-            angle_tuple = (phi, t1, t2, t3)
-            end_servo_angles = self.kin.to_servo_angles(angle_tuple)
+            end_servo_angles = self.kin.to_servo_angles(ik_angles)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
 
-        # Obliczenie różnic kątów i czasu ruchu
         angle_deltas = {
             sid: abs(end_servo_angles[sid] - current_servo_angles[sid])
             for sid in end_servo_angles
