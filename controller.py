@@ -77,15 +77,15 @@ class ArmController:
         return True
     
     def homepos(self, tempo_dps=60):
-        current_angles = self.servo.get_all_servo_positions_deg([1, 2, 3, 4])
+        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
         print(current_angles)    
 
         start_angles = current_angles
         end_angles = {
             1: 90,
-            2: 6,
-            3: 179,
-            4: 140
+            2: 20,
+            3: 290,
+            4: 190
         }
 
         self.servo.sync_angles(start_angles, end_angles, tempo_dps)
@@ -94,15 +94,15 @@ class ArmController:
         return total_time
     
     def start(self, tempo_dps=60):
-        current_angles = self.servo.get_all_servo_positions_deg([1, 2, 3, 4])
+        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
         print(current_angles)    
 
         start_angles = current_angles
         end_angles = {
             1: 90,
-            2: 6,
-            3: 179,
-            4: 25
+            2: 20,
+            3: 290,
+            4: 190
         }
 
         self.servo.sync_angles(start_angles, end_angles, tempo_dps)
