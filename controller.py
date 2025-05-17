@@ -16,25 +16,16 @@ class ArmController:
         self.utilis = Utilis(servo_ctrl, kinematics)
 
     def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
-        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
-        for sid in [base, shoulder, elbow, wrist]:
-            if sid not in current_angles:
-                print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}")
-                return False
-            
         try:
-            ik_angles = self.kin.inverse(x, 0.0, z, elbow_up)
-            if ik_angles is None:
-                print("[WARN] Solver nie znalazł rozwiązania IK (None).")
+            ik_angles, current_angles = self.utilis.prepare_to_move_ik(x, 0.0, z, elbow_up=elbow_up)
+            if ik_angles is False:
                 return False
-            phi, t1, t2, t3 = ik_angles
         except Exception as e:
-            print(f"[ERROR] Błąd obliczeń IK: {e}")
+            print(f"[ERROR] Błąd przygotowania ruchu IK: {e}")
             return False
 
-        # Konwersja do serwo
         try:
-            angle_tuple = (phi_deg, t1, t2, t3)
+            angle_tuple = (phi_deg, ik_angles[1], ik_angles[2], ik_angles[3])
             angles = self.kin.to_servo_angles(angle_tuple, wrist_horizontal=wrist_horizontal)
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
@@ -46,12 +37,9 @@ class ArmController:
             target_angle = angles[sid]
             delta = abs(target_angle - current_angle)  
             deltas[sid] = delta
-            # print(f"Serwo {sid}: Delta = {delta:.2f}°")
 
         max_delta = max(deltas.values())  
-        # print(f"max delta steps = {max_delta:.2f}°")
         steps = - round(-2.05 * math.exp(0.06 * max_delta))
-        # print(f"steps  = {steps:.2f}°")
 
         interpolations = {
             sid: np.linspace(current_angles[sid], angles[sid], steps)
@@ -62,8 +50,6 @@ class ArmController:
             step_angles = {sid: interpolations[sid][i] for sid in angles}
             self.servo.sync_points(step_angles)
             time.sleep(0.001)
-
-        # self.servo.last_positions.update(angles)
 
         return True
 
