@@ -3,9 +3,11 @@ import threading
 import time
 from pyPS4Controller.controller import Controller
 from config import L1, L2, base, shoulder, elbow, wrist, port_bus
+from config import base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits
 from controller import ArmController
 from kinematics import Kinematics
 from servos import ServoController
+from utilis import Utilis
 
 def scaled_step(value, base_step=5.0, exponent=2.0):
     scaled = abs(value) ** exponent
@@ -23,6 +25,7 @@ class ArmPS4Controller(Controller):
         self.kinematics = Kinematics(L1, L2)
         self.servo_controller = ServoController(port_bus)
         self.arm = ArmController(self.kinematics, self.servo_controller)
+        self.utilis = Utilis(self.servo_controller, self.kinematics)
 
     def _initialize_state(self):
         self.deadzone = 0.3
@@ -78,13 +81,36 @@ class ArmPS4Controller(Controller):
         self.base_angle += scaled_step(self.joystick_lx, base_step=2.0, exponent=5.0)
         self.shoulder_angle += scaled_step(self.joystick_ly, base_step=2.0, exponent=5.0)
         self.elbow_angle += scaled_step(self.joystick_rz, base_step=2.0, exponent=5.0)
-        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
+        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90 + 90
 
     def _apply_mechanical_limits(self):
-        self.base_angle = max(0, min(180, self.base_angle))
-        self.shoulder_angle = max(0, min(180, self.shoulder_angle))
-        self.elbow_angle = max(0, min(180, self.elbow_angle))
-        self.wrist_angle = max(0, min(180, self.wrist_angle))
+        angles = {
+            base: self.base_angle,
+            shoulder: self.shoulder_angle,
+            elbow: self.elbow_angle,
+            wrist: self.wrist_angle
+        }
+        angle_limits_per_servo = {
+            base: base_angle_limits,
+            shoulder: shoulder_angle_limits,
+            elbow: elbow_angle_limits,
+            wrist: wrist_angle_limits
+        }
+
+        for sid in angles:
+            min_val, max_val = angle_limits_per_servo[sid]
+            angles[sid] = min(max(angles[sid], min_val), max_val)
+
+        # przypisanie z powrotem
+        self.base_angle = angles[base]
+        self.shoulder_angle = angles[shoulder]
+        self.elbow_angle = angles[elbow]
+        self.wrist_angle = angles[wrist]
+        
+        # self.base_angle = max(0, min(180, self.base_angle))
+        # self.shoulder_angle = max(0, min(180, self.shoulder_angle))
+        # self.elbow_angle = max(0, min(180, self.elbow_angle))
+        # self.wrist_angle = max(0, min(180, self.wrist_angle))
 
     def _send_servo_commands(self):
         self.servo_controller.move_to({
