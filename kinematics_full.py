@@ -187,7 +187,13 @@ class FullKinematics:
             
             if cost < min_cost:
                 min_cost = cost
-                best_angles = (theta0, theta1, theta2, theta3)
+
+                phi_deg = np.degrees(theta0)
+                theta1_deg = np.degrees(theta1)
+                theta2_deg = np.degrees(theta2)
+                theta3_deg = np.degrees(theta3)
+
+                best_angles = (phi_deg, theta1_deg, theta2_deg, theta3_deg)
                 best_positions = self.calculate_positions_3d(theta0, theta1, theta2, theta3)
             
         if best_positions:
@@ -201,10 +207,10 @@ class FullKinematics:
 
         theta0, theta1, theta2, theta3 = angles
         servo_angles = {
-            base: np.degrees(theta0) + 90,
-            shoulder: 180 - np.degrees(theta1),
-            elbow: -1 * np.degrees(theta2) + 90,
-            wrist: 90 - np.degrees(theta3),
+            base: 90 - theta0,
+            shoulder: 180 - theta1,
+            elbow: -1 * theta2 + 90,
+            wrist: 90 - theta3,
         }
 
         servo_angles = Utilis.validate_and_clip_angles(servo_angles)
