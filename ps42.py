@@ -34,6 +34,7 @@ class ArmPS4Controller(Controller):
         self.joystick_lx = 0.0  # Base rotation
         self.joystick_ly = 0.0  # Shoulder
         self.joystick_rz = 0.0  # Elbow
+        self.joystick_rw = 0.0  # Wrist
         self._initialize_angles()
 
     def _initialize_angles(self):
@@ -74,12 +75,7 @@ class ArmPS4Controller(Controller):
 
         while self.running:
             self._update_angles()
-            
-            if not self._apply_mechanical_limits():
-                print("[INFO] Pominięto ruch – naruszenie ograniczeń.")
-                time.sleep(refresh_rate)
-                continue  # pomiń wysyłanie do serw
-
+            self._apply_mechanical_limits()
             self._send_servo_commands()
             time.sleep(refresh_rate)
 
@@ -96,20 +92,6 @@ class ArmPS4Controller(Controller):
             elbow: self.elbow_angle,
             wrist: self.wrist_angle
         }
-        try:
-            x, z = self.fullkin.forward_ik_full(angles)
-            print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm")
-
-        except Exception as e:
-            print(f"[ERROR] Błąd FK: {e}")
-            return False
-
-        if z < -90.0:
-            print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
-            return False
-        if z < 0 and x < 30:
-            print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x:.1f} mm")
-            return False
 
         angle_limits_per_servo = {
             base: base_angle_limits,
