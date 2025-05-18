@@ -39,7 +39,7 @@ class ArmPS4Controller(Controller):
         self.running = True
 
         print("[INFO] Moving to start position...")
-        self.arm.move_to_point_dps((self.x, 0.0, self.z), tempo_dps=60)
+        self.arm.move_to_point((self.x, 0.0, self.z), tempo_dps=60)
 
         self.control_thread = threading.Thread(target=self.update_loop)
         self.control_thread.start()

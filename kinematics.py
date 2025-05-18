@@ -9,7 +9,7 @@ class Kinematics:
         self.l1 = l1
         self.l2 = l2
 
-    def inverse(self, x, y, z, elbow_up=True):
+    def solve_ik_simple(self, x, y, z, elbow_up=True):
         phi = math.atan2(y, x)
         r = math.hypot(x, y)
         px = r
@@ -37,7 +37,7 @@ class Kinematics:
         theta3_deg = math.degrees(theta3)
         return phi_deg, theta1_deg, theta2_deg, theta3_deg
 
-    def forward(self, theta1_deg, theta2_deg):
+    def forward_ik_simple(self, theta1_deg, theta2_deg):
         # Konwersja na radiany
         t1 = math.radians(theta1_deg)
         t2 = math.radians(theta2_deg)

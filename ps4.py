@@ -38,7 +38,7 @@ class ArmPS4Controller(Controller):
         self.running = True
 
         print("[INFO] Moving to start position...")
-        self.arm.move_to_point_dps((self.x, 0.0, self.z), tempo_dps=60)
+        self.arm.move_to_point((self.x, 0.0, self.z), tempo_dps=60)
 
         self.control_thread = threading.Thread(target=self.update_loop)
         self.control_thread.start()
@@ -70,7 +70,7 @@ class ArmPS4Controller(Controller):
     def on_L1_press(self):
         self.x = 0
         self.z = 70
-        self.arm.move_to_point_dps((0, 0, 70), elbow_up=True, tempo_dps=60)
+        self.arm.move_to_point((0, 0, 70), elbow_up=True, tempo_dps=60)
 
     def on_triangle_press(self):
         if self.wrist_horizontal and self.z < -10.0:

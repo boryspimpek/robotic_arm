@@ -36,7 +36,7 @@ class ArmPS4Controller(Controller):
         self._initialize_angles()
 
     def _initialize_angles(self):
-        angles = self.servo_controller.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        angles = self.servo_controller.get_positions([base, shoulder, elbow, wrist])
         self.base_angle = angles.get(base, 90)
         self.shoulder_angle = angles.get(shoulder, 90)
         self.elbow_angle = angles.get(elbow, 90)

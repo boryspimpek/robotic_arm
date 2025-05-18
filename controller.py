@@ -53,7 +53,7 @@ class ArmController:
 
         return True
 
-    def move_to_point_dps(self, target_xyz, elbow_up=True, tempo_dps=60.0):
+    def move_to_point(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
         try:
             end_servo_angles = self.utilis.ik_to_servo_angles(ik_angles, wrist_horizontal=True)
@@ -77,7 +77,7 @@ class ArmController:
         return True
     
     def move_to_angle(self, angle1, angle2, angle3, angle4, tempo_dps=60):
-        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
         print(current_angles)    
 
         start_angles = current_angles
@@ -92,8 +92,8 @@ class ArmController:
         total_time = self.servo.sync_angles(start_angles, end_angles, tempo_dps)
         return total_time
     
-    def start(self, tempo_dps=60):
-        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+    def start_manual_mode(self, tempo_dps=60):
+        current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
         print(current_angles)    
 
         start_angles = current_angles
@@ -110,7 +110,7 @@ class ArmController:
         return total_time
     
     def pad_ik_full(self, x, z, phi_deg, cost_mode):
-        current_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_angles:
@@ -171,7 +171,7 @@ class ArmController:
         return True
 
     def move_to_point_ik_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
-        current_servo_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_servo_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
@@ -179,7 +179,7 @@ class ArmController:
                 return False
 
         try:
-            ik_result = self.fullkin.solve_ik_3d(x, y, z, cost_mode)
+            ik_result = self.fullkin.solve_ik_full(x, y, z, cost_mode)
         except ValueError as e:
             print(f"[ERROR] Błąd obliczeń IK: {e}")
             return False

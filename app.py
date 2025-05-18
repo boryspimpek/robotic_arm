@@ -57,7 +57,7 @@ def move_servo():
 
 @app.route('/get_angles', methods=['GET'])
 def get_angles():
-    positions = servo_ctrl.get_all_servo_positions_deg([1, 2, 3, 4])
+    positions = servo_ctrl.get_positions([1, 2, 3, 4])
     positions_int = {sid: int(round(angle)) for sid, angle in positions.items()}
     return jsonify(positions_int)
 
@@ -152,7 +152,7 @@ def gripper_close():
 
 @app.route('/start_manual', methods=['POST'])
 def start_manual():
-    return handle_action(arm.start, "Manual start")
+    return handle_action(arm.start_manual_mode, "Manual start")
 
 @app.route('/move_to_point', methods=['POST'])
 def move_to_point():

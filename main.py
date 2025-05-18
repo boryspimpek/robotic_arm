@@ -16,7 +16,7 @@ servo_ctrl = ServoController(port_bus)
 arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus), fullkin=FullKinematics(L1, L2, L3))
 
 
-angles = servo_ctrl.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 print(f"[INFO] Current angles: {angles}")
 
 # point=(0, 0, 240)

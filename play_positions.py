@@ -24,7 +24,7 @@ try:
         os.remove('play_done.txt')
 
 
-    last_pose = servo_ctrl.get_all_servo_positions_deg([
+    last_pose = servo_ctrl.get_positions([
         base, shoulder, elbow, wrist
     ])
     

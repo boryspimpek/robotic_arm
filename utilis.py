@@ -38,7 +38,7 @@ class Utilis:
         return angles
     
     def prepare_to_move_ik(self, *target_xyz, elbow_up):
-        current_servo_angles = self.servo.get_all_servo_positions_deg([base, shoulder, elbow, wrist])
+        current_servo_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
         for sid in [base, shoulder, elbow, wrist]:
             if sid not in current_servo_angles:
                 print(f"[ERROR] Nie udało się odczytać kąta serwa ID {sid}. Ruch przerwany.")

@@ -32,25 +32,25 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-        current = self.get_all_servo_positions_deg([shoulder, elbow])
+        # current = self.get_positions([shoulder, elbow])
         
-        if shoulder not in current or elbow not in current:
-            print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
-            return False
+        # if shoulder not in current or elbow not in current:
+        #     print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
+        #     return False
 
-        target_theta1 = angles.get(shoulder, current[shoulder])
-        target_theta2 = angles.get(elbow, current[elbow])
+        # target_theta1 = angles.get(shoulder, current[shoulder])
+        # target_theta2 = angles.get(elbow, current[elbow])
         
-        current_theta1 = current[shoulder]
-        current_theta2 = current[elbow]
+        # current_theta1 = current[shoulder]
+        # current_theta2 = current[elbow]
 
-        steps = 30
-        theta1_traj = np.linspace(current_theta1, target_theta1, steps)
-        theta2_traj = np.linspace(current_theta2, target_theta2, steps)
+        # steps = 30
+        # theta1_traj = np.linspace(current_theta1, target_theta1, steps)
+        # theta2_traj = np.linspace(current_theta2, target_theta2, steps)
 
         # for t1, t2 in zip(theta1_traj, theta2_traj):
         #     try:
-        #         x, y, z = self.kin.forward(t1, t2)
+        #         x, y, z = self.kin.forward_ik_simple(t1, t2)
         #         # print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
 
         #     except Exception as e:
@@ -123,7 +123,7 @@ class ServoController:
             self.last_positions[sid] = end
         return total_time
 
-    def get_all_servo_positions_deg(self, ids):
+    def get_positions(self, ids):
         positions = {}
         for sid in ids:
             try:
@@ -139,7 +139,7 @@ class ServoController:
     
     def get_current_angles(self):
         ids = [base, shoulder, elbow, wrist]
-        positions = self.get_all_servo_positions_deg(ids)
+        positions = self.get_positions(ids)
         return [positions[i] for i in ids]
 
 

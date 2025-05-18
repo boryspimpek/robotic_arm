@@ -41,7 +41,7 @@ def record_positions(ctrl, predefined_positions):
 
         elif user_input in predefined_positions:
             point = predefined_positions[user_input]
-            controller.move_to_point_dps(point)
+            controller.move_to_point(point)
             ctrl.torque_off_all()
             print(f"[INFO] Przejście do pozycji: {user_input.upper()} {point}")
             continue
