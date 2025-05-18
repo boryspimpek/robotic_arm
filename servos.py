@@ -142,8 +142,6 @@ class ServoController:
         positions = self.get_positions(ids)
         return [positions[i] for i in ids]
 
-
-
     def torque_off(self, servo_id):
         self.ctrl.write1ByteTxRx(servo_id, 40, 0)
 
