@@ -34,17 +34,14 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-        # Stawy do interpolacji (biorą udział w FK)
         interpolated_keys = [shoulder, elbow, wrist]
 
-        # Pobierz aktualne kąty tylko tych 3
         current = self.get_positions(interpolated_keys)
 
         if any(k not in current for k in interpolated_keys):
             print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
             return False
 
-        # Tworzymy trajektorie tylko dla shoulder, elbow, wrist
         steps = 30
         traj = {
             k: np.linspace(current[k], angles.get(k, current[k]), steps)
@@ -53,9 +50,8 @@ class ServoController:
 
         for t1, t2, t3 in zip(traj[shoulder], traj[elbow], traj[wrist]):
             try:
-                # Oblicz FK tylko na podstawie interpolowanych stawów
                 fk_angles = {shoulder: t1, elbow: t2, wrist: t3}
-                x, z = self.fullkin.forward_ik_full(fk_angles, [L1, L2, L3])
+                x, z = self.fullkin.forward_ik_full(fk_angles)
                 print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm")
 
             except Exception as e:

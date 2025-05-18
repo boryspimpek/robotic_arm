@@ -1,7 +1,7 @@
 import math
 from matplotlib import pyplot as plt
 import numpy as np
-from config import base, shoulder, elbow, wrist, base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits 
+from config import L1, L2, L3, base, shoulder, elbow, wrist, base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits 
 from utilis import Utilis
 
 
@@ -112,7 +112,7 @@ class FullKinematics:
 
         return best_angles, best_positions
 
-    def forward_ik_full(self, angles, lengths):
+    def forward_ik_full(self, angles):
         
         theta1_deg = angles[shoulder]
         theta2_deg = angles[elbow]
@@ -120,7 +120,6 @@ class FullKinematics:
 
         # Convert angles to degrees        
         print(f"Angles in degrees: theta1 = {theta1_deg:.2f}, theta2 = {theta2_deg:.2f}, theta3 = {theta3_deg:.2f}")
-        L1, L2, L3 = lengths
 
         # Convert angles to radians
         theta1 = np.radians(180 - theta1_deg)

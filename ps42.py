@@ -90,6 +90,7 @@ class ArmPS4Controller(Controller):
             elbow: self.elbow_angle,
             wrist: self.wrist_angle
         }
+        
         angle_limits_per_servo = {
             base: base_angle_limits,
             shoulder: shoulder_angle_limits,
@@ -107,11 +108,6 @@ class ArmPS4Controller(Controller):
         self.elbow_angle = angles[elbow]
         self.wrist_angle = angles[wrist]
         
-        # self.base_angle = max(0, min(180, self.base_angle))
-        # self.shoulder_angle = max(0, min(180, self.shoulder_angle))
-        # self.elbow_angle = max(0, min(180, self.elbow_angle))
-        # self.wrist_angle = max(0, min(180, self.wrist_angle))
-
     def _send_servo_commands(self):
         self.servo_controller.move_to({
             base: self.base_angle,
