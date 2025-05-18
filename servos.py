@@ -63,13 +63,13 @@ class ServoController:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
                 return False
             if z2 < -90.0:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z2 = {z3:.1f} mm, ")
                 return False
             if z3 < 0 and x3 < 30:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x3:.1f} mm")
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
                 return False
             if z2 < 0 and x2 < 40:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x2:.1f} mm")
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
                 return False
 
         # Na końcu wyślij cały zestaw kątów – także base i gripper
