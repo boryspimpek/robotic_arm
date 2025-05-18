@@ -1,4 +1,5 @@
 import math
+import subprocess
 import threading
 import time
 from pyPS4Controller.controller import Controller
@@ -87,6 +88,33 @@ class ArmPS4Controller(Controller):
         self.stop = True
         if hasattr(self, 'on_exit'):
             self.on_exit()
+
+    def on_left_arrow_press(self):
+        try:
+            subprocess.run(["python3", "save_position.py"], check=True)
+            print("[INFO] Position saved successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Script save_positions.py failed with return code {e.returncode}")
+        except FileNotFoundError:
+            print("[ERROR] Script save_positions.py not found.")
+
+    def on_right_arrow_press(self):
+        try:
+            subprocess.run(["python3", "reset_positions.py"], check=True)
+            print("[INFO] Positions sdeleted successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Script reset_positions.py failed with return code {e.returncode}")
+        except FileNotFoundError:
+            print("[ERROR] Script reset_positions.py not found.")
+
+    def on_up_arrow_press(self):
+        try:
+            subprocess.run(["python3", "play_positions.py"], check=True)
+            print("[INFO] Positions playing successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"[ERROR] Script play_positions.py failed with return code {e.returncode}")
+        except FileNotFoundError:
+            print("[ERROR] Script play_positions.py not found.")
 
     def dynamic_base_step_x(self, x):
         return max(1, round(-0.0494 + 0.116 * x - 1.24E-03 * x**2 + 6.23E-06 * x**3 - 1.27E-08 * x**4))

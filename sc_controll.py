@@ -151,7 +151,7 @@ def sc_servo_position(SCS_ID):
     portHandler.closePort()
 
     # Wypisz wynik
-    print(f"[ID:{SCS_ID}] Aktualna pozycja: {scs_present_position}")
+    # print(f"[ID:{SCS_ID}] Aktualna pozycja: {scs_present_position}")
 
 
     return scs_present_position  

@@ -25,7 +25,7 @@ try:
     with open('recorded_positions.json', 'w') as f:
         json.dump(positions, f, indent=4)
 
-    print("Pozycja zapisana!")
+    print(f"[INFO] Pozycja {new_key} zapisana!")
     sys.exit(0)
 
 except Exception as e:
