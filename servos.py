@@ -3,7 +3,8 @@ import sys
 import os
 import numpy as np
 from kinematics import Kinematics
-from config import L1, L2, baudrate, st_speed, st_acc, base, elbow, shoulder, wrist
+from config import L1, L2, L3, baudrate, st_speed, st_acc, base, elbow, shoulder, wrist
+from kinematics_full import FullKinematics
 
 # Add the Library path to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Library')))
@@ -20,6 +21,7 @@ class ServoController:
         self.ctrl = sts(self.port)
         self.last_positions = {}  
         self.kin = Kinematics(L1, L2)  
+        self.fullkin = FullKinematics(L1, L2, L3)  
 
     def deg_to_raw(self, angle_deg):
         return int(angle_deg * 4095 / 2 / 180)
@@ -32,40 +34,44 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-        # current = self.get_positions([shoulder, elbow])
+        current = self.get_positions([shoulder, elbow, wrist])
         
-        # if shoulder not in current or elbow not in current:
-        #     print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
-        #     return False
+        if shoulder not in current or elbow not in current:
+            print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
+            return False
 
-        # target_theta1 = angles.get(shoulder, current[shoulder])
-        # target_theta2 = angles.get(elbow, current[elbow])
+        target_theta1 = angles.get(shoulder, current[shoulder])
+        target_theta2 = angles.get(elbow, current[elbow])
+        target_theta3 = angles.get(wrist, current[wrist])
         
-        # current_theta1 = current[shoulder]
-        # current_theta2 = current[elbow]
+        current_theta1 = current[shoulder]
+        current_theta2 = current[elbow]
+        current_theta3 = current[wrist]
 
-        # steps = 30
-        # theta1_traj = np.linspace(current_theta1, target_theta1, steps)
-        # theta2_traj = np.linspace(current_theta2, target_theta2, steps)
+        steps = 30
+        theta1_traj = np.linspace(current_theta1, target_theta1, steps)
+        theta2_traj = np.linspace(current_theta2, target_theta2, steps)
+        theta3_traj = np.linspace(current_theta3, target_theta3, steps)
 
-        # for t1, t2 in zip(theta1_traj, theta2_traj):
-        #     try:
-        #         x, y, z = self.kin.forward_ik_simple(t1, t2)
-        #         # print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°)")
+        for t1, t2, t3 in zip(theta1_traj, theta2_traj, theta3_traj):
+            try:
+                x, z = self.fullkin.forward_ik_full(t1, t2, t3, L1, L2, L3)
+                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°), θ3 = {t3:.1f}°")
 
-        #     except Exception as e:
-        #         print(f"[ERROR] Błąd FK: {e}")
-        #         return False
+            except Exception as e:
+                print(f"[ERROR] Błąd FK: {e}")
+                return False
                 
-        #     if z < -20.0:
-        #         print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
-        #         return False
+            if z < -20.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
+                return False
             
-        #     if x > -10.0 and z < 0.0:
-        #         print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
-        #         return False
+            if x > -10.0 and z < 0.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
+                return False
             
         self.move_to(angles)
+        # print(f"x = {x:.1f} mm, z = {z:.1f} mm")
         return True
 
     def move_to(self, angles: dict):

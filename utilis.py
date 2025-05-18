@@ -45,7 +45,7 @@ class Utilis:
                 return False
 
         try:
-            ik_angles = self.kin.inverse(*target_xyz, elbow_up)
+            ik_angles = self.kin.solve_ik_simple(*target_xyz, elbow_up)
             if ik_angles is None:
                 print("[WARN] Solver nie znalazł rozwiązania IK (None).")
                 return False
@@ -67,7 +67,7 @@ class Utilis:
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
-            elbow: -theta2 + 90 + 50,
+            elbow: - theta2 + 140,
             wrist: wrist_angle + 40
         }
 
