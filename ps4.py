@@ -166,16 +166,23 @@ class ArmPS4Controller(Controller):
             print("[INFO] Movement not allowed.")
 
     def calculate_new_x(self, delta_x, z_thresholds):
-        x_limit = 38.0 if not self.wrist_horizontal and self.z < 122 else 0.0 
-        # new_x = self.x + delta_x
-        # for z_limit, min_x in z_thresholds:
-        #     if self.z <= z_limit:
-        #         new_x = max(min_x, new_x)
-        #         break
+        # if self.z < 0:
+        #     x_limit = 38
+        # elif not self.wrist_horizontal and self.z < 122:
+        #     x_limit = 38.0
         # else:
-        #     new_x = max(10.0, new_x)
-        # return max(x_limit, new_x)
-        return max(x_limit, self.x + delta_x)
+        #     x_limit = 0.0
+
+        # return max(x_limit, self.x + delta_x)
+
+        new_x = self.x + delta_x
+        for z_limit, min_x in z_thresholds:
+            if self.z <= z_limit:
+                new_x = max(min_x, new_x)
+                break
+        else:
+            new_x = max(10.0, new_x)
+        return new_x
 
     def calculate_new_z(self, delta_z):
         z_limit = -80.0 if self.wrist_horizontal else 0.0
