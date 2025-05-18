@@ -163,7 +163,7 @@ def move_to_point():
     cost_mode = data.get('cost_mode', 'standard')  
 
     return handle_action(
-        lambda: arm.move_to_point_ik_full(x, y, z, cost_mode=cost_mode),
+        lambda: arm.move_to_point_full(x, y, z, cost_mode=cost_mode),
         f"Ruch do punktu ({cost_mode})"
     )
 

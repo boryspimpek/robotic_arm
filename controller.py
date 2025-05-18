@@ -53,7 +53,7 @@ class ArmController:
 
         return True
 
-    def move_to_point(self, target_xyz, elbow_up=True, tempo_dps=60.0):
+    def move_to_point_simple(self, target_xyz, elbow_up=True, tempo_dps=60.0):
         ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
         try:
             end_servo_angles = self.utilis.ik_to_servo_angles(ik_angles, wrist_horizontal=True)
@@ -170,7 +170,7 @@ class ArmController:
 
         return True
 
-    def move_to_point_ik_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
+    def move_to_point_full(self, x, y, z, tempo_dps=60, cost_mode="min_angle_sum"):
         current_servo_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
 
         for sid in [base, shoulder, elbow, wrist]:
