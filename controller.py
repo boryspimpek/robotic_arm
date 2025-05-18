@@ -15,7 +15,7 @@ class ArmController:
         self.fullkin = fullkin
         self.utilis = Utilis(servo_ctrl, kinematics)
 
-    def pad_ik(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
+    def pad_ik_simple(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
         try:
             ik_angles, current_angles = self.utilis.prepare_to_move_ik(x, 0.0, z, elbow_up=elbow_up)
             if ik_angles is False:
