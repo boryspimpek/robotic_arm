@@ -7,16 +7,17 @@ from kinematics import Kinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
 from config import L1, L2, port_bus
+from config import base, shoulder, elbow, wrist
 
 def scaled_step(value, base_step, exponent):
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
 
-
 class ArmPS4Controller(Controller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.servo = ServoController(port_bus)
         self.arm=ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus))
 
         # Initial position
@@ -65,6 +66,11 @@ class ArmPS4Controller(Controller):
         print(f"[INFO] {action} gripper")
         close_gripper() if self.gripper_closed else open_gripper()
 
+    def on_L1_press(self):
+        self.x = 0
+        self.z = 70
+        self.arm.move_to_point_dps((0, 0, 70), elbow_up=True, tempo_dps=60)
+
     def on_triangle_press(self):
         if self.wrist_horizontal and self.z < -10.0:
             print("[WARN] Too low to rotate wrist to vertical")
@@ -82,7 +88,6 @@ class ArmPS4Controller(Controller):
         if hasattr(self, 'on_exit'):
             self.on_exit()
 
-    # --- Helper functions ---
     def dynamic_base_step_x(self, x):
         return max(1, round(-0.0494 + 0.116 * x - 1.24E-03 * x**2 + 6.23E-06 * x**3 - 1.27E-08 * x**4))
 
