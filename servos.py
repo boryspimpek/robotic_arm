@@ -34,44 +34,40 @@ class ServoController:
         # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
-        current = self.get_positions([shoulder, elbow, wrist])
-        
-        if shoulder not in current or elbow not in current:
+        # Stawy do interpolacji (biorą udział w FK)
+        interpolated_keys = [shoulder, elbow, wrist]
+
+        # Pobierz aktualne kąty tylko tych 3
+        current = self.get_positions(interpolated_keys)
+
+        if any(k not in current for k in interpolated_keys):
             print("[ERROR] Nie udało się odczytać aktualnych pozycji serw.")
             return False
 
-        target_theta1 = angles.get(shoulder, current[shoulder])
-        target_theta2 = angles.get(elbow, current[elbow])
-        target_theta3 = angles.get(wrist, current[wrist])
-        
-        current_theta1 = current[shoulder]
-        current_theta2 = current[elbow]
-        current_theta3 = current[wrist]
-
+        # Tworzymy trajektorie tylko dla shoulder, elbow, wrist
         steps = 30
-        theta1_traj = np.linspace(current_theta1, target_theta1, steps)
-        theta2_traj = np.linspace(current_theta2, target_theta2, steps)
-        theta3_traj = np.linspace(current_theta3, target_theta3, steps)
+        traj = {
+            k: np.linspace(current[k], angles.get(k, current[k]), steps)
+            for k in interpolated_keys
+        }
 
-        for t1, t2, t3 in zip(theta1_traj, theta2_traj, theta3_traj):
+        for t1, t2, t3 in zip(traj[shoulder], traj[elbow], traj[wrist]):
             try:
-                x, z = self.fullkin.forward_ik_full(t1, t2, t3, L1, L2, L3)
-                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm (θ1 = {t1:.1f}°, θ2 = {t2:.1f}°), θ3 = {t3:.1f}°")
+                # Oblicz FK tylko na podstawie interpolowanych stawów
+                fk_angles = {shoulder: t1, elbow: t2, wrist: t3}
+                x, z = self.fullkin.forward_ik_full(fk_angles, [L1, L2, L3])
+                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm")
 
             except Exception as e:
                 print(f"[ERROR] Błąd FK: {e}")
                 return False
-                
-            if z < -20.0:
+
+            if z < -100.0:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
                 return False
-            
-            if x > -10.0 and z < 0.0:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt daleko w lewo: x = {x:.1f} mm")
-                return False
-            
+
+        # Na końcu wyślij cały zestaw kątów – także base i gripper
         self.move_to(angles)
-        # print(f"x = {x:.1f} mm, z = {z:.1f} mm")
         return True
 
     def move_to(self, angles: dict):
