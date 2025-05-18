@@ -42,7 +42,7 @@ class ArmPS4Controller(Controller):
         self.base_angle = angles.get(base, 90)
         self.shoulder_angle = angles.get(shoulder, 90)
         self.elbow_angle = angles.get(elbow, 90)
-        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90
+        self.wrist_angle = angles.get(wrist, 90)
 
     def _start_control_thread(self):
         self.control_thread = threading.Thread(target=self._update_loop)
@@ -58,8 +58,9 @@ class ArmPS4Controller(Controller):
     def on_L3_up(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
     def on_L3_down(self, val): self.joystick_rz = self.apply_deadzone(val / 32767)
     def on_L3_y_at_rest(self): pass
-    def on_R3_right(self, value): pass
-    def on_R3_left(self, value): pass
+    def on_L3_x_at_rest(self): pass
+    def on_R3_right(self, val): self.joystick_rw = self.apply_deadzone(val / 32767)
+    def on_R3_left(self, val): self.joystick_rw = self.apply_deadzone(val / 32767)
     def on_R3_x_at_rest(self): pass
     def on_R3_y_at_rest(self): pass
     def on_x_press(self): pass  # Reserved for HybridController
@@ -83,7 +84,7 @@ class ArmPS4Controller(Controller):
         self.base_angle += scaled_step(self.joystick_lx, base_step=2.0, exponent=5.0)
         self.shoulder_angle += scaled_step(self.joystick_ly, base_step=2.0, exponent=5.0)
         self.elbow_angle += scaled_step(self.joystick_rz, base_step=2.0, exponent=5.0)
-        self.wrist_angle = 180 - self.shoulder_angle - self.elbow_angle + 90 + 90 + 90
+        self.wrist_angle += scaled_step(self.joystick_rw, base_step=2.0, exponent=5.0) 
 
     def _apply_mechanical_limits(self):
         angles = {
@@ -110,10 +111,8 @@ class ArmPS4Controller(Controller):
         self.elbow_angle = angles[elbow]
         self.wrist_angle = angles[wrist]
 
-        return True
-        
     def _send_servo_commands(self):
-        self.servo_controller.move_to({
+        self.servo_controller.safe_move_to({
             base: self.base_angle,
             shoulder: self.shoulder_angle,
             elbow: self.elbow_angle,
