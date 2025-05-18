@@ -144,4 +144,4 @@ class FullKinematics:
         z3 = z2 + L3 * np.sin(theta1 + theta2 + theta3)
         print(f"End Effector position: x3 = {x3:.2f}, z3 = {z3:.2f}")
 
-        return x3, z3
+        return x2, z2, x3, z3

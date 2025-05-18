@@ -51,18 +51,25 @@ class ServoController:
         for t1, t2, t3 in zip(traj[shoulder], traj[elbow], traj[wrist]):
             try:
                 fk_angles = {shoulder: t1, elbow: t2, wrist: t3}
-                x, z = self.fullkin.forward_ik_full(fk_angles)
-                print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm")
+                x2, z2, x3, z3 = self.fullkin.forward_ik_full(fk_angles)
+                print(f"[INFO] FK: x3 = {x3:.1f} mm, z3 = {z3:.1f} mm")
+                print(f"[INFO] FK: x2 = {x2:.1f} mm, z2 = {z2:.1f} mm")
 
             except Exception as e:
                 print(f"[ERROR] Błąd FK: {e}")
                 return False
 
-            if z < -100.0:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
+            if z3 < -100.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
                 return False
-            if z < 0 and x < 30:
-                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x:.1f} mm")
+            if z2 < -90.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
+                return False
+            if z3 < 0 and x3 < 30:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x3:.1f} mm")
+                return False
+            if z2 < 0 and x2 < 40:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x2:.1f} mm")
                 return False
 
         # Na końcu wyślij cały zestaw kątów – także base i gripper
