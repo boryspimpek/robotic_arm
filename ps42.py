@@ -2,17 +2,17 @@ import math
 import threading
 import time
 from pyPS4Controller.controller import Controller
-from config import L1, L2, base, shoulder, elbow, wrist, port_bus
+from config import L1, L2, L3, base, shoulder, elbow, wrist, port_bus
 from config import base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits
 from controller import ArmController
 from kinematics import Kinematics
+from kinematics_full import FullKinematics
 from servos import ServoController
 from utilis import Utilis
 
 def scaled_step(value, base_step=5.0, exponent=2.0):
     scaled = abs(value) ** exponent
     return math.copysign(base_step * scaled, value)
-
 
 class ArmPS4Controller(Controller):
     def __init__(self, **kwargs):
@@ -26,6 +26,7 @@ class ArmPS4Controller(Controller):
         self.servo_controller = ServoController(port_bus)
         self.arm = ArmController(self.kinematics, self.servo_controller)
         self.utilis = Utilis(self.servo_controller, self.kinematics)
+        self.fullkin = FullKinematics(L1, L2, L3)
 
     def _initialize_state(self):
         self.deadzone = 0.3
@@ -73,7 +74,12 @@ class ArmPS4Controller(Controller):
 
         while self.running:
             self._update_angles()
-            self._apply_mechanical_limits()
+            
+            if not self._apply_mechanical_limits():
+                print("[INFO] Pominięto ruch – naruszenie ograniczeń.")
+                time.sleep(refresh_rate)
+                continue  # pomiń wysyłanie do serw
+
             self._send_servo_commands()
             time.sleep(refresh_rate)
 
@@ -90,7 +96,21 @@ class ArmPS4Controller(Controller):
             elbow: self.elbow_angle,
             wrist: self.wrist_angle
         }
-        
+        try:
+            x, z = self.fullkin.forward_ik_full(angles)
+            print(f"[INFO] FK: x = {x:.1f} mm, z = {z:.1f} mm")
+
+        except Exception as e:
+            print(f"[ERROR] Błąd FK: {e}")
+            return False
+
+        if z < -90.0:
+            print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z = {z:.1f} mm")
+            return False
+        if z < 0 and x < 30:
+            print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x = {x:.1f} mm")
+            return False
+
         angle_limits_per_servo = {
             base: base_angle_limits,
             shoulder: shoulder_angle_limits,
@@ -107,6 +127,8 @@ class ArmPS4Controller(Controller):
         self.shoulder_angle = angles[shoulder]
         self.elbow_angle = angles[elbow]
         self.wrist_angle = angles[wrist]
+
+        return True
         
     def _send_servo_commands(self):
         self.servo_controller.move_to({
