@@ -19,18 +19,18 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
-arm.move_to_point_full(300, 0, 50, tempo_dps=60, cost_mode="flat")
-time.sleep(3)
-angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
-print(f"[INFO] Current angles: {angles}")
+# arm.move_to_point_full(300, 0, 50, tempo_dps=60, cost_mode="flat")
+# time.sleep(3)
+# angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
+# print(f"[INFO] Current angles: {angles}")
 
-lenghts = [L1, L2, L3]
+# lenghts = [L1, L2, L3]
 
-fullkin.forward_ik_full(angles, lenghts)
+# fullkin.forward_ik_full(angles, lenghts)
 
 
-# point=(0, 0, 240)
-# arm.move_to_point_dps(point)
+point=(150, 0, 150)
+arm.move_to_point_simple(point)
 
 # servo_ctrl.move_servo(1, 90)
 # servo_ctrl.move_servo(2, 90)

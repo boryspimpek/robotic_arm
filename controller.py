@@ -25,8 +25,11 @@ class ArmController:
             return False
 
         try:
-            angle_tuple = (phi_deg, ik_angles[1], ik_angles[2], ik_angles[3])
-            angles = self.utilis.ik_to_servo_angles(angle_tuple, wrist_horizontal=wrist_horizontal)
+            angles = self.utilis.ik_to_servo_angles(
+                ik_angles,
+                wrist_horizontal=wrist_horizontal,
+                phi_override=phi_deg
+            )
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
@@ -54,9 +57,20 @@ class ArmController:
         return True
 
     def move_to_point_simple(self, target_xyz, elbow_up=True, tempo_dps=60.0):
-        ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
         try:
-            end_servo_angles = self.utilis.ik_to_servo_angles(ik_angles, wrist_horizontal=True)
+            ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
+            if ik_angles is False:
+                return False
+        except Exception as e:
+            print(f"[ERROR] Błąd przygotowania ruchu IK: {e}")
+            return False
+
+        try:
+            end_servo_angles = self.utilis.ik_to_servo_angles(
+                ik_angles,
+                wrist_horizontal=True
+                # phi_override=None – domyślnie nie podajemy, chyba że potrzebne
+            )
         except Exception as e:
             print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
             return False
