@@ -3,14 +3,16 @@ import json
 import time
 import sys
 from kinematics import Kinematics
+from kinematics_full import FullKinematics
 from sc_controll import sc_servo
 from servos import ServoController
-from config import L1, L2, sc_acc, sc_speed, base, elbow, gripper, shoulder, wrist, port_bus
+from config import L1, L2, L3, sc_acc, sc_speed, base, elbow, gripper, shoulder, wrist, port_bus
 from controller import ArmController
 
+fullkin = FullKinematics(L1, L2, L3)
 servo_ctrl = ServoController(port_bus)
 kin = Kinematics(L1, L2)
-controller = ArmController(kin, servo_ctrl)
+controller = ArmController(kin, servo_ctrl, fullkin)
 
 TEMPO_DPS = 50.0  # prędkość ruchu serw w °/s
 
