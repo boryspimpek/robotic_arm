@@ -6,6 +6,28 @@ class Utilis:
         self.servo = servo_ctrl
         self.kin = kinematics
 
+    def prepare_point_and_angles(self, target_xyz, elbow_up=True, wrist_horizontal=True, phi_override=None):
+        try:
+            ik_angles, current_servo_angles = self.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
+            if ik_angles is False:
+                return False, None
+        except Exception as e:
+            print(f"[ERROR] Błąd przygotowania ruchu IK: {e}")
+            return False, None
+
+        try:
+            servo_angles = self.ik_to_servo_angles(
+                ik_angles,
+                wrist_horizontal=wrist_horizontal,
+                phi_override=phi_override
+            )
+        except Exception as e:
+            print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
+            return False, None
+
+        return servo_angles, current_servo_angles
+
+
     @staticmethod
     def validate_and_clip_angles(angles):
         angle_limits_per_servo = {

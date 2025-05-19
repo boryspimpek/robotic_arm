@@ -16,24 +16,15 @@ class ArmController:
         self.utilis = Utilis(servo_ctrl, kinematics)
 
     def pad_ik_simple(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
-        try:
-            ik_angles, current_angles = self.utilis.prepare_to_move_ik(x, 0.0, z, elbow_up=elbow_up)
-            if ik_angles is False:
-                return False
-        except Exception as e:
-            print(f"[ERROR] Błąd przygotowania ruchu IK: {e}")
+        angles, current_angles = self.utilis.prepare_point_and_angles(
+            (x, 0.0, z),
+            elbow_up=elbow_up,
+            wrist_horizontal=wrist_horizontal,
+            phi_override=phi_deg
+        )
+        if angles is False:
             return False
-
-        try:
-            angles = self.utilis.ik_to_servo_angles(
-                ik_angles,
-                wrist_horizontal=wrist_horizontal,
-                phi_override=phi_deg
-            )
-        except Exception as e:
-            print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
-            return False
-
+        
         deltas = {}  
         for sid in angles:
             current_angle = current_angles[sid]
@@ -57,33 +48,23 @@ class ArmController:
         return True
 
     def move_to_point_simple(self, target_xyz, elbow_up=True, tempo_dps=60.0):
-        try:
-            ik_angles, current_servo_angles = self.utilis.prepare_to_move_ik(*target_xyz, elbow_up=elbow_up)
-            if ik_angles is False:
-                return False
-        except Exception as e:
-            print(f"[ERROR] Błąd przygotowania ruchu IK: {e}")
+        servo_angles, current_servo_angles = self.utilis.prepare_point_and_angles(
+            target_xyz,
+            elbow_up=elbow_up,
+            wrist_horizontal=True
+        )
+        if servo_angles is False:
             return False
-
-        try:
-            end_servo_angles = self.utilis.ik_to_servo_angles(
-                ik_angles,
-                wrist_horizontal=True
-                # phi_override=None – domyślnie nie podajemy, chyba że potrzebne
-            )
-        except Exception as e:
-            print(f"[ERROR] Błąd konwersji kątów IK do kątów serw: {e}")
-            return False
-
+        
         angle_deltas = {
-            sid: abs(end_servo_angles[sid] - current_servo_angles[sid])
-            for sid in end_servo_angles
+            sid: abs(servo_angles[sid] - current_servo_angles[sid])
+            for sid in servo_angles
         }
 
         max_delta = max(angle_deltas.values())
         time_to_move = max_delta / tempo_dps
 
-        self.servo.sync_angles(current_servo_angles, end_servo_angles, tempo_dps)
+        self.servo.sync_angles(current_servo_angles, servo_angles, tempo_dps)
 
         print(f"[INFO] Czekam {time_to_move:.2f} sekund na zakończenie ruchu...")
         time.sleep(time_to_move)
