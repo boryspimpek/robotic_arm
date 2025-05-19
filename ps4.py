@@ -125,9 +125,10 @@ class ArmPS4Controller(Controller):
 
     def calculate_z_thresholds(self):
         z_thresholds = []
-        for i in range(1000):
-            z = -100 + i * 0.1
-            x = 6.59 - 3.9 * z - 0.0689 * z**2 - 4.81E-04 * z**3
+        for i in range(1300):
+            z = -50 + i * 0.1
+            z_val = z
+            x = 72 + 0.0483 * z_val -6.42E-03 * z_val**2 -2.26E-05 * z_val**3 -1.43E-06 * z_val**4 + 1.44E-09 * z_val**5 -3.86E-11 * z_val**6
             z_thresholds.append((z, x))
         return z_thresholds
 
@@ -181,7 +182,7 @@ class ArmPS4Controller(Controller):
                 new_x = max(min_x, new_x)
                 break
         else:
-            new_x = max(10.0, new_x)
+            new_x = max(0, new_x)
         return new_x
 
     def calculate_new_z(self, delta_z):
