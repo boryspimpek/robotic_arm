@@ -1,8 +1,5 @@
 # robot_arm/kinematics.py
-import numpy as np
 import math
-from config import base, shoulder, elbow, wrist
-from utilis import Utilis
 
 class Kinematics:
     def __init__(self, l1, l2):
