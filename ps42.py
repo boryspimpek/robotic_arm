@@ -23,10 +23,11 @@ class ArmPS4Controller(Controller):
 
     def _initialize_components(self):
         self.kinematics = Kinematics(L1, L2)
-        self.servo_controller = ServoController(port_bus)
-        self.arm = ArmController(self.kinematics, self.servo_controller)
-        self.utilis = Utilis(self.servo_controller, self.kinematics)
         self.fullkin = FullKinematics(L1, L2, L3)
+        self.servo_controller = ServoController(port_bus)
+
+        self.utilis = Utilis(self.servo_controller, self.kinematics, self.fullkin)
+        self.arm = ArmController(self.kinematics, self.servo_controller, self.fullkin)
 
     def _initialize_state(self):
         self.deadzone = 0.3

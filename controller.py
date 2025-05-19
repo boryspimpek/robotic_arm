@@ -6,14 +6,11 @@ from sc_controll import close_gripper
 from utilis import Utilis
 
 class ArmController:
-    def __init__(self, servo_ctrl, kinematics=None, fullkin=None):
-        if not kinematics and not fullkin:
-            raise ValueError("ArmController wymaga przynajmniej jednego z: kinematics lub fullkin.")
-
+    def __init__(self, servo_ctrl, kinematics, fullkin):
         self.servo = servo_ctrl
         self.kin = kinematics
         self.fullkin = fullkin
-        self.utilis = Utilis(servo_ctrl, kinematics)
+        self.utilis = Utilis(servo_ctrl, kinematics, fullkin)
 
     def pad_ik_simple(self, x, z, phi_deg, elbow_up=True, wrist_horizontal=True):
         angles, current_angles = self.utilis.prepare_point_and_angles(
@@ -55,7 +52,11 @@ class ArmController:
         )
         if servo_angles is False:
             return False
-        
+
+        if not self.utilis.check_collision(servo_angles, current_servo_angles):
+            print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
+            return False
+            
         angle_deltas = {
             sid: abs(servo_angles[sid] - current_servo_angles[sid])
             for sid in servo_angles

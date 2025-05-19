@@ -29,7 +29,7 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # fullkin.forward_ik_full(angles, lenghts)
 
 
-point=(150, 0, 150)
+point=(150, 100, 100)
 arm.move_to_point_simple(point)
 
 # servo_ctrl.move_servo(1, 90)

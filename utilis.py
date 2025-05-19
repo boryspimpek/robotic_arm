@@ -3,9 +3,10 @@ from config import base, shoulder, elbow, wrist
 from config import base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits
 
 class Utilis:
-    def __init__(self, servo_ctrl, kinematics):
+    def __init__(self, servo_ctrl, kinematics, full_kinematics):
         self.servo = servo_ctrl
         self.kin = kinematics
+        self.fullkin = full_kinematics
         
 
     def prepare_point_and_angles(self, target_xyz, elbow_up=True, wrist_horizontal=True, phi_override=None):

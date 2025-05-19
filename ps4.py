@@ -5,9 +5,10 @@ import time
 from pyPS4Controller.controller import Controller
 from controller import ArmController
 from kinematics import Kinematics
+from kinematics_full import FullKinematics
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
-from config import L1, L2, port_bus
+from config import L1, L2, L3, port_bus
 from config import base, shoulder, elbow, wrist
 
 def scaled_step(value, base_step, exponent):
@@ -19,7 +20,14 @@ class ArmPS4Controller(Controller):
         super().__init__(**kwargs)
 
         self.servo = ServoController(port_bus)
-        self.arm=ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus))
+        kinematics = Kinematics(L1, L2)
+        fullkin = FullKinematics(L1, L2, L3)
+
+        self.arm = ArmController(
+            kinematics=kinematics,
+            servo_ctrl=self.servo,
+            fullkin=fullkin
+        )
 
         # Initial position
         self.x = 200.0
