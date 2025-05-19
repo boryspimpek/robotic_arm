@@ -29,8 +29,8 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # fullkin.forward_ik_full(angles, lenghts)
 
 
-point=(150, 100, 100)
-arm.move_to_point_simple(point)
+# point1=(150, 100, 0)
+# arm.move_to_point_simple(point1)
 
 # servo_ctrl.move_servo(1, 90)
 # servo_ctrl.move_servo(2, 90)
@@ -64,7 +64,25 @@ tempo_dps=60
 #     move_arm_sequentially(240, 70, 0, -50, tempo_dps, cost_mode)
 #     move_arm_sequentially(70, 240, 0, -50, tempo_dps, cost_mode)
 
-# arm.move_to_point_ik_full(120, 0, 100, tempo_dps=60, cost_mode="flat")
+
+
+# for i in range(300):
+#     y = - 150 + i * 1
+
+#     arm.move_to_point_full(80, y, -100, tempo_dps=60, cost_mode="vertical_down")
+#     time.sleep(0.001)
+
+x = 80  # Set x to a fixed value or calculate as needed
+z = -80  # Set z to a fixed value or calculate as needed
+for i in range(300):
+    y = -150 + i * 1
+    point = (x, y, z)
+    arm.move_to_point_simple(point, tempo_dps=60)
+    time.sleep(0.001)
+
+
+
+
 
 
 # ik_angles, positions = fullkin.solve_ik_2d(x, y)

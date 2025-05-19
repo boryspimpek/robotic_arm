@@ -129,10 +129,10 @@ class Utilis:
                 print(f"[ERROR] Błąd FK: {e}")
                 return False  # zakładamy kolizję w razie błędu
 
-            if z3 < -100.0:
+            if z3 < -111.0:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
                 return False
-            if z2 < -90.0:
+            if z2 < -91.0:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z2 = {z3:.1f} mm, ")
                 return False
             if z3 < 0 and x3 < 30:
