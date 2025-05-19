@@ -1,3 +1,4 @@
+import numpy as np
 from config import base, shoulder, elbow, wrist
 from config import base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits
 
@@ -5,6 +6,7 @@ class Utilis:
     def __init__(self, servo_ctrl, kinematics):
         self.servo = servo_ctrl
         self.kin = kinematics
+        
 
     def prepare_point_and_angles(self, target_xyz, elbow_up=True, wrist_horizontal=True, phi_override=None):
         try:
@@ -26,7 +28,6 @@ class Utilis:
             return False, None
 
         return servo_angles, current_servo_angles
-
 
     @staticmethod
     def validate_and_clip_angles(angles):
@@ -98,3 +99,46 @@ class Utilis:
 
         angles = self.validate_and_clip_angles(angles)
         return angles
+
+    def check_collision(self, servo_angles, current_servo_angles):
+        steps = 30
+        interpolated_keys = [shoulder, elbow, wrist]  
+
+        try:
+            traj = {
+                k: np.linspace(current_servo_angles[k], servo_angles.get(k, current_servo_angles[k]), steps)
+                for k in interpolated_keys
+            }
+        except KeyError as e:
+            print(f"[ERROR] Brakuje klucza w kątach serw: {e}")
+            return False
+
+        for t1, t2, t3 in zip(traj[shoulder], traj[elbow], traj[wrist]):
+            try:
+                fk_angles = {
+                    shoulder: t1,
+                    elbow: t2,
+                    wrist: t3
+                }
+                x2, z2, x3, z3 = self.fullkin.forward_ik_full(fk_angles)
+                print(f"[INFO] FK: x2 = {x2:.1f} mm, z2 = {z2:.1f} mm")
+                print(f"[INFO] FK: x3 = {x3:.1f} mm, z3 = {z3:.1f} mm")
+
+            except Exception as e:
+                print(f"[ERROR] Błąd FK: {e}")
+                return False  # zakładamy kolizję w razie błędu
+
+            if z3 < -100.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z3 = {z3:.1f} mm, ")
+                return False
+            if z2 < -90.0:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z2 = {z3:.1f} mm, ")
+                return False
+            if z3 < 0 and x3 < 30:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
+                return False
+            if z2 < 0 and x2 < 40:
+                print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
+                return False
+
+        return True

@@ -72,7 +72,6 @@ class ServoController:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
                 return False
 
-        # Na końcu wyślij cały zestaw kątów – także base i gripper
         self.move_to(angles)
         return True
 
