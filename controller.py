@@ -53,9 +53,9 @@ class ArmController:
         if servo_angles is False:
             return False
 
-        if not self.utilis.check_collision(servo_angles, current_servo_angles):
-            print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
-            return False
+        # if not self.utilis.check_collision(servo_angles, current_servo_angles):
+        #     print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
+        #     return False
             
         angle_deltas = {
             sid: abs(servo_angles[sid] - current_servo_angles[sid])
@@ -83,9 +83,9 @@ class ArmController:
             wrist: angle4 
         }
 
-        if not self.utilis.check_collision(end_angles, current_angles):
-            print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
-            return False
+        # if not self.utilis.check_collision(end_angles, current_angles):
+        #     print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
+        #     return False
 
         self.servo.sync_angles(current_angles, end_angles, tempo_dps)
         total_time = self.servo.sync_angles(current_angles, end_angles, tempo_dps)
@@ -131,9 +131,9 @@ class ArmController:
 
         target_servo_angles = self.utilis.ik_to_servo_angles(best_angles)
 
-        if not self.utilis.check_collision(target_servo_angles, current_servo_angles):
-            print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
-            return False
+        # if not self.utilis.check_collision(target_servo_angles, current_servo_angles):
+        #     print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
+        #     return False
 
         angle_deltas = {
             sid: abs(target_servo_angles[sid] - current_servo_angles[sid])

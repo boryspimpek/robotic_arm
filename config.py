@@ -20,7 +20,7 @@ baudrate = 1000000
 # Motion settings
 st_speed = 500         
 sc_speed = 500         
-st_acc = 25            
+st_acc = 10            
 sc_acc = 25      
 
 # angle_limits = (0, 180)      
