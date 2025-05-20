@@ -55,12 +55,7 @@ class Utilis:
                         f"Kąt serwa ID {sid} poza zakresem: {angle:.2f}° (dozwolony: {min_angle}°–{max_angle}°)"
                     )
         return angles
-    
-    def apply_trims(angles, trims):
-        for sid in angles:
-            angles[sid] += trims.get(sid, 0.0)
-        return angles
-    
+        
     def prepare_to_move_ik(self, *target_xyz, elbow_up):
         current_servo_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
         for sid in [base, shoulder, elbow, wrist]:
