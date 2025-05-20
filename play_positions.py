@@ -48,7 +48,7 @@ try:
         delta = max(abs(arm_angles[sid] - last_pose.get(sid, arm_angles[sid])) for sid in arm_angles)
         move_time = delta / TEMPO_DPS
 
-        time.sleep(move_time + 1)
+        time.sleep(move_time + 0.3)
         last_pose = arm_angles
 
     # ✅ Dopiero po całej pętli:
