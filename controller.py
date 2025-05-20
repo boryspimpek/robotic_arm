@@ -74,7 +74,6 @@ class ArmController:
     
     def move_to_angle(self, angle1, angle2, angle3, angle4, tempo_dps=60):
         current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
-        print(current_angles)    
 
         end_angles = {
             base: angle1, 
