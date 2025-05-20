@@ -22,25 +22,27 @@ class ArmController:
         if angles is False:
             return False
         
-        deltas = {}  
-        for sid in angles:
-            current_angle = current_angles[sid]
-            target_angle = angles[sid]
-            delta = abs(target_angle - current_angle)  
-            deltas[sid] = delta
+        self.servo.sync_angles(current_angles, angles, tempo_dps=120)
 
-        max_delta = max(deltas.values())  
-        steps = - round(-2.05 * math.exp(0.06 * max_delta))
+        # deltas = {}  
+        # for sid in angles:
+        #     current_angle = current_angles[sid]
+        #     target_angle = angles[sid]
+        #     delta = abs(target_angle - current_angle)  
+        #     deltas[sid] = delta
 
-        interpolations = {
-            sid: np.linspace(current_angles[sid], angles[sid], steps)
-            for sid in angles
-        }
+        # max_delta = max(deltas.values())  
+        # steps = - round(-2.05 * math.exp(0.06 * max_delta))
 
-        for i in range(steps):
-            step_angles = {sid: interpolations[sid][i] for sid in angles}
-            self.servo.sync_points(step_angles)
-            time.sleep(0.001)
+        # interpolations = {
+        #     sid: np.linspace(current_angles[sid], angles[sid], steps)
+        #     for sid in angles
+        # }
+
+        # for i in range(steps):
+        #     step_angles = {sid: interpolations[sid][i] for sid in angles}
+        #     self.servo.sync_points(step_angles)
+        #     time.sleep(0.001)
 
         return True
 
