@@ -34,6 +34,6 @@ servo_trims = {
     base: 2.5,
     shoulder: 0,
     elbow: 0,
-    wrist: 0
+    wrist: 4
 }
 

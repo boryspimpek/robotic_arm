@@ -134,10 +134,10 @@ class Utilis:
             if z2 < -91.0:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt nisko: z2 = {z3:.1f} mm, ")
                 return False
-            if z3 < 0 and x3 < 30:
+            if z3 < 20 and x3 < 30:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
                 return False
-            if z2 < 0 and x2 < 40:
+            if z2 < 20 and x2 < 40:
                 print(f"[WARN] Ruch przerwany – punkt pośredni zbyt blisko: x2 = {x2:.1f} mm")
                 return False
 
