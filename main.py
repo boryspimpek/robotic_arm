@@ -16,11 +16,32 @@ servo_ctrl = ServoController(port_bus)
 arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus), fullkin=FullKinematics(L1, L2, L3))
 
 
+
+angles = {
+    base: 50,
+    shoulder: 141,
+    elbow: 217,
+    wrist: 185,
+}
+servo_ctrl.sync_points(angles)
+time.sleep(3)
+angles = {
+    base: 130,
+    shoulder: 141,
+    elbow: 217,
+    wrist: 185,
+}
+servo_ctrl.sync_points(angles)
+
+
+
+
+
 # angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
-arm.move_to_point_full(170, -100, -115, tempo_dps=30, cost_mode="vertical_down")
-time.sleep(3)
+# arm.move_to_point_full(170, -100, -115, tempo_dps=30, cost_mode="vertical_down")
+# time.sleep(3)
 # angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
@@ -44,14 +65,6 @@ time.sleep(3)
 # servo_ctrl.move_servo(2, 90)
 # servo_ctrl.move_servo(3, 90)
 # servo_ctrl.move_servo(4, 0)
-
-a = "min_angle_sum"
-b = "flat"
-c = "vertical_up"
-d = "vertical_down"
-e = "standard"
-tempo_dps=60
-
 
 # def move_arm_sequentially(start_x, end_x, y, z, tempo_dps, cost_mode):
 
