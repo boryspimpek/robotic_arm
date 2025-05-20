@@ -97,7 +97,7 @@ class ServoController:
             delta = abs(angle - prev)
             speed_ratio = delta / max_delta if max_delta > 0 else 1.0
             speed = int(500 * speed_ratio)
-            acc = 100
+            acc = 25
             raw = self.deg_to_raw(angle)
 
             # print(f"[SYNC] Servo {sid} ->")

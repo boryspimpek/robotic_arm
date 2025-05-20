@@ -101,9 +101,9 @@ class ArmController:
             4: 190
         }
 
-        if not self.utilis.check_collision(end_angles, current_angles):
-            print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
-            return False
+        # if not self.utilis.check_collision(end_angles, current_angles):
+        #     print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
+        #     return False
 
         self.servo.sync_angles(current_angles, end_angles, tempo_dps)
         close_gripper()
