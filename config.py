@@ -30,9 +30,10 @@ elbow_angle_limits = (0, 290)
 wrist_angle_limits = (0, 260)  
 
 # Servo trims (adjustments for alignment)
-trims = {
-    base: 0,        
-    shoulder: 0,   
-    elbow: 0,       
-    wrist: 5        
+servo_trims = {
+    base: 2.5,
+    shoulder: 0,
+    elbow: 0,
+    wrist: 0
 }
+

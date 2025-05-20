@@ -19,20 +19,28 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
-# arm.move_to_point_full(300, 0, 50, tempo_dps=60, cost_mode="flat")
-# time.sleep(3)
+arm.move_to_point_full(170, -100, -115, tempo_dps=30, cost_mode="vertical_down")
+time.sleep(3)
+# angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
+# print(f"[INFO] Current angles: {angles}")
+
+
+# point = fullkin.forward_ik_full(angles)
+
+
+# point1=(150, 100, -90)
+# arm.move_to_point_simple(point1)
+# time.sleep(1)
 # angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
-# lenghts = [L1, L2, L3]
-
-# fullkin.forward_ik_full(angles, lenghts)
+# point = fullkin.forward_ik_full(angles)
 
 
-# point1=(150, 100, 0)
-# arm.move_to_point_simple(point1)
 
-# servo_ctrl.move_servo(1, 90)
+
+
+# servo_ctrl.move_servo(1, 62)
 # servo_ctrl.move_servo(2, 90)
 # servo_ctrl.move_servo(3, 90)
 # servo_ctrl.move_servo(4, 0)
@@ -72,13 +80,13 @@ tempo_dps=60
 #     arm.move_to_point_full(80, y, -100, tempo_dps=60, cost_mode="vertical_down")
 #     time.sleep(0.001)
 
-x = 80  # Set x to a fixed value or calculate as needed
-z = -80  # Set z to a fixed value or calculate as needed
-for i in range(300):
-    y = -150 + i * 1
-    point = (x, y, z)
-    arm.move_to_point_simple(point, tempo_dps=60)
-    time.sleep(0.001)
+# x = 80  # Set x to a fixed value or calculate as needed
+# z = -80  # Set z to a fixed value or calculate as needed
+# for i in range(300):
+#     y = -150 + i * 1
+#     point = (x, y, z)
+#     arm.move_to_point_simple(point, tempo_dps=60)
+#     time.sleep(0.001)
 
 
 

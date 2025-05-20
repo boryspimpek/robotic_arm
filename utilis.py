@@ -1,5 +1,5 @@
 import numpy as np
-from config import base, shoulder, elbow, wrist
+from config import base, shoulder, elbow, wrist, servo_trims
 from config import base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits
 
 class Utilis:
@@ -97,8 +97,12 @@ class Utilis:
             elbow: -theta2 + 140,
             wrist: wrist_angle + 40
         }
+        trimmed_angles = {
+            sid: angle + servo_trims.get(sid, 0)
+            for sid, angle in angles.items()
+    }
 
-        angles = self.validate_and_clip_angles(angles)
+        angles = self.validate_and_clip_angles(trimmed_angles)
         return angles
 
     def check_collision(self, servo_angles, current_servo_angles):

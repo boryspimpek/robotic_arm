@@ -3,7 +3,9 @@ import sys
 import os
 import numpy as np
 from kinematics import Kinematics
-from config import L1, L2, L3, baudrate, st_speed, st_acc, base, elbow, shoulder, wrist
+from config import L1, L2, L3, baudrate, st_speed, st_acc
+from config import base, elbow, shoulder, wrist
+from config import servo_trims
 from kinematics_full import FullKinematics
 
 # Add the Library path to sys.path
@@ -27,11 +29,10 @@ class ServoController:
         return int(angle_deg * 4095 / 2 / 180)
 
     def move_servo(self, servo_id, angle_deg):
-        position = self.deg_to_raw(angle_deg)
-        # print(f"Servo {servo_id}: {angle_deg}° → raw {position}")
-
+        trim = servo_trims.get(servo_id, 0)
+        trimmed_angle = angle_deg + trim
+        position = self.deg_to_raw(trimmed_angle)
         self.ctrl.WritePosEx(servo_id, position, st_speed, st_acc)
-        # self.last_positions[servo_id] = angle_deg
 
     def safe_move_to(self, angles: dict):
         interpolated_keys = [shoulder, elbow, wrist]

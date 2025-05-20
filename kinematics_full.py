@@ -119,7 +119,7 @@ class FullKinematics:
         theta3_deg = angles[wrist]  
 
         # Convert angles to degrees        
-        print(f"Angles in degrees: theta1 = {theta1_deg:.2f}, theta2 = {theta2_deg:.2f}, theta3 = {theta3_deg:.2f}")
+        # print(f"Angles in degrees: theta1 = {theta1_deg:.2f}, theta2 = {theta2_deg:.2f}, theta3 = {theta3_deg:.2f}")
 
         # Convert angles to radians
         theta1 = np.radians(180 - theta1_deg)
