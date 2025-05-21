@@ -84,6 +84,19 @@ const playSequence = () => {
         });
 };
 
+const stopSequence = () => {
+    setStatus("Zatrzymuję sekwencję...");
+    postRequest('/stop_sequence')
+        .then(r => r.text())
+        .then(msg => {
+            setStatus(msg);
+        })
+        .catch(err => {
+            setStatus("Błąd przy zatrzymywaniu.");
+            console.error(err);
+        });
+};
+
 const updateSliders = () => {
     fetch('/get_angles')
         .then(response => response.json())

@@ -1,4 +1,5 @@
 from flask import Flask, json, jsonify, render_template, request
+from threading import Event
 from config import L1, L2, L3, port_bus
 from config import base, elbow, shoulder, wrist
 from controller import ArmController
@@ -18,8 +19,10 @@ kin = Kinematics(L1, L2)
 fullkin = FullKinematics(L1, L2, L3)
 servo_ctrl = ServoController(port_bus)
 arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(port_bus), fullkin=FullKinematics(L1, L2, L3))
+
 positions_process = None
 pad_process = None
+stop_event = Event()
 
 def run_script(script_name):
     """Run a Python script and return its output."""
@@ -97,17 +100,25 @@ def save_preset(preset_name):
 @app.route('/play_sequence', methods=['POST'])
 def play_sequence():
     def action():
+        stop_event.clear()
         positions = load_positions()
-        sorted_keys = sorted(positions.keys(), key=lambda x: int(x))  # sortujemy po numerach
+        sorted_keys = sorted(positions.keys(), key=lambda x: int(x))
         for key in sorted_keys:
+            if stop_event.is_set():
+                return "Sekwencja przerwana"
             angles = positions[key]
             if len(angles) != 4:
-                continue  # pomiń błędne dane
+                continue
             arm.move_to_angle(*angles)
-            time.sleep(2)  # opóźnienie między pozycjami w sekundach (zmień wg potrzeb)
+            time.sleep(2)
         return "Sekwencja zakończona"
     
     return handle_action(action, "Sekwencja zakończona")
+
+@app.route('/stop_sequence', methods=['POST'])
+def stop_sequence():
+    stop_event.set()
+    return "Zatrzymano sekwencję", 200
 
 @app.route('/start_pad', methods=['POST'])
 def start_pad():
