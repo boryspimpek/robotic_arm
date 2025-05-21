@@ -89,9 +89,37 @@ h2 { font-size: 24px; }
     white-space: nowrap;
 }
 
+.card {
+    background: rgba(255, 255, 255, 0.05); /* delikatna przezroczystość */
+    border-radius: 12px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: 15px 0;
+    box-shadow: 0px 12px 12px rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
+}
+
+/* specjalne style TYLKO dla przycisków presetów u góry */
+.top-buttons button {
+    width: 50px;  
+    height: 25px;
+    background-color: #0057b8;
+    color: #fff;
+    font-size: 1.1em;
+    box-shadow: 0 0 10px rgba(0,87,184,0.5);
+    border: 2px solid #003d80;
+    border-radius: 50px;
+    margin: 5px;
+    padding: 10px 10px;
+    text-align: center;
+    align-items: center;
+}
+
 /* Button hover/active */
 @media (min-width: 768px) {
-    .preset-buttons button:hover { background: #2980b9; }
+    .preset-buttons button:hover { background: #b92929; }
 }
 @media (max-width: 767px) {
     .preset-buttons button:active { background: #2980b9; }
