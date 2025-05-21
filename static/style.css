@@ -216,6 +216,21 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 3px;
 }
 
+#angles-display {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  width: fit-content;
+  /* margin-left: auto;
+  margin-right: auto; */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border-radius: 5px;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
 /* ############################### Center Select Styles ############################### */
 /* .center-select {
     overflow-x: auto;

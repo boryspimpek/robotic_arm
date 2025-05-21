@@ -13,7 +13,7 @@
     <nav class="navbar">
         <a href="#presets">Presets</a>
         <a href="#setpoint">Point</a>
-        <a href="#record">Record</a>
+        <a href="#ps4">Record</a>
         <a href="#controller">Controller</a>
         <a href="#angles">Manual</a>
     </nav>
@@ -96,9 +96,26 @@
 
         <hr>
 
-        <!-- ############################### RECORD SECTION ############################### -->
-        <section id="record" class="scroll-buttons">
-            <h2>Record</h2>
+
+        <!-- ############################### POSITIONS SECTION ############################### -->
+        <section id="positions">
+            <div class="preset-buttons">        
+                <button onclick="getCurrentAngles()">Angles</button>
+            </div>    
+            <div id="angles-display">
+                <p>Baza: <span id="angle-base">--</span>°</p>
+                <p>Shoulder: <span id="angle-shoulder">--</span>°</p>
+                <p>Elbow: <span id="angle-elbow">--</span>°</p>
+                <p>Wrist: <span id="angle-wrist">--</span>°</p>
+            </div>
+        </section>
+
+
+
+
+        <!-- ############################### PS4 CONTROLLER SECTION ############################### -->
+        <section id="ps4" class="scroll-buttons">
+            <h2>PS4 Controller</h2>
             <div class="preset-buttons">
                 <button onclick="startPad()">Go PS4</button>
                 <button onclick="stopPad()">Stop PS4</button>

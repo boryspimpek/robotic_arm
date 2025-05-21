@@ -264,36 +264,50 @@ window.onload = () => {
         });
 };
 
-
-
-
-
-
-function updateActiveButton() {
-    let centerX = window.innerWidth / 2;
-
-    let closestBtn = null;
-    let closestDistance = Infinity;
-
-    buttons.forEach(btn => {
-        const rect = btn.getBoundingClientRect();
-        const btnCenter = rect.left + rect.width / 2;
-        const distance = Math.abs(btnCenter - centerX);
-
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestBtn = btn;
-        }
-    });
-
-    buttons.forEach(btn => btn.classList.remove('active'));
-    if (closestBtn) {
-        closestBtn.classList.add('active');
-    }
+function getCurrentAngles() {
+    fetch('/get_angles')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('angle-base').textContent = data[1] + '°';
+            document.getElementById('angle-shoulder').textContent = data[2] + '°';
+            document.getElementById('angle-elbow').textContent = data[3] + '°';
+            document.getElementById('angle-wrist').textContent = data[4] + '°';
+        })
+        .catch(error => {
+            console.error('Błąd podczas pobierania kątów:', error);
+        });
 }
 
-document.querySelector('.center-select').addEventListener('scroll', () => {
-    requestAnimationFrame(updateActiveButton);
-});
 
-window.addEventListener('load', updateActiveButton);
+
+
+
+
+// function updateActiveButton() {
+//     let centerX = window.innerWidth / 2;
+
+//     let closestBtn = null;
+//     let closestDistance = Infinity;
+
+//     buttons.forEach(btn => {
+//         const rect = btn.getBoundingClientRect();
+//         const btnCenter = rect.left + rect.width / 2;
+//         const distance = Math.abs(btnCenter - centerX);
+
+//         if (distance < closestDistance) {
+//             closestDistance = distance;
+//             closestBtn = btn;
+//         }
+//     });
+
+//     buttons.forEach(btn => btn.classList.remove('active'));
+//     if (closestBtn) {
+//         closestBtn.classList.add('active');
+//     }
+// }
+
+// document.querySelector('.center-select').addEventListener('scroll', () => {
+//     requestAnimationFrame(updateActiveButton);
+// });
+
+// window.addEventListener('load', updateActiveButton);
