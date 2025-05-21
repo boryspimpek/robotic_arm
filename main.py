@@ -18,26 +18,26 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 
 
 
-# Ustaw początkowe kąty (symulacja)
-servo_ctrl.last_positions = {
-    1: 50.0,
-    2: 141.0,
-    3: 217.0,
-    4: 185.0,
+# # Ustaw początkowe kąty (symulacja)
+# servo_ctrl.last_positions = {
+#     1: 50.0,
+#     2: 141.0,
+#     3: 217.0,
+#     4: 185.0,
     
-}
+# }
 
-# Testowa pozycja docelowa
-target_angles = {
-    1: 130.0,
-    2: 141.0,
-    3: 217.0,
-    4: 185.0,
+# # Testowa pozycja docelowa
+# target_angles = {
+#     1: 130.0,
+#     2: 141.0,
+#     3: 217.0,
+#     4: 185.0,
     
-}
+# }
 
-# Uruchom ruch
-servo_ctrl.sync_points(target_angles)
+# # Uruchom ruch
+# servo_ctrl.sync_points(target_angles)
 
 
 
@@ -54,7 +54,7 @@ servo_ctrl.sync_points(target_angles)
 # point = fullkin.forward_ik_full(angles)
 
 
-# point1=(150, 100, -90)
+# point1=(150, 0, 0)
 # arm.move_to_point_simple(point1)
 # time.sleep(1)
 # angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
@@ -63,10 +63,10 @@ servo_ctrl.sync_points(target_angles)
 # point = fullkin.forward_ik_full(angles)
 
 
+arm.homepos()
 
 
-
-# servo_ctrl.move_servo(1, 50)
+# servo_ctrl.move_servo(1, 90)
 # servo_ctrl.move_servo(2, 141)
 # servo_ctrl.move_servo(3, 217)
 # servo_ctrl.move_servo(4, 185)

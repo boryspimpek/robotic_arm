@@ -83,8 +83,10 @@ class ArmController:
             wrist: 190
         }
 
-        self.servo.sync_angles(current_angles, end_angles, tempo_dps)
-        total_time = self.servo.sync_angles(current_angles, end_angles, tempo_dps)
+        trimmed_angles = self.utilis.apply_servo_trims(end_angles)
+
+        self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
+        total_time = self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
         return total_time
 
     def move_to_angle(self, angle1, angle2, angle3, angle4, tempo_dps=60):
@@ -97,12 +99,14 @@ class ArmController:
             wrist: angle4 
         }
 
+        trimmed_angles = self.utilis.apply_servo_trims(end_angles)
+
         # if not self.utilis.check_collision(end_angles, current_angles):
         #     print("[INFO] Ruch przerwany z powodu potencjalnej kolizji.")
         #     return False
 
-        self.servo.sync_angles(current_angles, end_angles, tempo_dps)
-        total_time = self.servo.sync_angles(current_angles, end_angles, tempo_dps)
+        self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
+        total_time = self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
         return total_time
     
     def start_manual_mode(self, tempo_dps=60):

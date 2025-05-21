@@ -92,13 +92,10 @@ class Utilis:
             elbow: -theta2 + 140,
             wrist: wrist_angle + 40
         }
-        trimmed_angles = {
-            sid: angle + servo_trims.get(sid, 0)
-            for sid, angle in angles.items()
-    }
+        trimmed_angles = self.apply_servo_trims(angles)
 
-        angles = self.validate_and_clip_angles(trimmed_angles)
-        return angles
+        validated_angles = self.validate_and_clip_angles(trimmed_angles)
+        return validated_angles
 
     def check_collision(self, servo_angles, current_servo_angles):
         steps = 30
@@ -142,3 +139,9 @@ class Utilis:
                 return False
 
         return True
+
+    def apply_servo_trims(self, angles: dict) -> dict:
+        return {
+            sid: angle + servo_trims.get(sid, 0)
+            for sid, angle in angles.items()
+        }
