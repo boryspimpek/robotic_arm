@@ -72,6 +72,21 @@ const savePreset = presetName => {
         });
 };
 
+const deletePreset = presetName => {
+    if (!confirm(`Czy na pewno chcesz usunąć preset ${presetName}?`)) return;
+
+    setStatus(`Usuwam preset ${presetName}...`);
+    postRequest(`/delete_preset/${presetName}`)
+        .then(r => r.text())
+        .then(msg => {
+            setStatus(msg);
+        })
+        .catch(err => {
+            setStatus("Błąd przy usuwaniu.");
+            console.error(err);
+        });
+};
+
 const playSequence = () => {
     setStatus("Odtwarzam zapisane pozycje...");
     postRequest('/play_sequence')

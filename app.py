@@ -97,6 +97,20 @@ def save_preset(preset_name):
     
     return handle_action(action, "Zapisano preset")
 
+@app.route('/delete_preset/<preset_name>', methods=['POST'])
+def delete_preset(preset_name):
+    def action():
+        positions = load_positions()
+        if preset_name in positions:
+            del positions[preset_name]
+            with open('positions.json', 'w') as f:
+                json.dump(positions, f, indent=2)
+            return f"Usunięto preset {preset_name}"
+        else:
+            raise ValueError(f"Preset {preset_name} nie istnieje")
+    
+    return handle_action(action, f"Usunięto preset {preset_name}")
+
 @app.route('/play_sequence', methods=['POST'])
 def play_sequence():
     def action():
