@@ -113,35 +113,38 @@ class FullKinematics:
         return best_angles, best_positions
 
     def forward_ik_full(self, angles):
-        
+        theta0_deg = angles[base]       # obrót podstawy
         theta1_deg = angles[shoulder]
         theta2_deg = angles[elbow]
         theta3_deg = angles[wrist]  
 
-        # Convert angles to degrees        
-        # print(f"Angles in degrees: theta1 = {theta1_deg:.2f}, theta2 = {theta2_deg:.2f}, theta3 = {theta3_deg:.2f}")
-
-        # Convert angles to radians
+        # Konwersja na radiany
+        theta0 = np.radians(theta0_deg)
         theta1 = np.radians(180 - theta1_deg)
         theta2 = np.radians(- theta2_deg + 140)
         theta3 = np.radians(- theta3_deg + 130)
 
-        # Base joint position
+        # Pozycje w płaszczyźnie XZ (przed uwzględnieniem obrotu podstawy)
         x0, z0 = 0, 0
 
-        # First joint
         x1 = x0 + L1 * np.cos(theta1)
         z1 = z0 + L1 * np.sin(theta1)
-        print(f"Joint 1 position: x1 = {x1:.2f}, z1 = {z1:.2f}")
 
-        # Second joint
         x2 = x1 + L2 * np.cos(theta1 + theta2)
         z2 = z1 + L2 * np.sin(theta1 + theta2)
-        print(f"Joint 2 position: x2 = {x2:.2f}, z2 = {z2:.2f}")
 
-        # End effector
         x3 = x2 + L3 * np.cos(theta1 + theta2 + theta3)
         z3 = z2 + L3 * np.sin(theta1 + theta2 + theta3)
-        print(f"End Effector position: x3 = {x3:.2f}, z3 = {z3:.2f}")
 
-        return x2, z2, x3, z3
+        r2 = x2
+        r3 = x3
+
+        x2_final = r2 * np.cos(theta0)
+        y2_final = r2 * np.sin(theta0)
+        z2_final = z2
+
+        x3_final = r3 * np.cos(theta0)
+        y3_final = r3 * np.sin(theta0)
+        z3_final = z3
+
+        return x3_final, y3_final, z3_final

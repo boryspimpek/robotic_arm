@@ -278,6 +278,19 @@ function getCurrentAngles() {
         });
 }
 
+function getCurrentPosition() {
+    fetch('/get_position')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('pos-x').textContent = data.x + ' mm';
+            document.getElementById('pos-y').textContent = data.y + ' mm';
+            document.getElementById('pos-z').textContent = data.z + ' mm';
+        })
+        .catch(error => {
+            console.error('Błąd podczas pobierania pozycji XYZ:', error);
+        });
+}
+
 
 
 

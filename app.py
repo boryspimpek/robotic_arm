@@ -65,6 +65,16 @@ def get_angles():
     positions_int = {sid: int(round(angle)) for sid, angle in positions.items()}
     return jsonify(positions_int)
 
+@app.route('/get_position', methods=['GET'])
+def get_position():
+    positions = servo_ctrl.get_positions([1, 2, 3, 4])
+    angles = {sid: int(round(angle)) for sid, angle in positions.items()}
+
+    # Oblicz FK
+    x, y, z = fullkin.forward_ik_full(angles)  # Upewnij się, że masz instancję `kinematics`
+
+    return jsonify({'x': round(x, 2), 'y': round(y, 2), 'z': round(z, 2)})
+
 @app.route('/move_preset/<preset_name>', methods=['POST'])
 def move_preset(preset_name):
     def action():
