@@ -13,8 +13,8 @@
     <nav class="navbar">
         <a href="#presets">Presets</a>
         <a href="#setpoint">Point</a>
-        <a href="#PS4">PS4</a>
-        <a href="#servo controll">Servo</a>
+        <a href="#record">Record</a>
+        <a href="#controller">Controller</a>
         <a href="#angles">Manual</a>
     </nav>
 
@@ -28,21 +28,23 @@
     <main>
     <!-- ############################### CENTER SELECT SECTION ############################### -->
         <h2>Fire Preset</h2>
-        <section id="presets" class="scroll-buttons">
-            <div class="preset-buttons">
-                <button onclick="playSequence()">Play</button>
-                <button onclick="stopSequence()">Stop</button>
-                <button onclick="goHome()">Home</button>
-                <button onclick="movePreset('1')">1</button>
-                <button onclick="movePreset('2')">2</button>
-                <button onclick="movePreset('3')">3</button>
-                <button onclick="movePreset('4')">4</button>
-                <button onclick="movePreset('5')">5</button>
-                <button onclick="movePreset('6')">6</button>
-                <button onclick="movePreset('7')">7</button>
-                <button onclick="movePreset('8')">8</button>
-                <button onclick="movePreset('9')">9</button>
-                <button onclick="movePreset('10')">10</button>                    
+        <section class="center-select">
+            <div class="track-wrapper">
+                <div class="button-track" id="scrollTrack">
+                    <button onclick="playSequence()">Play</button>
+                    <button onclick="stopSequence()">Stop</button>
+                    <button onclick="goHome()">Home</button>
+                    <button onclick="movePreset('1')">1</button>
+                    <button onclick="movePreset('2')">2</button>
+                    <button onclick="movePreset('3')">3</button>
+                    <button onclick="movePreset('4')">4</button>
+                    <button onclick="movePreset('5')">5</button>
+                    <button onclick="movePreset('6')">6</button>
+                    <button onclick="movePreset('7')">7</button>
+                    <button onclick="movePreset('8')">8</button>
+                    <button onclick="movePreset('9')">9</button>
+                    <button onclick="movePreset('10')">10</button>                    
+                </div>
             </div>
         </section>
         <section id="presets" class="scroll-buttons">
@@ -82,9 +84,9 @@
 
         <hr>
 
-        <!-- ############################### PS4 CONTROLLER SECTION ############################### -->
-        <section id="PS4" class="scroll-buttons">
-            <h2>PS4 Controller</h2>
+        <!-- ############################### RECORD SECTION ############################### -->
+        <section id="record" class="scroll-buttons">
+            <h2>Record</h2>
             <div class="preset-buttons">
                 <button onclick="startPad()">Go PS4</button>
                 <button onclick="stopPad()">Stop PS4</button>
@@ -97,9 +99,9 @@
 
         <hr>
 
-        <!-- ############################### SERVOO CONTROLLER SECTION ############################### -->>
-        <section id="servo controll" class="scroll-buttons">
-            <h2>Servo Controller</h2>
+        <!-- ############################### CONTROLLER SECTION ############################### -->
+        <section id="controller" class="scroll-buttons">
+            <h2>Controller</h2>
             <div class="preset-buttons">
                 <button id="toggleGripper" onclick="toggleGripper()">Gripper</button>
                 <button onclick="enableManualControl()">Manual</button>
