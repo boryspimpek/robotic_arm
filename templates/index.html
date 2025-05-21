@@ -98,27 +98,26 @@
 
 
         <!-- ############################### POSITIONS SECTION ############################### -->
-        <section id="positions">
-            <div class="preset-buttons">        
-                <button onclick="getCurrentAngles()">Angles</button>
-            </div>    
-            <div id="angles-display">
-                <p>Baza: <span id="angle-base">--</span>°</p>
-                <p>Shoulder: <span id="angle-shoulder">--</span>°</p>
-                <p>Elbow: <span id="angle-elbow">--</span>°</p>
-                <p>Wrist: <span id="angle-wrist">--</span>°</p>
-            </div>
-        </section>
-        <section id="positions">
-            <div class="preset-buttons">
-                <button onclick="getCurrentPosition()">Pokaż aktualne XYZ</button>
-            </div>
-            <div id="angles-display">
-                <p>X: <span id="pos-x">--</span></p>
-                <p>Y: <span id="pos-y">--</span></p>
-                <p>Z: <span id="pos-z">--</span></p>
-            </div>
-        </section>    
+<section id="positions" style="display: flex; gap: 40px; justify-content: center;">
+    <div class="position-box">
+        <button onclick="getCurrentAngles()">Angles</button>
+        <div id="angles-display">
+            <p>Baza: <span id="angle-base">--</span></p>
+            <p>Shoulder: <span id="angle-shoulder">--</span></p>
+            <p>Elbow: <span id="angle-elbow">--</span></p>
+            <p>Wrist: <span id="angle-wrist">--</span></p>
+        </div>
+    </div>
+
+    <div class="position-box">
+        <button onclick="getCurrentPosition()">Point</button>
+        <div id="position-display">
+            <p>X: <span id="pos-x">--</span></p>
+            <p>Y: <span id="pos-y">--</span></p>
+            <p>Z: <span id="pos-z">--</span></p>
+        </div>
+    </div>
+</section>
 
 
 
