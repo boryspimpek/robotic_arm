@@ -89,7 +89,7 @@ class Utilis:
         angles = {
             base: 90 - phi,
             shoulder: 180 - theta1,
-            elbow: -theta2 + 140,
+            elbow: -theta2 + 145,
             wrist: wrist_angle + 40
         }
         trimmed_angles = self.apply_servo_trims(angles)

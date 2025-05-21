@@ -117,11 +117,9 @@ class FullKinematics:
         theta2_deg = angles[elbow]
         theta3_deg = angles[wrist]  
 
-        # print(f"Angles in degrees: theta1 = {theta1_deg:.2f}, theta2 = {theta2_deg:.2f}, theta3 = {theta3_deg:.2f}")
-
         # Convert angles to radians
         theta1 = np.radians(180 - theta1_deg)
-        theta2 = np.radians(- theta2_deg + 140)
+        theta2 = np.radians(- theta2_deg + 145)
         theta3 = np.radians(- theta3_deg + 130)
 
         x0, z0 = 0, 0
@@ -140,6 +138,6 @@ class FullKinematics:
         x3 = x2 + L3 * np.cos(theta1 + theta2 + theta3)
         z3 = z2 + L3 * np.sin(theta1 + theta2 + theta3)
         print(f"End Effector position: x3 = {x3:.2f}, z3 = {z3:.2f}")
-        
+
         y3 = 0    
         return x3, y3, z3
