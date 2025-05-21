@@ -9,6 +9,7 @@ from sc_controll import open_gripper, close_gripper
 import subprocess
 import signal
 import os
+import time
 
 app = Flask(__name__)
 
@@ -92,6 +93,21 @@ def save_preset(preset_name):
         return "Zapisano preset"
     
     return handle_action(action, "Zapisano preset")
+
+@app.route('/play_sequence', methods=['POST'])
+def play_sequence():
+    def action():
+        positions = load_positions()
+        sorted_keys = sorted(positions.keys(), key=lambda x: int(x))  # sortujemy po numerach
+        for key in sorted_keys:
+            angles = positions[key]
+            if len(angles) != 4:
+                continue  # pomiń błędne dane
+            arm.move_to_angle(*angles)
+            time.sleep(2)  # opóźnienie między pozycjami w sekundach (zmień wg potrzeb)
+        return "Sekwencja zakończona"
+    
+    return handle_action(action, "Sekwencja zakończona")
 
 @app.route('/start_pad', methods=['POST'])
 def start_pad():

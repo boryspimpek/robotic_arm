@@ -70,6 +70,20 @@ const savePreset = presetName => {
         });
 };
 
+const playSequence = () => {
+    setStatus("Odtwarzam zapisane pozycje...");
+    postRequest('/play_sequence')
+        .then(r => r.text())
+        .then(msg => {
+            setStatus(msg);
+            updateSliders();
+        })
+        .catch(err => {
+            setStatus("Błąd przy odtwarzaniu sekwencji.");
+            console.error(err);
+        });
+};
+
 const updateSliders = () => {
     fetch('/get_angles')
         .then(response => response.json())
