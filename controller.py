@@ -73,7 +73,20 @@ class ArmController:
         time.sleep(time_to_move)
         print("[INFO] Ruch zakończony.")
         return True
-    
+
+    def homepos(self, tempo_dps=60):
+        current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
+        end_angles = {
+            base: 90,
+            shoulder: 20,
+            elbow: 290,
+            wrist: 190
+        }
+
+        self.servo.sync_angles(current_angles, end_angles, tempo_dps)
+        total_time = self.servo.sync_angles(current_angles, end_angles, tempo_dps)
+        return total_time
+
     def move_to_angle(self, angle1, angle2, angle3, angle4, tempo_dps=60):
         current_angles = self.servo.get_positions([base, shoulder, elbow, wrist])
 

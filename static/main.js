@@ -24,7 +24,7 @@ const toggleGripper = () => {
     postRequest(`/${action}`)
         .then(response => response.text())
         .then(msg => {
-            alert(msg);
+            // alert(msg);
             gripperState = newState;
         })
         .catch(() => alert(`Błąd przy ${action === 'open_gripper' ? 'otwieraniu' : 'zamykaniu'} grippera.`));
