@@ -217,7 +217,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* ############################### Center Select Styles ############################### */
-.center-select {
+/* .center-select {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -248,7 +248,7 @@ input[type=range]::-webkit-slider-thumb {
     transform: scale(1.4);
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
     z-index: 10;
-}
+} */
 
 /* ############################### Responsive Styles ############################### */
 @media (max-width: 768px) {

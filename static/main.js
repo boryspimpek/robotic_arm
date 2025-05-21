@@ -1,5 +1,7 @@
-const track = document.getElementById('scrollTrack');
-const buttons = track.querySelectorAll('button');
+const buttons = document.querySelectorAll(".preset-buttons button");
+
+// const track = document.getElementById('scrollTrack');
+// const buttons = track.querySelectorAll('button');
 
 let gripperState = 'closed';
 
