@@ -78,7 +78,7 @@ class ArmPS4Controller(Controller):
     def on_L1_press(self):
         self.x = 0
         self.z = 70
-        self.arm.move_to_point_simple((0, 0, 70), elbow_up=True, tempo_dps=60)
+        self.arm.move_to_point_simple((0, 0, 80), elbow_up=True, tempo_dps=60)
 
     def on_triangle_press(self):
         if self.wrist_horizontal and self.z < -10.0:

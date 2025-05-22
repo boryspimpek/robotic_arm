@@ -27,16 +27,16 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # angles = servo_ctrl.get_positions([base, shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
 
-angles = {
-    shoulder: 90,
-    elbow: 145,
-    wrist: 130
-}
-point = fullkin.forward_ik_full(angles)
+# angles = {
+#     shoulder: 90,
+#     elbow: 145,
+#     wrist: 130
+# }
+# point = fullkin.forward_ik_full(angles)
 
 
-# point1=(150, 0, 0)
-# arm.move_to_point_simple(point1)
+point1=(150, 0, 0)
+arm.move_to_point_simple(point1)
 # time.sleep(1)
 # angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
 # print(f"[INFO] Current angles: {angles}")
