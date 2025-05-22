@@ -1,0 +1,337 @@
+html {
+    scroll-behavior: smooth;
+}
+
+/* ############################### Global Styles ############################### */
+body {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    padding: 40px;
+    color: #fff;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+    background: url('/static/images/Nature-Landscape-1080-x-1920-Wallpaper-Vertical.jpg') center/cover fixed no-repeat;
+}
+
+/* ############################### Header Styles ############################### */
+h1, h2 {
+    color: #fff;
+    text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    margin: 20px 0;
+    font-weight: bold;
+}
+h1 { font-size: 36px; }
+h2 { font-size: 24px; }
+
+/* ############################### Button Styles ############################### */
+.preset-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+.preset-buttons button {
+    width: 150px;
+    height: 50px;
+    margin: 10px;
+    font-size: 18px;
+    text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* --- Horizontal scrollable buttons --- */
+.scroll-buttons .preset-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.scroll-buttons .preset-buttons button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-width: 100px;
+    max-width: 100px;
+}
+.scroll-buttons .preset-buttons::-webkit-scrollbar {
+    height: 6px;
+}
+.scroll-buttons .preset-buttons::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+/* --- Shrinkable horizontal buttons --- */
+.shrink-buttons .preset-buttons {
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    justify-content: center;
+    gap: 10px;
+}
+.shrink-buttons .preset-buttons button {
+    flex: 1 1 0;
+    min-width: 80px;
+    max-width: 200px;
+    white-space: nowrap;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.05); /* delikatna przezroczystość */
+    border-radius: 12px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin: 15px 0;
+    box-shadow: 0px 12px 12px rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
+}
+
+/* specjalne style TYLKO dla przycisków presetów u góry */
+.top-buttons button {
+    width: 50px;  
+    height: 25px;
+    background-color: #0057b8;
+    color: #fff;
+    font-size: 1.1em;
+    box-shadow: 0 0 10px rgba(0,87,184,0.5);
+    border: 2px solid #003d80;
+    border-radius: 50px;
+    margin: 5px;
+    padding: 10px 10px;
+    text-align: center;
+    align-items: center;
+}
+
+.scroll-wrapper {
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+/* Aby przyciski nie zawijały się, tylko przewijały razem */
+.preset-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  min-width: max-content;
+}
+
+/* Button hover/active */
+@media (min-width: 768px) {
+    .preset-buttons button:hover { background: #b92929; }
+}
+@media (max-width: 767px) {
+    .preset-buttons button:active { background: #2980b9; }
+}
+
+/* ############################### Servo Block Styles ############################### */
+.servo-block {
+    margin-bottom: 20px;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 18px;
+}
+.servo-label {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    margin: -10px 0 10px;
+    color: #fff;
+    text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+}
+input[type=range] {
+    appearance: none;
+    width: 80%;
+    height: 8px;
+    background: #fff;
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+}
+input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #000;
+    cursor: pointer;
+}
+.angle-display {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+/* ############################### Navigation Bar ################################## */
+.navbar {
+    position: sticky;
+    top: 0;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    margin: 0 auto;
+    max-width: 100%;
+    z-index: 999;
+}
+.navbar a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+.navbar a:hover {
+    background: #34495e;
+    transform: scale(1.05);
+}
+@media (max-width: 600px) {
+    .navbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 0.5rem 1rem;
+        border-radius: 0;
+    }
+    .navbar a {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+/* ############################### Points Styles ################################## */
+.point-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 30px auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 10px;
+    max-width: 100%;
+}
+.point-input input {
+    width: 80px;
+    padding: 8px;
+    font-size: 16px;
+    text-align: center;
+    min-width: 60px;
+    flex-shrink: 0;
+}
+.point-input button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.point-input::-webkit-scrollbar {
+    height: 6px;
+}
+.point-input::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 3px;
+}
+
+
+/* ############################### Position Box Styles ############################### */
+#positions {
+    margin-top: 20px;
+}
+
+.position-box {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 180px;
+    text-align: center;
+    margin: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column; 
+    align-items: left;
+    /* justify-content: center; */
+
+}
+
+/* ############################### Center Select Styles ############################### */
+/* .center-select {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    padding: 10px 0;
+}
+.track-wrapper {
+    display: flex;
+    padding: 0 20vw;
+}
+.button-track {
+    display: flex;
+    gap: 20px;
+}
+.center-select button {
+    flex: 0 0 auto;
+    width: 95px;
+    height: 50px;
+    border-radius: 10%;
+    font-size: 18px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+    scroll-snap-align: center;
+}
+.center-select button.active {
+    transform: scale(1.4);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    z-index: 10;
+} */
+
+/* ############################### Responsive Styles ############################### */
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+        background-image: url('/static/images/Nature-Landscape-1080-x-1920-Wallpaper-Vertical.jpg');
+    }
+    h1 { font-size: 24px; }
+    .servo-block h2 { font-size: 20px; }
+    .preset-buttons button {
+        width: 80%;
+        margin: 10px auto;
+        font-size: 20px;
+        padding: 15px;
+        display: block;
+    }
+    input[type=range] { width: 100%; }
+    .angle-display { font-size: 20px; }
+}

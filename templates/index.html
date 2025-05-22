@@ -24,112 +24,99 @@
     </header>
 
     <main>
-<!-- ############################### CENTER SELECT SECTION ############################### -->
-<section id="presets-group" class="card">
-  <h2>Fire Preset</h2>
-
-  <div class="preset-buttons">
-    <button onclick="goHome()">Home</button>
-    <button onclick="playSequence()">Play</button>
-    <button onclick="stopSequence()">Stop</button>
-  </div>
-  <div class="scroll-wrapper">
-
-    <div class="preset-buttons">
-      <button onclick="movePreset('1')">1</button>
-      <button onclick="movePreset('2')">2</button>
-      <button onclick="movePreset('3')">3</button>
-      <button onclick="movePreset('4')">4</button>
-      <button onclick="movePreset('5')">5</button>
-      <button onclick="movePreset('6')">6</button>
-      <button onclick="movePreset('7')">7</button>
-      <button onclick="movePreset('8')">8</button>
-      <button onclick="movePreset('9')">9</button>
-      <button onclick="movePreset('10')">10</button>
-    </div>
-
-    <div class="preset-buttons">
-      <button onclick="savePreset('1')">Save 1</button>
-      <button onclick="savePreset('2')">Save 2</button>
-      <button onclick="savePreset('3')">Save 3</button>
-      <button onclick="savePreset('4')">Save 4</button>
-      <button onclick="savePreset('5')">Save 5</button>
-      <button onclick="savePreset('6')">Save 6</button>
-      <button onclick="savePreset('7')">Save 7</button>
-      <button onclick="savePreset('8')">Save 8</button>
-      <button onclick="savePreset('9')">Save 9</button>
-      <button onclick="savePreset('10')">Save 10</button>
-    </div>
-
-    <div class="preset-buttons">
-      <button onclick="deletePreset('1')">Usuń 1</button>
-      <button onclick="deletePreset('2')">Usuń 2</button>
-      <button onclick="deletePreset('3')">Usuń 3</button>
-      <button onclick="deletePreset('4')">Usuń 4</button>
-      <button onclick="deletePreset('5')">Usuń 5</button>
-      <button onclick="deletePreset('6')">Usuń 6</button>
-      <button onclick="deletePreset('7')">Usuń 7</button>
-      <button onclick="deletePreset('8')">Usuń 8</button>
-      <button onclick="deletePreset('9')">Usuń 9</button>
-      <button onclick="deletePreset('10')">Usuń 10</button>
-    </div>
-  </div>
-</section>
-
-        <!-- ############################### SET POINT ############################### -->
+        <!-- ############################### CENTER SELECT SECTION ############################### -->
         <section class="card">
-        <h2>Set Point</h2>
-            <section id="setpoint">
-                <div class="point-input">
-                    <input type="number" id="inputX" placeholder="X">
-                    <input type="number" id="inputY" placeholder="Y">
-                    <input type="number" id="inputZ" placeholder="Z">
+            <h2 class="section-title">Fire Preset</h2>
+            <div class="top-buttons pretty-button">
+                <button onclick="goHome()">Home</button>
+                <button onclick="playSequence()">Play</button>
+                <button onclick="stopSequence()">Stop</button>
+            </div>
+            <div class="scroll-wrapper">
+                <div class="button-row row-1">
+                    <button onclick="movePreset('1')">1</button>
+                    <button onclick="movePreset('2')">2</button>
+                    <button onclick="movePreset('3')">3</button>
+                    <button onclick="movePreset('4')">4</button>
+                    <button onclick="movePreset('5')">5</button>
+                    <button onclick="movePreset('6')">6</button>
+                    <button onclick="movePreset('7')">7</button>
+                    <button onclick="movePreset('8')">8</button>
+                    <button onclick="movePreset('9')">9</button>
+                    <button onclick="movePreset('10')">10</button>
                 </div>
-            </section>    
-            <section id="setpoint" class="scroll-buttons">    
-                <div class="preset-buttons">
-                    <button onclick="moveToPoint('normal')">Normal</button>
-                    <button onclick="moveToPoint('flat')">Flat</button>
-                    <button onclick="moveToPoint('vertical_down')">Down</button>
-                    <button onclick="moveToPoint('vertical_up')">Up</button>
-                    <button onclick="moveToPoint('min_angle_angle')">Sum</button>
-                </div>    
-            </section>
+                <div class="button-row row-2">
+                    <button onclick="savePreset('1')">Save 1</button>
+                    <button onclick="savePreset('2')">Save 2</button>
+                    <button onclick="savePreset('3')">Save 3</button>
+                    <button onclick="savePreset('4')">Save 4</button>
+                    <button onclick="savePreset('5')">Save 5</button>
+                    <button onclick="savePreset('6')">Save 6</button>
+                    <button onclick="savePreset('7')">Save 7</button>
+                    <button onclick="savePreset('8')">Save 8</button>
+                    <button onclick="savePreset('9')">Save 9</button>
+                    <button onclick="savePreset('10')">Save 10</button>
+                </div>
+                <div class="button-row row-3">
+                    <button onclick="deletePreset('1')">Usuń 1</button>
+                    <button onclick="deletePreset('2')">Usuń 2</button>
+                    <button onclick="deletePreset('3')">Usuń 3</button>
+                    <button onclick="deletePreset('4')">Usuń 4</button>
+                    <button onclick="deletePreset('5')">Usuń 5</button>
+                    <button onclick="deletePreset('6')">Usuń 6</button>
+                    <button onclick="deletePreset('7')">Usuń 7</button>
+                    <button onclick="deletePreset('8')">Usuń 8</button>
+                    <button onclick="deletePreset('9')">Usuń 9</button>
+                    <button onclick="deletePreset('10')">Usuń 10</button>
+                </div>
+            </div>
         </section>
 
+        <!-- ############################### SET POINT ############################### -->
+        <section class="card pretty-button">
+            <h2 class="section-title">Set Point</h2>
+            <div class="point-input">
+                <input type="number" id="inputX" placeholder="X">
+                <input type="number" id="inputY" placeholder="Y">
+                <input type="number" id="inputZ" placeholder="Z">
+            </div>
+            <div class="point-input">
+                <button onclick="moveToPoint('normal')">Normal</button>
+                <button onclick="moveToPoint('flat')">Flat</button>
+                <button onclick="moveToPoint('vertical_down')">Down</button>
+                <button onclick="moveToPoint('vertical_up')">Up</button>
+                <button onclick="moveToPoint('min_angle_angle')">Sum</button>
+            </div>
+        </section>
 
         <!-- ############################### POSITIONS SECTION ############################### -->
-        <section id="positions" class="card" style="display: flex; flex-direction: column; gap: 20px;">
-
-            <h2>Positions</h2>
-
-            <div style="display: flex; gap: 40px; justify-content: center;">
+        <section id="positions" class="card pretty-button">
+            <h2 class="section-title">Positions</h2>
+            <div class="position-container">
                 <div class="position-box">
                     <button onclick="getCurrentAngles()">Angles</button>
-                    <div id="angles-display">
+                    <div>
                         <p>Baza: <span id="angle-base">--</span></p>
                         <p>Shoulder: <span id="angle-shoulder">--</span></p>
                         <p>Elbow: <span id="angle-elbow">--</span></p>
                         <p>Wrist: <span id="angle-wrist">--</span></p>
                     </div>
                 </div>
-
                 <div class="position-box">
                     <button onclick="getCurrentPosition()">Point</button>
-                    <div id="position-display">
+                    <div>
                         <p>X: <span id="pos-x">--</span></p>
                         <p>Y: <span id="pos-y">--</span></p>
                         <p>Z: <span id="pos-z">--</span></p>
                     </div>
                 </div>
             </div>
-
         </section>
 
         <!-- ############################### PS4 CONTROLLER SECTION ############################### -->
-        <section id="ps4" class="scroll-buttons card">
+        <section id="ps4" class="card pretty-button">
             <h2>PS4 Controller</h2>
-            <div class="preset-buttons">
+            <div class="ps4">
                 <button onclick="startPad()">Go PS4</button>
                 <button onclick="stopPad()">Stop PS4</button>
                 <button onclick="savePosition()">Save</button>
@@ -139,28 +126,20 @@
             </div>
         </section>
 
-        <hr>
-
         <!-- ############################### CONTROLLER SECTION ############################### -->
-        <section id="controller" class="scroll-buttons card">
+        <section id="controller" class="card pretty-button">
             <h2>Controller</h2>
-            <div class="preset-buttons">
+            <div class="controller">
                 <button id="toggleGripper" onclick="toggleGripper()">Gripper</button>
                 <button onclick="enableManualControl()">Manual</button>
                 <button onclick="torqueOn()">Torque</button>
                 <button onclick="torqueOff()">Release</button>
-
-
             </div>
         </section>
 
-        <hr>
-
         <!-- ############################### ANGLES SECTION ############################### -->
-        <section id="angles" class="shrink-buttons">
+        <section id="angles" class="card">
             <h2>Manual</h2>
-        </section>
-        <section id="angles">
             <div class="servo-block">
                 <div class="servo-label">BASE: <span id="angle1">90</span>°</div>
                 <input type="range" min="0" max="180" value="90" id="slider1" disabled>
@@ -178,7 +157,7 @@
                 <input type="range" min="0" max="260" value="90" id="slider4" disabled>
             </div>
         </section>
-    </main>
+        </main>
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
