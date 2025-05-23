@@ -5,6 +5,7 @@ from config import base, elbow, shoulder, wrist
 from controller import ArmController
 from kinematics import Kinematics
 from kinematics_full import FullKinematics
+from pick_and_place import pick_drop
 from servos import ServoController
 from sc_controll import open_gripper, close_gripper
 import subprocess
@@ -240,6 +241,20 @@ def stop_subprocess(process):
         process.terminate()
         return None
     return process
+
+@app.route('/pick-drop-sequence', methods=['POST'])
+def pick_drop_sequence():
+    data = request.get_json()
+    pairs = data.get('pairs', [])
+
+    for pair in pairs:
+        pickup = tuple(pair['pickup'])
+        drop = tuple(pair['drop'])
+        pick_drop(pickup, drop)
+        time.sleep(0.5)
+
+    arm.homepos()
+    return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

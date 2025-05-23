@@ -12,7 +12,7 @@ arm = ArmController(
     fullkin=FullKinematics(L1, L2, L3)
 )
 
-def pickup_place(pickup_point, place_point, lift_height=40):
+def pick_drop(pickup_point, place_point, lift_height=40):
     x1, y1, z1 = pickup_point
     x2, y2, z2 = place_point
     above_pickup = (x1, y1, z1 + lift_height)
@@ -47,5 +47,3 @@ def perform_place(place_point, above_point, tempo_dps=30, cost_mode="vertical_do
     time.sleep(0.5)
     close_gripper()
 
-# Przykładowe wywołanie
-pickup_place((150, -100, -110), (200, -100, -50))

@@ -13,6 +13,8 @@
     <nav class="navbar">
         <a href="#presets">Presets</a>
         <a href="#setpoint">Point</a>
+        <a href="#positions">Positions</a>
+        <a href="#pickup">Pickup</a>
         <a href="#ps4">ps4</a>
         <a href="#controller">Controller</a>
         <a href="#angles">Manual</a>
@@ -25,7 +27,7 @@
 
     <main>
         <!-- ############################### CENTER SELECT SECTION ############################### -->
-        <section class="card">
+        <section id="presets" class="card">
             <h2 class="section-title">Fire Preset</h2>
             <div class="top-buttons pretty-button">
                 <button onclick="goHome()">Home</button>
@@ -73,7 +75,7 @@
         </section>
 
         <!-- ############################### SET POINT ############################### -->
-        <section class="card pretty-button">
+        <section id="setpoint" class="card pretty-button">
             <h2 class="section-title">Set Point</h2>
             <div class="point-input">
                 <input type="number" id="inputX" placeholder="X">
@@ -111,6 +113,26 @@
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- ############################### PICK AND PLACE SECTION ############################### -->
+        <section id="pickup" class="card pretty-button">
+            <h2>Pick & Drop Sequence</h2>
+            <div id="pairs-container">
+                <div class="point-pair">
+                    <label>Pickup:</label>
+                    <input type="number" class="pickup" placeholder="X">
+                    <input type="number" class="pickup" placeholder="Y">
+                    <input type="number" class="pickup" placeholder="Z">
+
+                    <label>Drop:</label>
+                    <input type="number" class="drop" placeholder="X">
+                    <input type="number" class="drop" placeholder="Y">
+                    <input type="number" class="drop" placeholder="Z">
+                </div>
+            </div>
+            <button onclick="addPair()">Add Pair</button>
+            <button onclick="sendPickDrop()">Start</button>
         </section>
 
         <!-- ############################### PS4 CONTROLLER SECTION ############################### -->
@@ -157,7 +179,7 @@
                 <input type="range" min="0" max="260" value="90" id="slider4" disabled>
             </div>
         </section>
-        </main>
+    </main>
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>

@@ -292,6 +292,73 @@ function getCurrentPosition() {
 }
 
 
+// ###################################### PICK AND DROP ######################################
+function addPair() {
+  const container = document.getElementById('pairs-container');
+  const newPair = container.firstElementChild.cloneNode(true);
+  newPair.querySelectorAll('input').forEach(input => input.value = '');
+  container.appendChild(newPair);
+}
+
+async function sendPickDrop() {
+  const pairs = [];
+  const pointPairs = document.querySelectorAll('.point-pair');
+
+  pointPairs.forEach(pair => {
+    const pickup = pair.querySelectorAll('.pickup');
+    const drop = pair.querySelectorAll('.drop');
+
+    const pickupPoint = [parseFloat(pickup[0].value), parseFloat(pickup[1].value), parseFloat(pickup[2].value)];
+    const dropPoint = [parseFloat(drop[0].value), parseFloat(drop[1].value), parseFloat(drop[2].value)];
+
+    pairs.push({ pickup: pickupPoint, drop: dropPoint });
+  });
+
+  await fetch('/pick-drop-sequence', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pairs })
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

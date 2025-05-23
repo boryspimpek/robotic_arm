@@ -17,7 +17,7 @@ body {
 .navbar {
     position: sticky;
     top: 0;
-    background: rgba(255, 255, 255, 0.05); /* półprzezroczysty biały */
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 1rem 2rem;
@@ -49,17 +49,16 @@ body {
 }
 
 /* ################################## UNIVERSAL STYLES ################################## */
-
 .card {
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 5px;
     padding-right: 5px;
     margin-bottom: 20px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(90, 90, 90, 0.25);
     border-radius: 16px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* backdrop-filter: blur(10px); */
+    border: 1px solid rgba(255, 255, 255, 0.35);
     padding: 20px;
 }
 
@@ -71,20 +70,19 @@ body {
 .pretty-button button {
     width: 150px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(90, 90, 90, 0.25);
+    border: 1px solid rgba(90, 90, 90, 0.35);
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
     font-size: 20px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
     transition: background 0.2s, transform 0.2s;
     cursor: pointer;
 }
 
 /* ############################### FIRE PRESETS ############################### */
-
 .top-buttons {
     display: flex;
     justify-content: center;
@@ -118,64 +116,74 @@ body {
 }
 
 .row-1 button {
-    height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 40px;
+    background: rgba(90, 90, 90, 0.25);
+    border: 1px solid rgba(90, 90, 90, 0.25);
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
     font-size: 20px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
     transition: background 0.2s, transform 0.2s;
     cursor: pointer;
 }
 
 .row-2 button {
     height: 30px;
-    background: rgba(0, 255, 4, 0.539);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 255, 0, 0.25);
+    border: 1px solid rgba(90, 90, 90, 0.25);
     color: white;
     border-radius: 8px;
     font-size: 16px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
     transition: background 0.2s, transform 0.2s;
     cursor: pointer;
 }
 
 .row-3 button {
     height: 30px;
-    background: rgba(255, 0, 0, 0.53);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 0, 0, 0.25);
+    border: 1px solid rgba(90, 90, 90, 0.25);
     color: white;
     border-radius: 8px;
     font-size: 16px;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
     transition: background 0.2s, transform 0.2s;
     cursor: pointer;
 }
 
-/*################################ POINT INPUT ################################*/
-
+/*################################ SET INPUT ################################*/
 .point-input {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    overflow-x: auto;
-    white-space: nowrap;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 12px;
+  /* background: rgba(255, 255, 255, 0.06); */
+  /* backdrop-filter: blur(8px); */
+  /* -webkit-backdrop-filter: blur(8px); */
+  /* border: 1px solid rgba(255, 255, 255, 0.15); */
 }
 
 .point-input input {
-    display: flex;
-    width: 80px;
-    height: 40px;
-    font-size: 16px;
-    text-align: center;
-    color: #fff;
-    background-color: #7384a4;
+  width: 80px;
+  height: 40px;
+  font-size: 16px;
+  text-align: center;
+  color: white;
+  background: rgba(255, 255, 92550, 0.15);
+  border: 1px solid rgba(90, 90, 90, 0.35);
+  border-radius: 10px;
+  /* backdrop-filter: blur(4px); */
+  /* -webkit-backdrop-filter: blur(4px); */
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1);
+  outline: none;
 }
 
 /* ############################### Position Box Styles ############################### */
@@ -184,27 +192,26 @@ body {
     gap: 40px;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 20px;
+
 }
 
 .position-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    width: 180px;
+    width: 200px;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    /* backdrop-filter: blur(12px); */
+    /* -webkit-backdrop-filter: blur(12px); */
+    border: 1px solid rgba(90, 90, 90, 0.35);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     text-align: center;
-    background: rgba(155, 255, 255, 0.1);
-    color: #fff;
+    color: white;
     font-size: 18px;
-    display: flex;
-    flex-direction: column;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: background 0.2s, transform 0.2s;
-    cursor: pointer;
-
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 /* ############################### PS4 CONTROLLER STYLES ############################### */
@@ -217,7 +224,6 @@ body {
 }
 
 /* ############################### SERVO CONTROL STYLES ############################### */
-
 .controller {
     display: flex;
     justify-content: center;
@@ -227,7 +233,6 @@ body {
 
 }
 
-/** ############################### SERVO CONTROL STYLES ############################### */
 .servo-block {
     margin-bottom: 20px;
     color: #fff;
@@ -271,3 +276,48 @@ input[type=range]::-webkit-slider-thumb {
     margin-top: 10px;
     font-size: 18px;
 }
+
+/* ############################### PICK and PLACE STYLES ############################### */
+#pairs-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.point-pair {
+    width: 150px;
+    flex-shrink: 0;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    /* backdrop-filter: blur(12px); */
+    /* -webkit-backdrop-filter: blur(12px); */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: white;
+}
+
+.point-pair label {
+    font-size: 18px;
+    font-weight: 500;
+    color: #ddd;
+}
+
+.point-pair input[type="number"] {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 10px;
+    padding: 8px;
+    color: white;
+    font-size: 18px;
+    /* backdrop-filter: blur(4px); */
+    /* -webkit-backdrop-filter: blur(4px); */
+    /* box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.1); */
+}
+
+
