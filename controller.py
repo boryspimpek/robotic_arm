@@ -46,11 +46,11 @@ class ArmController:
 
         return True
 
-    def move_to_point_simple(self, target_xyz, elbow_up=True, tempo_dps=60.0):
+    def move_to_point_simple(self, target_xyz, elbow_up=True, tempo_dps=60.0, wrist_horizontal=True):
         servo_angles, current_servo_angles = self.utilis.prepare_point_and_angles(
             target_xyz,
             elbow_up=elbow_up,
-            wrist_horizontal=True
+            wrist_horizontal=wrist_horizontal
         )
         if servo_angles is False:
             return False
@@ -85,8 +85,10 @@ class ArmController:
 
         trimmed_angles = self.utilis.apply_servo_trims(end_angles)
 
+        close_gripper()
         self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
         total_time = self.servo.sync_angles(current_angles, trimmed_angles, tempo_dps)
+        time.sleep(total_time)
         return total_time
 
     def move_to_angle(self, angle1, angle2, angle3, angle4, tempo_dps=60):
