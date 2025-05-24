@@ -12,7 +12,7 @@ elbow = 3
 wrist = 4       
 gripper = 5     
 
-# Communication settings
+# Communication settings command: ls /dev/ttyACM*
 port_bus = "/dev/ttyACM0" 
 port_ps4 = "/dev/input/js0" 
 baudrate = 1000000     
