@@ -80,6 +80,18 @@ class FullKinematics:
             theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
             theta3 = theta3_c - (theta1 + theta2)
 
+            # expected_orientation = {
+            #     "vertical_up": np.pi/2,
+            #     "vertical_down": -np.pi/2,
+            #     "flat": 0.0
+            # }.get(cost_mode)
+
+            # if cost_mode in ["vertical_up", "vertical_down", "flat"]:
+            #     end_orientation = theta1 + theta2 + theta3
+            #     if abs(end_orientation - expected_orientation) > np.radians(1):  # 10° tolerancji
+            #         continue  # pomijamy tę konfigurację, bo nie spełnia wymagań
+
+
             if cost_mode == "min_angle_sum":
                 cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
             elif cost_mode == "vertical_up":
