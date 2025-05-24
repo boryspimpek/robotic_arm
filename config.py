@@ -23,17 +23,16 @@ sc_speed = 500
 st_acc = 80            
 sc_acc = 25      
 
-# angle_limits = (0, 180)      
-base_angle_limits = (0, 180)
-shoulder_angle_limits = (0, 180)
+base_angle_limits = (0, 182.5)
+shoulder_angle_limits = (0, 181.5)
 elbow_angle_limits = (0, 290)
 wrist_angle_limits = (0, 260)  
 
 # Servo trims (adjustments for alignment)
 servo_trims = {
     base: 2.5,
-    shoulder: 0,
-    elbow: 0,
+    shoulder: 1.5,
+    elbow: -3.5,
     wrist: 0
 }
 

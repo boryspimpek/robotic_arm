@@ -35,21 +35,22 @@ arm = ArmController(kinematics=Kinematics(L1, L2), servo_ctrl=ServoController(po
 # point = fullkin.forward_ik_full(angles)
 
 
-point1=(150, 0, 0)
-arm.move_to_point_simple(point1)
-# time.sleep(1)
-# angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
-# print(f"[INFO] Current angles: {angles}")
+point1=(200, 0, 0)
+arm.move_to_point_full(*point1, tempo_dps=30, cost_mode="flat")
 
-# point = fullkin.forward_ik_full(angles)
+time.sleep(1)
+angles = servo_ctrl.get_positions([shoulder, elbow, wrist])
+print(f"[INFO] Current angles: {angles}")
+
+point = fullkin.forward_ik_full(angles)
 
 
 # arm.homepos()
 
 
 # servo_ctrl.move_servo(1, 90)
-# servo_ctrl.move_servo(2, 141)
-# servo_ctrl.move_servo(3, 217)
+# servo_ctrl.move_servo(2, 90)
+# servo_ctrl.move_servo(3, 100)
 # servo_ctrl.move_servo(4, 185)
 
 # def move_arm_sequentially(start_x, end_x, y, z, tempo_dps, cost_mode):

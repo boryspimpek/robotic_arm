@@ -1,7 +1,7 @@
 import math
 from matplotlib import pyplot as plt
 import numpy as np
-from config import L1, L2, L3, base, shoulder, elbow, wrist, base_angle_limits, shoulder_angle_limits, elbow_angle_limits, wrist_angle_limits 
+from config import L1, L2, L3, base, shoulder, elbow, wrist, servo_trims 
 from utilis import Utilis
 
 
@@ -113,15 +113,16 @@ class FullKinematics:
         return best_angles, best_positions
 
     def forward_ik_full(self, angles):
-        theta1_deg = angles[shoulder]
-        theta2_deg = angles[elbow]
-        theta3_deg = angles[wrist]  
+        theta1_deg = angles[shoulder] - servo_trims[shoulder]
+        theta2_deg = angles[elbow] - servo_trims[elbow]
+        theta3_deg = angles[wrist] - servo_trims[wrist]        
+        print(f"theta1_deg: {theta1_deg}, theta2_deg: {theta2_deg}, theta3_deg: {theta3_deg}")
 
         # Convert angles to radians
         theta1 = np.radians(180 - theta1_deg)
         theta2 = np.radians(- theta2_deg + 145)
         theta3 = np.radians(- theta3_deg + 130)
-
+        
         x0, z0 = 0, 0
 
         # First joint
