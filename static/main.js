@@ -238,7 +238,7 @@ const moveToPoint = (costMode = 'standard') => {
     postRequest('/move_to_point', { x, y, z, cost_mode: costMode })
         .then(response => response.text())
         .then(text => {
-            alert(text);
+            // alert(text);
             const duration = parseFloat(text);
             if (!isNaN(duration)) {
                 setTimeout(updateSliders, duration * 1000);
