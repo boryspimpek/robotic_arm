@@ -57,7 +57,7 @@ def move_servo():
     data = request.json
     servo_id = int(data.get('id'))
     angle = int(data.get('angle'))
-    servo_ctrl.safe_move_to({servo_id: angle})
+    servo_ctrl.move_to({servo_id: angle})
     return '', 204
 
 @app.route('/get_angles', methods=['GET'])
@@ -72,7 +72,7 @@ def get_position():
     angles = {sid: int(round(angle)) for sid, angle in positions.items()}
 
     # Oblicz FK
-    x, y, z = fullkin.forward_ik_full(angles)  # Upewnij się, że masz instancję `kinematics`
+    _, _, _, x, y, z = fullkin.forward_ik_full(angles)  # Upewnij się, że masz instancję `kinematics`
 
     return jsonify({'x': round(x, 2), 'y': round(y, 2), 'z': round(z, 2)})
 

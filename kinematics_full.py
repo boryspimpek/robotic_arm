@@ -125,19 +125,21 @@ class FullKinematics:
         return best_angles, best_positions
 
     def forward_ik_full(self, angles):
+        theta0_deg = angles[base] - servo_trims[base]
         theta1_deg = angles[shoulder] - servo_trims[shoulder]
         theta2_deg = angles[elbow] - servo_trims[elbow]
         theta3_deg = angles[wrist] - servo_trims[wrist]        
         print(f"theta1_deg: {theta1_deg}, theta2_deg: {theta2_deg}, theta3_deg: {theta3_deg}")
 
         # Convert angles to radians
+        theta0 = np.radians(90 - theta0_deg)
         theta1 = np.radians(180 - theta1_deg)
         theta2 = np.radians(- theta2_deg + 145)
         theta3 = np.radians(- theta3_deg + 130)
-        
+
         x0, z0 = 0, 0
 
-        # First joint
+        # First joint (in XZ plane)
         x1 = x0 + L1 * np.cos(theta1)
         z1 = z0 + L1 * np.sin(theta1)
         print(f"Joint 1 position: x1 = {x1:.2f}, z1 = {z1:.2f}")
@@ -152,5 +154,14 @@ class FullKinematics:
         z3 = z2 + L3 * np.sin(theta1 + theta2 + theta3)
         print(f"End Effector position: x3 = {x3:.2f}, z3 = {z3:.2f}")
 
-        y3 = 0    
-        return x3, y3, z3
+        # Apply base rotation to get full 3D (X, Y, Z)
+        # Base rotation around Z axis affects X and Y
+        def rotate_base(x, theta0):
+            x_rot = x * np.cos(theta0)
+            y_rot = x * np.sin(theta0)
+            return x_rot, y_rot
+
+        x2_rot, y2 = rotate_base(x2, theta0)
+        x3_rot, y3 = rotate_base(x3, theta0)
+
+        return x2_rot, y2, z2, x3_rot, y3, z3

@@ -117,7 +117,7 @@ class Utilis:
                     elbow: t2,
                     wrist: t3
                 }
-                x2, z2, x3, z3 = self.fullkin.forward_ik_full(fk_angles)
+                x2, _, z2, x3, _, z3 = self.fullkin.forward_ik_full(fk_angles)
                 print(f"[INFO] FK: x2 = {x2:.1f} mm, z2 = {z2:.1f} mm")
                 print(f"[INFO] FK: x3 = {x3:.1f} mm, z3 = {z3:.1f} mm")
 
