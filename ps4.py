@@ -142,7 +142,7 @@ try:
 
         ly = joystick.get_axis(0)
         lx = joystick.get_axis(1)
-        ry = joystick.get_axis(3)
+        ry = joystick.get_axis(4)
 
         # deadzone
         lx = 0 if abs(lx) < deadzone else lx
