@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from .stservo_def import *
+from .values import *
 
 class GroupSyncRead:
     def __init__(self, ph, start_address, data_length):

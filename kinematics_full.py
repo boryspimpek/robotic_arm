@@ -1,167 +1,74 @@
 import math
-from matplotlib import pyplot as plt
 import numpy as np
-from config import L1, L2, L3, base, shoulder, elbow, wrist, servo_trims 
-from utilis import Utilis
 
 
-class FullKinematics:
-    def __init__(self, l1, l2, l3):
-        self.l1 = l1
-        self.l2 = l2
-        self.l3 = l3
-        self.delta_deg = 1
 
-    def calculate_positions_full(self, theta0, theta1, theta2, theta3):
-        x0, y0, z0 = 0, 0, 0
-        x1 = self.l1 * np.cos(theta1) * np.cos(theta0)
-        y1 = self.l1 * np.cos(theta1) * np.sin(theta0)
-        z1 = self.l1 * np.sin(theta1)
+l1 = 120
+l2 = 120
+l3 = 110
+delta_deg = 1
 
-        x2 = x1 + self.l2 * np.cos(theta1 + theta2) * np.cos(theta0)
-        y2 = y1 + self.l2 * np.cos(theta1 + theta2) * np.sin(theta0)
-        z2 = z1 + self.l2 * np.sin(theta1 + theta2)
+def solve_ik(x_target, y_target, z_target, cost_mode):
+    delta_theta = np.radians(delta_deg)
+    theta3_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
-        x3 = x2 + self.l3 * np.cos(theta1 + theta2 + theta3) * np.cos(theta0)
-        y3 = y2 + self.l3 * np.cos(theta1 + theta2 + theta3) * np.sin(theta0)
-        z3 = z2 + self.l3 * np.sin(theta1 + theta2 + theta3)
+    r_target = np.hypot(x_target, y_target)
+    px = r_target
+    py = z_target
 
-        return [(x0, y0, z0), (x1, y1, z1), (x2, y2, z2), (x3, y3, z3)]
+    d = math.hypot(px, py)
+    if d > (l1 + l2 + l3):
+        raise ValueError("Punkt poza zasięgiem")
 
-    def plot_positions_full(self, best_positions, x_target, y_target, z_target):
-        if best_positions:
-            xs, ys, zs = zip(*best_positions)
-            fig = plt.figure(figsize=(8, 8))
-            ax = fig.add_subplot(111, projection='3d')
-            ax.plot(xs, ys, zs, 'o-', linewidth=4, markersize=8, label='Arm')
-            ax.scatter([x_target], [y_target], [z_target], color='r', s=100, label='Target')
-            ax.set_xlabel("X (mm)")
-            ax.set_ylabel("Y (mm)")
-            ax.set_zlabel("Z (mm)")
-            ax.set_title("IK – 3D Arm with Base Rotation (Elbow Up)")
-            ax.grid(True)
-            ax.set_xlim(0, 300)
-            ax.set_ylim(-300, 300)
-            ax.set_zlim(0, 300)
+    theta0 = np.arctan2(y_target, x_target)
 
-    def solve_ik_full(self, x_target, y_target, z_target, cost_mode):
-        delta_theta = np.radians(self.delta_deg)
-        theta3_candidates = np.arange(-np.pi, np.pi, delta_theta)
+    min_cost = np.inf
+    best_angles = None
 
-        r_target = np.hypot(x_target, y_target)
-        px = r_target
-        py = z_target
+    for theta3_c in theta3_candidates:
+        wrist_r = r_target - l3 * np.cos(theta3_c)
+        wrist_z = z_target - l3 * np.sin(theta3_c)
 
-        d = math.hypot(px, py)
-        if d > (self.l1 + self.l2 + self.l3):
-            raise ValueError("Punkt poza zasięgiem")
+        D = np.hypot(wrist_r, wrist_z)
+        if D > (l1 + l2) or D < abs(l1 - l2):
+            continue
 
-        theta0 = np.arctan2(y_target, x_target)
+        cos_theta2 = (wrist_r**2 + wrist_z**2 - l1**2 - l2**2) / (2 * l1 * l2)
+        if not (-1 <= cos_theta2 <= 1):
+            continue
 
-        min_cost = np.inf
-        best_angles = None
-        best_positions = None
+        theta2 = -np.arccos(cos_theta2)  # Elbow-up
+        k1 = l1 + l2 * np.cos(theta2)
+        k2 = l2 * np.sin(theta2)
+        theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
+        theta3 = theta3_c - (theta1 + theta2)
 
-        for theta3_c in theta3_candidates:
-            wrist_r = r_target - self.l3 * np.cos(theta3_c)
-            wrist_z = z_target - self.l3 * np.sin(theta3_c)
+        if cost_mode == "min_angle_sum":
+            cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
+        elif cost_mode == "vertical_up":
+            end_orientation = theta1 + theta2 + theta3
+            cost = (end_orientation - np.pi/2)**2    
+        elif cost_mode == "vertical_down":
+            end_orientation = theta1 + theta2 + theta3
+            cost = (end_orientation + np.pi/2)**2            
+        elif cost_mode == "flat":
+            end_orientation = theta1 + theta2 + theta3
+            cost = (end_orientation)**2  
+        elif cost_mode == "normal":
+            cost = (theta2)**2 + (theta3)**2
+        else:
+            raise ValueError("Nieznany tryb kosztu")
+        
+        if cost < min_cost:
+            min_cost = cost
 
-            D = np.hypot(wrist_r, wrist_z)
-            if D > (self.l1 + self.l2) or D < abs(self.l1 - self.l2):
-                continue
+            phi_deg = np.degrees(theta0)
+            theta1_deg = np.degrees(theta1)
+            theta2_deg = np.degrees(theta2)
+            theta3_deg = np.degrees(theta3)
 
-            cos_theta2 = (wrist_r**2 + wrist_z**2 - self.l1**2 - self.l2**2) / (2 * self.l1 * self.l2)
-            if not (-1 <= cos_theta2 <= 1):
-                continue
+            best_angles = (phi_deg, theta1_deg, theta2_deg, theta3_deg)
+        
 
-            theta2 = -np.arccos(cos_theta2)  # Elbow-up
-            k1 = self.l1 + self.l2 * np.cos(theta2)
-            k2 = self.l2 * np.sin(theta2)
-            theta1 = np.arctan2(wrist_z, wrist_r) - np.arctan2(k2, k1)
-            theta3 = theta3_c - (theta1 + theta2)
+    return best_angles
 
-            # expected_orientation = {
-            #     "vertical_up": np.pi/2,
-            #     "vertical_down": -np.pi/2,
-            #     "flat": 0.0
-            # }.get(cost_mode)
-
-            # if cost_mode in ["vertical_up", "vertical_down", "flat"]:
-            #     end_orientation = theta1 + theta2 + theta3
-            #     if abs(end_orientation - expected_orientation) > np.radians(1):  # 10° tolerancji
-            #         continue  # pomijamy tę konfigurację, bo nie spełnia wymagań
-
-
-            if cost_mode == "min_angle_sum":
-                cost = theta0**2 + theta1**2 + theta2**2 + theta3**2
-            elif cost_mode == "vertical_up":
-                end_orientation = theta1 + theta2 + theta3
-                cost = (end_orientation - np.pi/2)**2    
-            elif cost_mode == "vertical_down":
-                end_orientation = theta1 + theta2 + theta3
-                cost = (end_orientation + np.pi/2)**2            
-            elif cost_mode == "flat":
-                end_orientation = theta1 + theta2 + theta3
-                cost = (end_orientation)**2  
-            elif cost_mode == "normal":
-                cost = (theta2)**2 + (theta3)**2
-            else:
-                raise ValueError("Nieznany tryb kosztu")
-            
-            if cost < min_cost:
-                min_cost = cost
-
-                phi_deg = np.degrees(theta0)
-                theta1_deg = np.degrees(theta1)
-                theta2_deg = np.degrees(theta2)
-                theta3_deg = np.degrees(theta3)
-
-                best_angles = (phi_deg, theta1_deg, theta2_deg, theta3_deg)
-                best_positions = self.calculate_positions_full(theta0, theta1, theta2, theta3)
-            
-        if best_positions:
-            self.plot_positions_full(best_positions, x_target, y_target, z_target)
-
-        return best_angles, best_positions
-
-    def forward_ik_full(self, angles):
-        theta0_deg = angles[base] - servo_trims[base]
-        theta1_deg = angles[shoulder] - servo_trims[shoulder]
-        theta2_deg = angles[elbow] - servo_trims[elbow]
-        theta3_deg = angles[wrist] - servo_trims[wrist]        
-        print(f"theta1_deg: {theta1_deg}, theta2_deg: {theta2_deg}, theta3_deg: {theta3_deg}")
-
-        # Convert angles to radians
-        theta0 = np.radians(90 - theta0_deg)
-        theta1 = np.radians(180 - theta1_deg)
-        theta2 = np.radians(- theta2_deg + 145)
-        theta3 = np.radians(- theta3_deg + 130)
-
-        x0, z0 = 0, 0
-
-        # First joint (in XZ plane)
-        x1 = x0 + L1 * np.cos(theta1)
-        z1 = z0 + L1 * np.sin(theta1)
-        print(f"Joint 1 position: x1 = {x1:.2f}, z1 = {z1:.2f}")
-
-        # Second joint
-        x2 = x1 + L2 * np.cos(theta1 + theta2)
-        z2 = z1 + L2 * np.sin(theta1 + theta2)
-        print(f"Joint 2 position: x2 = {x2:.2f}, z2 = {z2:.2f}")
-
-        # End effector
-        x3 = x2 + L3 * np.cos(theta1 + theta2 + theta3)
-        z3 = z2 + L3 * np.sin(theta1 + theta2 + theta3)
-        print(f"End Effector position: x3 = {x3:.2f}, z3 = {z3:.2f}")
-
-        # Apply base rotation to get full 3D (X, Y, Z)
-        # Base rotation around Z axis affects X and Y
-        def rotate_base(x, theta0):
-            x_rot = x * np.cos(theta0)
-            y_rot = x * np.sin(theta0)
-            return x_rot, y_rot
-
-        x2_rot, y2 = rotate_base(x2, theta0)
-        x3_rot, y3 = rotate_base(x3, theta0)
-
-        return x2_rot, y2, z2, x3_rot, y3, z3

@@ -1,10 +1,7 @@
-#!/usr/bin/env python
-
-from .scservo_def import *
+from .values import *
 
 class GroupSyncWrite:
-    def __init__(self, port, ph, start_address, data_length):
-        self.port = port
+    def __init__(self, ph, start_address, data_length):
         self.ph = ph
         self.start_address = start_address
         self.data_length = data_length
@@ -21,41 +18,41 @@ class GroupSyncWrite:
 
         self.param = []
 
-        for scs_id in self.data_dict:
-            if not self.data_dict[scs_id]:
+        for sts_id in self.data_dict:
+            if not self.data_dict[sts_id]:
                 return
 
-            self.param.append(scs_id)
-            self.param.extend(self.data_dict[scs_id])
+            self.param.append(sts_id)
+            self.param.extend(self.data_dict[sts_id])
 
-    def addParam(self, scs_id, data):
-        if scs_id in self.data_dict:  # scs_id already exist
+    def addParam(self, sts_id, data):
+        if sts_id in self.data_dict:  # sts_id already exist
             return False
 
         if len(data) > self.data_length:  # input data is longer than set
             return False
 
-        self.data_dict[scs_id] = data
+        self.data_dict[sts_id] = data
 
         self.is_param_changed = True
         return True
 
-    def removeParam(self, scs_id):
-        if scs_id not in self.data_dict:  # NOT exist
+    def removeParam(self, sts_id):
+        if sts_id not in self.data_dict:  # NOT exist
             return
 
-        del self.data_dict[scs_id]
+        del self.data_dict[sts_id]
 
         self.is_param_changed = True
 
-    def changeParam(self, scs_id, data):
-        if scs_id not in self.data_dict:  # NOT exist
+    def changeParam(self, sts_id, data):
+        if sts_id not in self.data_dict:  # NOT exist
             return False
 
         if len(data) > self.data_length:  # input data is longer than set
             return False
 
-        self.data_dict[scs_id] = data
+        self.data_dict[sts_id] = data
 
         self.is_param_changed = True
         return True
@@ -70,5 +67,5 @@ class GroupSyncWrite:
         if self.is_param_changed is True or not self.param:
             self.makeParam()
 
-        return self.ph.syncWriteTxOnly(self.port, self.start_address, self.data_length, self.param,
+        return self.ph.syncWriteTxOnly(self.start_address, self.data_length, self.param,
                                        len(self.data_dict.keys()) * (1 + self.data_length))

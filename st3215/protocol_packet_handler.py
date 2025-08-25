@@ -1,32 +1,10 @@
-#!/usr/bin/env python
-
-from .stservo_def import *
-
-TXPACKET_MAX_LEN = 250
-RXPACKET_MAX_LEN = 250
-
-# for Protocol Packet
-PKT_HEADER0 = 0
-PKT_HEADER1 = 1
-PKT_ID = 2
-PKT_LENGTH = 3
-PKT_INSTRUCTION = 4
-PKT_ERROR = 4
-PKT_PARAMETER0 = 5
-
-# Protocol Error bit
-ERRBIT_VOLTAGE = 1
-ERRBIT_ANGLE = 2
-ERRBIT_OVERHEAT = 4
-ERRBIT_OVERELE = 8
-ERRBIT_OVERLOAD = 32
-
+from .values import *
 
 class protocol_packet_handler(object):
-    def __init__(self, portHandler, protocol_end):
+    def __init__(self, portHandler):
         #self.sts_setend(protocol_end)# STServo bit end(STS/SMS=0, SCS=1)
         self.portHandler = portHandler
-        self.sts_end = protocol_end
+        self.sts_end = 0
 
     def sts_getend(self):
         return self.sts_end
@@ -130,8 +108,8 @@ class protocol_packet_handler(object):
             return COMM_TX_ERROR
 
         # make packet header
-        txpacket[PKT_HEADER0] = 0xFF
-        txpacket[PKT_HEADER1] = 0xFF
+        txpacket[PKT_HEADER_0] = 0xFF
+        txpacket[PKT_HEADER_1] = 0xFF
 
         # add a checksum to the packet
         for idx in range(2, total_packet_length - 1):  # except header, checksum
