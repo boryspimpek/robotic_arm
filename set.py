@@ -4,6 +4,6 @@ servo = ST3215('/dev/ttyACM0')
 
 
 
-# servo.MoveTo(3, 2048)
+servo.MoveTo(4, 397, 500, 50)
 
-# servo.DefineMiddle(4)
+# servo.DefineMiddle(2)
