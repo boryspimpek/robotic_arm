@@ -2,6 +2,7 @@ import math
 import numpy as np
 import time
 from st3215 import ST3215
+from pyPS4Controller.controller import Controller
 
 servo = ST3215('/dev/ttyACM0')
 
@@ -142,4 +143,16 @@ def move_to_point(point):
         servo.MoveTo(id, target, speed, 150)
 
 
-move_to_point([200, 0, 200])
+
+
+
+
+
+
+
+
+
+
+
+
+
