@@ -126,15 +126,18 @@ def move_to_point(point, max_speed=2400):
         for id, target, speed in zip(ids, servo_targets, servo_speeds):
             servo.MoveTo(id, target, speed, 150)
 
-if __name__ == "__main__":
+def init_joystick():
     pygame.init()
     pygame.joystick.init()
     if pygame.joystick.get_count() == 0:
         raise Exception("Nie wykryto pada PS4!")
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-
     print(f"Pad wykryty: {joystick.get_name()}")
+    return joystick
+
+if __name__ == "__main__":
+    joystick = init_joystick()
 
     x, y, z = 200, 0, 0
     deadzone = 0.8
