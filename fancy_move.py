@@ -12,26 +12,9 @@ servo = ST3215('/dev/ttyACM0')
 
 l1, l2, l3 = 120, 120, 110
 
-limits = {
-    1: (1024, 3072),
-    2: (0, 2048), 
-    3: (400, 3700),
-    4: (600, 3500)
-}
-
 # -------------------------
 # Funkcje konwersji kątów
 # -------------------------
-
-def check_servo_angles(servo_targets):
-    """Sprawdza czy kąty serw są w ich indywidualnych zakresach"""
-    errors = []
-    for id, target in zip([1, 2, 3, 4], servo_targets):
-        min_angle, max_angle = limits[id]  # Pobierz limity dla konkretnego serwa
-        if not (min_angle <= target <= max_angle):
-            errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
-    return errors
-
 def rad_to_servo(rad):
     center = 2048
     scale = 2048 / 3.1415926535
@@ -43,9 +26,38 @@ def servo_to_rad(raw_position):
     return ((4095 - raw_position) - center) / scale
 
 # -------------------------
-# Funkcja IK
+# Funkcja FK (Forward Kinematics)
 # -------------------------
-def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
+def forward_kinematics(theta1, theta2, theta3, theta4):
+    # Pozycja podstawy
+    x0, y0, z0 = 0, 0, 0
+    
+    # Pozycja stawu 1 (ramię)
+    x1 = x0
+    y1 = y0
+    z1 = z0
+    
+    # Pozycja stawu 2 (łokieć)
+    x2 = x1 + l1 * math.cos(theta2) * math.cos(theta1)
+    y2 = y1 + l1 * math.cos(theta2) * math.sin(theta1)
+    z2 = z1 + l1 * math.sin(theta2)
+    
+    # Pozycja stawu 3 (nadgarstek)
+    x3 = x2 + l2 * math.cos(theta2 + theta3) * math.cos(theta1)
+    y3 = y2 + l2 * math.cos(theta2 + theta3) * math.sin(theta1)
+    z3 = z2 + l2 * math.sin(theta2 + theta3)
+    
+    # Pozycja końcówki
+    x4 = x3 + l3 * math.cos(theta2 + theta3 + theta4) * math.cos(theta1)
+    y4 = y3 + l3 * math.cos(theta2 + theta3 + theta4) * math.sin(theta1)
+    z4 = z3 + l3 * math.sin(theta2 + theta3 + theta4)
+    
+    return (x4, y4, z4), (x3, y3, z3), (x2, y2, z2)
+
+# -------------------------
+# Funkcja IK z redundancją
+# -------------------------
+def solve_ik_with_redundancy(x_target, y_target, z_target, current_angles, cost_mode="normal", redundancy_param=0.0):
     delta_theta = np.radians(1)
     theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
@@ -63,6 +75,9 @@ def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
     best_angles = None
     best_orientation_error = float('inf')
     tol = math.radians(2)
+    
+    # Aktualna konfiguracja (do uwzględnienia w koszcie)
+    theta2_curr, theta3_curr, theta4_curr = current_angles[1], current_angles[2], current_angles[3]
 
     for theta4_c in theta4_candidates:
         wrist_r = r_target - l3 * math.cos(theta4_c)
@@ -94,9 +109,13 @@ def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
             orientation_error = abs(end_orientation)
             cost = orientation_error**2
         else:
-            cost = theta3**2 + theta4**2
+            # Koszt uwzględniający redundancję - minimalizacja zmiany kątów
+            cost = (theta2 - theta2_curr)**2 + (theta3 - theta3_curr)**2 + (theta4 - theta4_curr)**2
             orientation_error = 0.0
 
+        # Dodajemy komponent redundancji - preferujemy rozwiązania z większym kątem theta3
+        cost -= redundancy_param * theta3
+        
         if cost < min_cost:
             min_cost = cost
             best_angles = (theta1, theta2, theta3, theta4)
@@ -111,30 +130,64 @@ def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
     return best_angles
 
 # -------------------------
-# Funkcja ruchu serw
+# Funkcja ruchu z redundancją
 # -------------------------
-def move_to_point(point, max_speed=2400):
+def move_with_redundancy(point, redundancy_param=0.0):
     x, y, z = point
     ids = [1, 2, 3, 4]
 
     current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in ids]
 
-    angles = solve_ik(x, y, z, "normal")
+    angles = solve_ik_with_redundancy(x, y, z, current_angles, "normal", redundancy_param)
 
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
 
     max_delta = max(delta_angles)
-    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
+    servo_speeds = [int((delta / max_delta) * 2400) if max_delta != 0 else 0 for delta in delta_angles]
 
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
-    errors = check_servo_angles(servo_targets)
-    if errors:
-        print("Błędy:", errors)
-        return
-    else:
-        for id, target, speed in zip(ids, servo_targets, servo_speeds):
-            servo.MoveTo(id, target, speed, 150)
+    for id, target, speed in zip(ids, servo_targets, servo_speeds):
+        servo.MoveTo(id, target, speed, 150)
+        
+    return angles
+
+# -------------------------
+# Funkcja do efektownego ruchu bez przemieszczania końcówki
+# -------------------------
+def fancy_move(redundancy_range=2.0, steps=20, delay=0.1):
+    """Wykonuje efektowny ruch bez przemieszczania końcówki"""
+    # Pobierz aktualne kąty
+    ids = [1, 2, 3, 4]
+    current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in ids]
+    
+    # Oblicz aktualną pozycję końcówki
+    current_pos, wrist_pos, elbow_pos = forward_kinematics(*current_angles)
+    
+    print(f"Pozycja początkowa: {current_pos}")
+    
+    # Wykonaj serię ruchów z różnymi parametrami redundancji
+    for i in range(steps + 1):
+        # Zmieniaj parametr redundancji sinusoidalnie
+        param = redundancy_range * math.sin(2 * math.pi * i / steps)
+        
+        try:
+            new_angles = move_with_redundancy(current_pos, param)
+            new_pos, new_wrist, new_elbow = forward_kinematics(*new_angles)
+            
+            # Sprawdź, czy końcówka się nie przemieściła
+            error = math.sqrt(
+                (new_pos[0] - current_pos[0])**2 +
+                (new_pos[1] - current_pos[1])**2 +
+                (new_pos[2] - current_pos[2])**2
+            )
+            
+            print(f"Krok {i}: redundancja={param:.2f}, błąd pozycji={error:.2f}mm")
+            
+            time.sleep(delay)
+        except Exception as e:
+            print(f"Błąd w kroku {i}: {e}")
+            break
 
 # -------------------------
 # Inicjalizacja Pygame i pad PS4
@@ -155,7 +208,7 @@ x, y, z = 200, 0, 0
 step = 5.0
 deadzone = 0.8
 
-move_to_point((x, y, z), 400)
+move_with_redundancy((x, y, z))
 time.sleep(2)
 
 try:
@@ -165,6 +218,9 @@ try:
         ly = joystick.get_axis(0)
         lx = joystick.get_axis(1)
         ry = joystick.get_axis(4)
+        
+        # Sprawdź przyciski dla efektownych ruchów
+        triangle_btn = joystick.get_button(2)  # Trójkąt
 
         # deadzone
         lx = 0 if abs(lx) < deadzone else lx
@@ -178,8 +234,14 @@ try:
 
         # ruch robota
         try:
-            move_to_point((x, y, z))
-            # print(f"Ruch do punktu: x={x:.1f}, y={y:.1f}, z={z:.1f}")
+            if triangle_btn:
+                # Naciśnięty trójkąt - wykonaj efektowny ruch
+                fancy_move(redundancy_range=2.0, steps=30, delay=0.05)
+            else:
+                # Normalny ruch
+                move_with_redundancy((x, y, z))
+                
+            print(f"Ruch do punktu: x={x:.1f}, y={y:.1f}, z={z:.1f}")
         except ValueError as e:
             print(f"Nieosiągalna pozycja: {e}")
 

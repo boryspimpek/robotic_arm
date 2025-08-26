@@ -140,6 +140,3 @@ def move_to_point(point):
     # ruch serw zsynchronizowany
     for id, target, speed in zip(ids, servo_targets, servo_speeds):
         servo.MoveTo(id, target, speed, 150)
-
-
-move_to_point([200, 0, 200])
