@@ -4,12 +4,12 @@ import math
 import numpy as np
 from st3215 import ST3215
 from math import radians, degrees
+from jacobian import calculate_manipulability
 
 LINK_LENGTHS = (120, 120, 110)  # l1, l2, l3
 step = 5
 DEADZONE = 0.8
 INITIAL_POSITION = (200, 0, 110)
-MOVE_SPEED = 400
 cost_mode = "flat"
 
 SERVO_LIMITS = {
@@ -115,7 +115,10 @@ def move_to_point(point, max_speed=2400):
     current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in servo_ids]
     
     angles = solve_ik(x, y, z, cost_mode)
-    
+    theta1, theta2, theta3, theta4 = angles
+    manipulat = calculate_manipulability(theta1, theta2, theta3, theta4)
+    print(manipulat/1000)
+
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
     max_delta = max(delta_angles) if delta_angles else 0
     
@@ -148,17 +151,14 @@ def process_joystick_input(joystick, current_pos, step_size):
     
     x, y, z = current_pos
     
-    # Odczytaj wartości osi
     ly = joystick.get_axis(0)
     lx = joystick.get_axis(1)
     ry = joystick.get_axis(4)
 
-    # Zastosuj deadzone
     lx = 0 if abs(lx) < DEADZONE else lx
     ly = 0 if abs(ly) < DEADZONE else ly
     ry = 0 if abs(ry) < DEADZONE else ry
     
-    # Aktualizuj pozycję
     x += -lx * step_size
     y -= ly * step_size
     z -= ry * step_size
@@ -169,8 +169,7 @@ def main():
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
     
-    # Początkowy ruch do pozycji startowej
-    move_to_point(current_position, MOVE_SPEED)
+    move_to_point(current_position, 400)
     time.sleep(2)
     
     try:
