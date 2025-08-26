@@ -5,9 +5,6 @@ import numpy as np
 from st3215 import ST3215
 from math import radians, degrees
 
-# -------------------------
-# Inicjalizacja serw i robota
-# -------------------------
 servo = ST3215('/dev/ttyACM0')
 
 l1, l2, l3 = 120, 120, 110
@@ -18,10 +15,6 @@ limits = {
     3: (400, 3700),
     4: (600, 3500)
 }
-
-# -------------------------
-# Funkcje konwersji kątów
-# -------------------------
 
 def check_servo_angles(servo_targets):
     """Sprawdza czy kąty serw są w ich indywidualnych zakresach"""
@@ -42,10 +35,7 @@ def servo_to_rad(raw_position):
     scale = 2048 / 3.1415926535
     return ((4095 - raw_position) - center) / scale
 
-# -------------------------
-# Funkcja IK
-# -------------------------
-def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
+def solve_ik(x_target, y_target, z_target, cost_mode="down"):
     delta_theta = np.radians(1)
     theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
@@ -84,10 +74,7 @@ def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
 
         end_orientation = theta2 + theta3 + theta4
 
-        if cost_mode == "vertical_up":
-            orientation_error = abs(end_orientation - math.pi/2)
-            cost = orientation_error**2
-        elif cost_mode == "vertical_down":
+        if cost_mode == "down":
             orientation_error = abs(end_orientation + math.pi/2)
             cost = orientation_error**2
         elif cost_mode == "flat":
@@ -110,9 +97,6 @@ def solve_ik(x_target, y_target, z_target, cost_mode="normal"):
 
     return best_angles
 
-# -------------------------
-# Funkcja ruchu serw
-# -------------------------
 def move_to_point(point, max_speed=2400):
     x, y, z = point
     ids = [1, 2, 3, 4]
@@ -124,7 +108,6 @@ def move_to_point(point, max_speed=2400):
     max_delta = max(delta_angles)
 
     servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
-    print(f"Prędkości serw: {servo_speeds}")
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
     errors = check_servo_angles(servo_targets)
@@ -135,54 +118,49 @@ def move_to_point(point, max_speed=2400):
         for id, target, speed in zip(ids, servo_targets, servo_speeds):
             servo.MoveTo(id, target, speed, 150)
 
-# -------------------------
-# Inicjalizacja Pygame i pad PS4
-# -------------------------
-pygame.init()
-pygame.joystick.init()
-if pygame.joystick.get_count() == 0:
-    raise Exception("Nie wykryto pada PS4!")
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
+if __name__ == "__main__":
+    pygame.init()
+    pygame.joystick.init()
+    if pygame.joystick.get_count() == 0:
+        raise Exception("Nie wykryto pada PS4!")
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
 
-print(f"Pad wykryty: {joystick.get_name()}")
+    print(f"Pad wykryty: {joystick.get_name()}")
 
-# -------------------------
-# Początkowa pozycja końcówki
-# -------------------------
-x, y, z = 200, 0, 110
-step = 2.0
-deadzone = 0.8
+    x, y, z = 200, 0, 0
+    step = 2.0
+    deadzone = 0.8
 
-move_to_point((x, y, z), 400)
-time.sleep(2)
+    move_to_point((x, y, z), 400)
+    time.sleep(2)
 
-try:
-    while True:
-        pygame.event.pump()
+    try:
+        while True:
+            pygame.event.pump()
 
-        ly = joystick.get_axis(0)
-        lx = joystick.get_axis(1)
-        ry = joystick.get_axis(4)
+            ly = joystick.get_axis(0)
+            lx = joystick.get_axis(1)
+            ry = joystick.get_axis(4)
 
-        # deadzone
-        lx = 0 if abs(lx) < deadzone else lx
-        ly = 0 if abs(ly) < deadzone else ly
-        ry = 0 if abs(ry) < deadzone else ry
-        
-        # ruch XYZ
-        x += -lx * step
-        y -= ly * step
-        z -= ry * step
+            # deadzone
+            lx = 0 if abs(lx) < deadzone else lx
+            ly = 0 if abs(ly) < deadzone else ly
+            ry = 0 if abs(ry) < deadzone else ry
+            
+            # ruch XYZ
+            x += -lx * step
+            y -= ly * step
+            z -= ry * step
 
-        # ruch robota
-        try:
-            move_to_point((x, y, z))
-            # print(f"Ruch do punktu: x={x:.1f}, y={y:.1f}, z={z:.1f}")
-        except ValueError as e:
-            print(f"Nieosiągalna pozycja: {e}")
+            # ruch robota
+            try:
+                move_to_point((x, y, z))
+                # print(f"Ruch do punktu: x={x:.1f}, y={y:.1f}, z={z:.1f}")
+            except ValueError as e:
+                print(f"Nieosiągalna pozycja: {e}")
 
-        time.sleep(0.01)
+            time.sleep(0.01)
 
-except KeyboardInterrupt:
-    print("Sterowanie zakończone")
+    except KeyboardInterrupt:
+        print("Sterowanie zakończone")
