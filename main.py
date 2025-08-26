@@ -21,7 +21,7 @@ step = 5
 def check_servo_angles(servo_targets):
     errors = []
     for id, target in zip([1, 2, 3, 4], servo_targets):
-        min_angle, max_angle = limits[id]  
+        min_angle, max_angle = limits[id]
         if not (min_angle <= target <= max_angle):
             errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
     return errors
@@ -42,7 +42,7 @@ def solve_ik(x_target, y_target, z_target, cost_mode="down"):
     if cost_mode == "normal":
         step = 5  
     else:
-        step = 2  
+        step = 2
 
     delta_theta = np.radians(1)
     theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
@@ -126,18 +126,15 @@ def move_to_point(point, max_speed=2400):
         for id, target, speed in zip(ids, servo_targets, servo_speeds):
             servo.MoveTo(id, target, speed, 150)
 
-def init_joystick():
+if __name__ == "__main__":
     pygame.init()
     pygame.joystick.init()
     if pygame.joystick.get_count() == 0:
         raise Exception("Nie wykryto pada PS4!")
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-    print(f"Pad wykryty: {joystick.get_name()}")
-    return joystick
 
-if __name__ == "__main__":
-    joystick = init_joystick()
+    print(f"Pad wykryty: {joystick.get_name()}")
 
     x, y, z = 200, 0, 0
     deadzone = 0.8
