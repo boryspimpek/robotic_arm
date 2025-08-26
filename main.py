@@ -16,11 +16,12 @@ limits = {
     4: (600, 3500)
 }
 
+step = 5  
+
 def check_servo_angles(servo_targets):
-    """Sprawdza czy kąty serw są w ich indywidualnych zakresach"""
     errors = []
     for id, target in zip([1, 2, 3, 4], servo_targets):
-        min_angle, max_angle = limits[id]  # Pobierz limity dla konkretnego serwa
+        min_angle, max_angle = limits[id]  
         if not (min_angle <= target <= max_angle):
             errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
     return errors
@@ -36,6 +37,13 @@ def servo_to_rad(raw_position):
     return ((4095 - raw_position) - center) / scale
 
 def solve_ik(x_target, y_target, z_target, cost_mode="down"):
+    global step  
+    
+    if cost_mode == "normal":
+        step = 5  
+    else:
+        step = 2  
+
     delta_theta = np.radians(1)
     theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
@@ -129,7 +137,6 @@ if __name__ == "__main__":
     print(f"Pad wykryty: {joystick.get_name()}")
 
     x, y, z = 200, 0, 0
-    step = 2.0
     deadzone = 0.8
 
     move_to_point((x, y, z), 400)
@@ -148,7 +155,7 @@ if __name__ == "__main__":
             ly = 0 if abs(ly) < deadzone else ly
             ry = 0 if abs(ry) < deadzone else ry
             
-            # ruch XYZ
+            # ruch XYZ z użyciem globalnej zmiennej step
             x += -lx * step
             y -= ly * step
             z -= ry * step
