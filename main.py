@@ -5,26 +5,21 @@ import numpy as np
 from st3215 import ST3215
 from math import radians, degrees
 
-servo = ST3215('/dev/ttyACM0')
+LINK_LENGTHS = (120, 120, 110)  # l1, l2, l3
+step = 5
+DEADZONE = 0.8
+INITIAL_POSITION = (200, 0, 110)
+MOVE_SPEED = 400
+cost_mode = "flat"
 
-l1, l2, l3 = 120, 120, 110
-
-limits = {
+SERVO_LIMITS = {
     1: (1024, 3072),
     2: (0, 2048), 
     3: (400, 3700),
     4: (600, 3500)
 }
 
-step = 5  
-
-def check_servo_angles(servo_targets):
-    errors = []
-    for id, target in zip([1, 2, 3, 4], servo_targets):
-        min_angle, max_angle = limits[id]
-        if not (min_angle <= target <= max_angle):
-            errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
-    return errors
+servo = ST3215('/dev/ttyACM0')
 
 def rad_to_servo(rad):
     center = 2048
@@ -36,14 +31,22 @@ def servo_to_rad(raw_position):
     scale = 2048 / 3.1415926535
     return ((4095 - raw_position) - center) / scale
 
-def solve_ik(x_target, y_target, z_target, cost_mode="down"):
+def check_servo_angles(servo_targets):
+    errors = []
+    for id, target in zip([1, 2, 3, 4], servo_targets):
+        min_angle, max_angle = SERVO_LIMITS[id]
+        if not (min_angle <= target <= max_angle):
+            errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
+    return errors
+
+def solve_ik(x_target, y_target, z_target, cost_mode):
     global step  
-    
     if cost_mode == "normal":
         step = 5  
     else:
         step = 2
 
+    l1, l2, l3 = LINK_LENGTHS
     delta_theta = np.radians(1)
     theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
 
@@ -107,14 +110,15 @@ def solve_ik(x_target, y_target, z_target, cost_mode="down"):
 
 def move_to_point(point, max_speed=2400):
     x, y, z = point
-    ids = [1, 2, 3, 4]
+    servo_ids = [1, 2, 3, 4]
 
-    current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in ids]
-    angles = solve_ik(x, y, z)
-
+    current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in servo_ids]
+    
+    angles = solve_ik(x, y, z, cost_mode)
+    
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
-    max_delta = max(delta_angles)
-
+    max_delta = max(delta_angles) if delta_angles else 0
+    
     servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
@@ -122,48 +126,60 @@ def move_to_point(point, max_speed=2400):
     if errors:
         print("Błędy:", errors)
         return
-    else:
-        for id, target, speed in zip(ids, servo_targets, servo_speeds):
-            servo.MoveTo(id, target, speed, 150)
+    
+    for id, target, speed in zip(servo_ids, servo_targets, servo_speeds):
+        servo.MoveTo(id, target, speed, 150)
 
-if __name__ == "__main__":
+def initialize_joystick():
     pygame.init()
     pygame.joystick.init()
+    
     if pygame.joystick.get_count() == 0:
         raise Exception("Nie wykryto pada PS4!")
+    
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-
+    
     print(f"Pad wykryty: {joystick.get_name()}")
+    return joystick
 
-    x, y, z = 200, 0, 0
-    deadzone = 0.8
+def process_joystick_input(joystick, current_pos, step_size):
+    pygame.event.pump()
+    
+    x, y, z = current_pos
+    
+    # Odczytaj wartości osi
+    ly = joystick.get_axis(0)
+    lx = joystick.get_axis(1)
+    ry = joystick.get_axis(4)
 
-    move_to_point((x, y, z), 400)
+    # Zastosuj deadzone
+    lx = 0 if abs(lx) < DEADZONE else lx
+    ly = 0 if abs(ly) < DEADZONE else ly
+    ry = 0 if abs(ry) < DEADZONE else ry
+    
+    # Aktualizuj pozycję
+    x += -lx * step_size
+    y -= ly * step_size
+    z -= ry * step_size
+    
+    return (x, y, z)
+
+def main():
+    joystick = initialize_joystick()
+    current_position = INITIAL_POSITION
+    
+    # Początkowy ruch do pozycji startowej
+    move_to_point(current_position, MOVE_SPEED)
     time.sleep(2)
-
+    
     try:
         while True:
-            pygame.event.pump()
-
-            ly = joystick.get_axis(0)
-            lx = joystick.get_axis(1)
-            ry = joystick.get_axis(4)
-
-            # deadzone
-            lx = 0 if abs(lx) < deadzone else lx
-            ly = 0 if abs(ly) < deadzone else ly
-            ry = 0 if abs(ry) < deadzone else ry
+            new_position = process_joystick_input(joystick, current_position, step)
             
-            # ruch XYZ z użyciem globalnej zmiennej step
-            x += -lx * step
-            y -= ly * step
-            z -= ry * step
-
-            # ruch robota
             try:
-                move_to_point((x, y, z))
-                # print(f"Ruch do punktu: x={x:.1f}, y={y:.1f}, z={z:.1f}")
+                move_to_point(new_position)
+                current_position = new_position
             except ValueError as e:
                 print(f"Nieosiągalna pozycja: {e}")
 
@@ -171,3 +187,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Sterowanie zakończone")
+
+if __name__ == "__main__":
+    main()
