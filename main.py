@@ -118,14 +118,13 @@ def move_to_point(point, max_speed=2400):
     ids = [1, 2, 3, 4]
 
     current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in ids]
-
-    angles = solve_ik(x, y, z, "normal")
+    angles = solve_ik(x, y, z)
 
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
-
     max_delta = max(delta_angles)
-    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
 
+    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
+    print(f"Prędkości serw: {servo_speeds}")
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
     errors = check_servo_angles(servo_targets)
@@ -151,8 +150,8 @@ print(f"Pad wykryty: {joystick.get_name()}")
 # -------------------------
 # Początkowa pozycja końcówki
 # -------------------------
-x, y, z = 200, 0, 0
-step = 5.0
+x, y, z = 200, 0, 110
+step = 2.0
 deadzone = 0.8
 
 move_to_point((x, y, z), 400)
@@ -183,7 +182,7 @@ try:
         except ValueError as e:
             print(f"Nieosiągalna pozycja: {e}")
 
-        time.sleep(0.001)
+        time.sleep(0.01)
 
 except KeyboardInterrupt:
     print("Sterowanie zakończone")
