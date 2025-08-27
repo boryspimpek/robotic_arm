@@ -6,7 +6,7 @@ import numpy as np
 from st3215 import ST3215
 from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
 
-step = 5
+# Początkowe wartości
 DEADZONE = 0.8
 INITIAL_POSITION = (200, 0, 110)
 
@@ -15,6 +15,7 @@ TRIANGLE_BUTTON_ID = 2
 CIRCLE_BUTTON_ID = 1
 CROSS_BUTTON_ID = 0
 
+# Zmienne globalne
 method = "full"
 orientation_mode = "flat"
 
@@ -165,7 +166,10 @@ def transform(current_position):
     return wrist_point
 
 def main():
-    global method, orientation_mode, step
+    global method, orientation_mode
+    
+    step = 3 if method == "wrist" else 5
+    
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
     
@@ -193,12 +197,13 @@ def main():
             if cross_state == 1 and last_cross_state == 0:
                 if method == "full":
                     method = "wrist"
-                    step = 5
+                    step = 3 
                     wrist_point = transform(current_position)
                     current_position = wrist_point
                 else:
                     method = "full"
-                    step = 1
+                    step = 5 
+                print(f"Zmieniono tryb na: {method}, step = {step}")
 
             last_triangle_state = triangle_state
             last_circle_state = circle_state
@@ -210,7 +215,7 @@ def main():
                 try:
                     move_to_point(new_position, method)
                     current_position = new_position
-                    print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}")
+                    print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}, Step: {step}")
                 
                 except ValueError as e:
                     print(f"Nieosiągalna pozycja: {e}")
