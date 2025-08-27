@@ -4,7 +4,7 @@ import math
 from math import cos, pi, radians, degrees, sin
 import numpy as np
 from st3215 import ST3215
-from utilis import DEADZONE, INITIAL_POSITION, check_servo_angles, initialize_joystick, process_joystick_input, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
+from utilis import DEADZONE, INITIAL_POSITION, check_servo_angles, find_wrist_point, initialize_joystick, process_joystick_input, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
 
 # Definicje przycisków
 TRIANGLE_BUTTON_ID = 2
@@ -115,7 +115,7 @@ def move_to_point(point, method, max_speed=2400):
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
     max_delta = max(delta_angles) if delta_angles else 0
     
-    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
+    servo_speeds = [int((delta / max_delta) * corrected_speed) if max_delta != 0 else 0 for delta in delta_angles]
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
     errors = check_servo_angles(servo_targets)
@@ -126,25 +126,10 @@ def move_to_point(point, method, max_speed=2400):
     for id, target, speed in zip(servo_ids, servo_targets, servo_speeds):
         servo.MoveTo(id, target, speed, 150)
 
-def transform(angles):
-    l1, l2, l3 = LINK_LENGTHS
-    
-    theta1, theta2, theta3, theta4 = angles
-
-    wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
-    wrist_y = l1 * cos(theta2) * sin(theta1) + l2 * cos(theta2 + theta3) * sin(theta1)
-    wrist_z = l1 * sin(theta2) + l2 * sin(theta2 + theta3)
-
-    wrist_point = (wrist_x, wrist_y, wrist_z)
-
-    move_to_point(wrist_point, method="wrist")
-
-    return wrist_point
-
 def main():
     global method, orientation_mode
     
-    step = 3 if method == "wrist" else 5
+    step = 3 if method == "wrist" else 6
     
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
@@ -175,7 +160,8 @@ def main():
                     method = "wrist"
                     step = 3 
                     angles = solve_ik_full(*current_position)
-                    wrist_point = transform(angles)
+                    wrist_point = find_wrist_point(angles)
+                    move_to_point(wrist_point, method="wrist")
                     current_position = wrist_point
                 else:
                     method = "full"
