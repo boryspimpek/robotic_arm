@@ -1,10 +1,14 @@
-import pygame
 import time
 import math
-from math import cos, pi, radians, degrees, sin
+from math import cos, pi, sin
+
 import numpy as np
+import pygame
+
 from st3215 import ST3215
-from utilis import DEADZONE, INITIAL_POSITION, check_servo_angles, find_wrist_point, initialize_joystick, process_joystick_input, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
+
+from utilis import DEADZONE, INITIAL_POSITION, LINK_LENGTHS 
+from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input
 
 # Definicje przycisków
 TRIANGLE_BUTTON_ID = 2
