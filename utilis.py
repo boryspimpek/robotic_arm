@@ -9,6 +9,11 @@ SERVO_LIMITS = {
     4: (600, 3500)
 }
 
+# Początkowe wartości
+DEADZONE = 0.8
+INITIAL_POSITION = (200, 0, 110)
+
+
 LINK_LENGTHS = (120, 120, 110)  # l1, l2, l3
 
 def rad_to_servo(rad):
@@ -41,6 +46,25 @@ def initialize_joystick():
     
     print(f"Pad wykryty: {joystick.get_name()}")
     return joystick
+
+def process_joystick_input(joystick, current_pos, step_size):
+    pygame.event.pump()
+    
+    x, y, z = current_pos
+    
+    ly = joystick.get_axis(0)
+    lx = joystick.get_axis(1)
+    ry = joystick.get_axis(4)
+
+    lx = 0 if abs(lx) < DEADZONE else lx
+    ly = 0 if abs(ly) < DEADZONE else ly
+    ry = 0 if abs(ry) < DEADZONE else ry
+    
+    x += -lx * step_size
+    y -= ly * step_size
+    z -= ry * step_size
+    
+    return (x, y, z)
 
 def singularity_check(angles, max_speed):
     l1, l2, l3 = LINK_LENGTHS

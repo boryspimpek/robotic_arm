@@ -4,11 +4,7 @@ import math
 from math import cos, pi, radians, degrees, sin
 import numpy as np
 from st3215 import ST3215
-from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
-
-# Początkowe wartości
-DEADZONE = 0.8
-INITIAL_POSITION = (200, 0, 110)
+from utilis import DEADZONE, INITIAL_POSITION, check_servo_angles, initialize_joystick, process_joystick_input, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
 
 # Definicje przycisków
 TRIANGLE_BUTTON_ID = 2
@@ -119,7 +115,7 @@ def move_to_point(point, method, max_speed=2400):
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
     max_delta = max(delta_angles) if delta_angles else 0
     
-    servo_speeds = [int((delta / max_delta) * corrected_speed) if max_delta != 0 else 0 for delta in delta_angles]
+    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
     errors = check_servo_angles(servo_targets)
@@ -130,28 +126,8 @@ def move_to_point(point, method, max_speed=2400):
     for id, target, speed in zip(servo_ids, servo_targets, servo_speeds):
         servo.MoveTo(id, target, speed, 150)
 
-def process_joystick_input(joystick, current_pos, step_size):
-    pygame.event.pump()
-    
-    x, y, z = current_pos
-    
-    ly = joystick.get_axis(0)
-    lx = joystick.get_axis(1)
-    ry = joystick.get_axis(4)
-
-    lx = 0 if abs(lx) < DEADZONE else lx
-    ly = 0 if abs(ly) < DEADZONE else ly
-    ry = 0 if abs(ry) < DEADZONE else ry
-    
-    x += -lx * step_size
-    y -= ly * step_size
-    z -= ry * step_size
-    
-    return (x, y, z)
-
-def transform(current_position):
+def transform(angles):
     l1, l2, l3 = LINK_LENGTHS
-    angles = solve_ik_full(*current_position)
     
     theta1, theta2, theta3, theta4 = angles
 
@@ -173,7 +149,7 @@ def main():
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
     
-    move_to_point(current_position, method, 1500)
+    move_to_point(current_position, method, 500)
     time.sleep(2)
 
     last_triangle_state = 0
@@ -198,7 +174,8 @@ def main():
                 if method == "full":
                     method = "wrist"
                     step = 3 
-                    wrist_point = transform(current_position)
+                    angles = solve_ik_full(*current_position)
+                    wrist_point = transform(angles)
                     current_position = wrist_point
                 else:
                     method = "full"
