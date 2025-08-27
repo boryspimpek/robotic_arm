@@ -4,9 +4,8 @@ import math
 from math import pi, radians, degrees
 import numpy as np
 from st3215 import ST3215
-from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo
+from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check, map_speed
 
-LINK_LENGTHS = (120, 120, 110)  # l1, l2, l3
 step = 5
 DEADZONE = 0.8
 INITIAL_POSITION = (200, 0, 110)
@@ -114,10 +113,12 @@ def move_to_point(point, method, max_speed=2400):
     elif method == "wrist":
         angles = solve_ik_wrist(x, y, z, orientation_mode)
 
+    corrected_speed = singularity_check(angles, max_speed)
+
     delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
     max_delta = max(delta_angles) if delta_angles else 0
     
-    servo_speeds = [int((delta / max_delta) * max_speed) if max_delta != 0 else 0 for delta in delta_angles]
+    servo_speeds = [int((delta / max_delta) * corrected_speed) if max_delta != 0 else 0 for delta in delta_angles]
     servo_targets = [rad_to_servo(angle) for angle in angles]
 
     errors = check_servo_angles(servo_targets)
@@ -152,7 +153,7 @@ def main():
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
     
-    move_to_point(current_position, method, 400)
+    move_to_point(current_position, method, 1500)
     time.sleep(2)
 
     last_triangle_state = 0
@@ -184,8 +185,7 @@ def main():
                 try:
                     move_to_point(new_position, method)
                     current_position = new_position
-                    
-                    print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}")
+                    # print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}")
                 
                 except ValueError as e:
                     print(f"Nieosiągalna pozycja: {e}")
