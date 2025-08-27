@@ -1,7 +1,7 @@
 import pygame
 import time
 import math
-from math import pi, radians, degrees
+from math import cos, pi, radians, degrees, sin
 import numpy as np
 from st3215 import ST3215
 from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
@@ -148,6 +148,24 @@ def process_joystick_input(joystick, current_pos, step_size):
     
     return (x, y, z)
 
+def transform(current_position):
+    l1, l2, l3 = LINK_LENGTHS
+    # x, y, z = current_position
+    angles = solve_ik_full(*current_position)
+    
+    theta1, theta2, theta3, theta4 = angles
+
+    wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
+    wrist_y = l1 * cos(theta2) * sin(theta1) + l2 * cos(theta2 + theta3) * sin(theta1)
+    wrist_z = l1 * sin(theta2) + l2 * sin(theta2 + theta3)
+
+    wrist_point = (wrist_x, wrist_y, wrist_z)
+
+    move_to_point(wrist_point, method="wrist")
+
+    return wrist_point
+
+
 def main():
     global method, orientation_mode
     joystick = initialize_joystick()
@@ -173,7 +191,13 @@ def main():
                 orientation_mode = "flat"
             
             if cross_state == 1 and last_cross_state == 0:
-                method = "wrist" if method == "full" else "full"
+                # Przełącz metodę na przeciwną
+                if method == "full":
+                    method = "wrist"
+                    wrist_point = transform(current_position)
+                    current_position = wrist_point
+                else:
+                    method = "full"
 
             last_triangle_state = triangle_state
             last_circle_state = circle_state
@@ -185,7 +209,7 @@ def main():
                 try:
                     move_to_point(new_position, method)
                     current_position = new_position
-                    # print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}")
+                    print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}, {current_position[2]:.2f}), Method: {method}, Orientation: {orientation_mode}")
                 
                 except ValueError as e:
                     print(f"Nieosiągalna pozycja: {e}")
