@@ -150,7 +150,6 @@ def process_joystick_input(joystick, current_pos, step_size):
 
 def transform(current_position):
     l1, l2, l3 = LINK_LENGTHS
-    # x, y, z = current_position
     angles = solve_ik_full(*current_position)
     
     theta1, theta2, theta3, theta4 = angles
@@ -165,9 +164,8 @@ def transform(current_position):
 
     return wrist_point
 
-
 def main():
-    global method, orientation_mode
+    global method, orientation_mode, step
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
     
@@ -186,18 +184,21 @@ def main():
             
             if triangle_state == 1 and last_triangle_state == 0:
                 orientation_mode = "down"
+                move_to_point(current_position, method)
             
             if circle_state == 1 and last_circle_state == 0:
                 orientation_mode = "flat"
+                move_to_point(current_position, method)
             
             if cross_state == 1 and last_cross_state == 0:
-                # Przełącz metodę na przeciwną
                 if method == "full":
                     method = "wrist"
+                    step = 5
                     wrist_point = transform(current_position)
                     current_position = wrist_point
                 else:
                     method = "full"
+                    step = 1
 
             last_triangle_state = triangle_state
             last_circle_state = circle_state
