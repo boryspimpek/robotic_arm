@@ -169,7 +169,7 @@ def main():
                     current_position = wrist_point
                 else:
                     method = "full"
-                    step = 5 
+                    step = 6
                 print(f"Zmieniono tryb na: {method}, step = {step}")
 
             last_triangle_state = triangle_state
