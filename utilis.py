@@ -56,18 +56,22 @@ def singularity_check(angles, max_speed):
     distance_to_max = max_reach - wrist_distance
     print(f"distance to max: {distance_to_max:.2f}")
 
-    corrected_speed = distance_to_max / (l1 + l2) * max_speed
-    corrected_speed = round(corrected_speed)  # teraz corrected_speed jest zaokrąglone
+    exponent = 2
+    normalized = distance_to_max / (l1 + l2)
+    corrected_speed = (1 - (1 - normalized) ** exponent) * max_speed
+    corrected_speed = max(400, round(corrected_speed))  
     print(f"corrected speed: {corrected_speed:.2f}")
 
     return corrected_speed
 
-
-
-
-
-def map_speed(distance_to_max, max_speed):
+def wrist_point(angles):
     l1, l2, l3 = LINK_LENGTHS
-    corrected_speed = distance_to_max / (l1 + l2) * max_speed
-    corrected_speed = round(corrected_speed)  # teraz corrected_speed jest zaokrąglone
-    return corrected_speed
+    theta1, theta2, theta3, theta4 = angles
+
+    wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
+    wrist_y = l1 * cos(theta2) * sin(theta1) + l2 * cos(theta2 + theta3) * sin(theta1)
+    wrist_z = l1 * sin(theta2) + l2 * sin(theta2 + theta3)
+
+    wrist_point = (wrist_x, wrist_y, wrist_z)
+
+    return wrist_point

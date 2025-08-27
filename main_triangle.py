@@ -4,7 +4,7 @@ import math
 from math import pi, radians, degrees
 import numpy as np
 from st3215 import ST3215
-from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check, map_speed
+from utilis import check_servo_angles, initialize_joystick, servo_to_rad, rad_to_servo, LINK_LENGTHS, singularity_check
 
 step = 5
 DEADZONE = 0.8
