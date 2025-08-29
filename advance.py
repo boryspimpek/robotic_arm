@@ -137,9 +137,15 @@ def main():
     
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
+
+    home = {
+    1: 2048,
+    2: 1025,
+    3: 2779,
+    4: 2723
+    }
     
-    move_to_point(current_position, method, 500)
-    time.sleep(2)
+    servo.MoveManyTo(home, max_speed=500, acc=100, wait=True)
 
     last_triangle_state = 0
     last_circle_state = 0
