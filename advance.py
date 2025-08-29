@@ -7,63 +7,45 @@ import pygame
 
 from st3215 import ST3215
 
-from utilis import DEADZONE, INITIAL_POSITION, LINK_LENGTHS 
+from utilis import l1, l2, l3, INITIAL_POSITION
 from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input
 
-# Definicje przycisków
 TRIANGLE_BUTTON_ID = 2
 CIRCLE_BUTTON_ID = 1
 CROSS_BUTTON_ID = 0
 
-# Zmienne globalne
 method = "full"
 orientation_mode = "flat"
 
 servo = ST3215('/dev/ttyACM0')
 
 def solve_ik_full(x_target, y_target, z_target):
-    """Rozwiązanie IK dla pełnego manipulatora 4-DOF"""
-    l1, l2, l3 = LINK_LENGTHS
-    delta_theta = np.radians(1)
-    theta4_candidates = np.arange(-np.pi, np.pi, delta_theta)
-
+    theta4_candidates = np.arange(-np.pi, np.pi, np.radians(3))
+    
     r_target = math.hypot(x_target, y_target)
-    px = r_target
-    py = z_target
-
-    d = math.hypot(px, py)
-    if d > (l1 + l2 + l3):
+    theta1 = math.atan2(y_target, x_target)
+    
+    if (d := math.hypot(r_target, z_target)) > (l1 + l2 + l3):
         raise ValueError("Punkt poza zasięgiem manipulatora")
 
-    theta1 = math.atan2(y_target, x_target)
-
-    min_cost = float('inf')
-    best_angles = None
+    min_cost, best_angles = float('inf'), None
 
     for theta4_c in theta4_candidates:
-        wrist_r = r_target - l3 * math.cos(theta4_c)
-        wrist_z = z_target - l3 * math.sin(theta4_c)
-
-        D = math.hypot(wrist_r, wrist_z)
-        if D > (l1 + l2) or D < abs(l1 - l2):
+        wrist_r, wrist_z = r_target - l3 * math.cos(theta4_c), z_target - l3 * math.sin(theta4_c)
+        
+        if not (abs(l1 - l2) <= (D := math.hypot(wrist_r, wrist_z)) <= (l1 + l2)):
             continue
-
-        cos_theta3 = (wrist_r**2 + wrist_z**2 - l1**2 - l2**2) / (2 * l1 * l2)
-        if not (-1 <= cos_theta3 <= 1):
+            
+        if not (-1 <= (cos_theta3 := (wrist_r**2 + wrist_z**2 - l1**2 - l2**2) / (2 * l1 * l2)) <= 1):
             continue
 
         theta3 = -math.acos(cos_theta3)
-        k1 = l1 + l2 * math.cos(theta3)
-        k2 = l2 * math.sin(theta3)
+        k1, k2 = l1 + l2 * math.cos(theta3), l2 * math.sin(theta3)
         theta2 = math.atan2(wrist_z, wrist_r) - math.atan2(k2, k1)
         theta4 = theta4_c - (theta2 + theta3)
 
-        # Koszt normalny: minimalizacja theta3 i theta4
-        cost = theta3**2 + theta4**2
-
-        if cost < min_cost:
-            min_cost = cost
-            best_angles = (theta1, theta2, theta3, theta4)
+        if (cost := theta3**2 + theta4**2) < min_cost:
+            min_cost, best_angles = cost, (theta1, theta2, theta3, theta4)
 
     if best_angles is None:
         raise ValueError("Brak rozwiązania IK dla tej pozycji")
@@ -71,116 +53,66 @@ def solve_ik_full(x_target, y_target, z_target):
     return best_angles
 
 def solve_ik_wrist(x_target, y_target, z_target, orientation_mode):
-    """Rozwiązanie IK dla pozycji nadgarstka (tylko theta1, theta2, theta3)"""
-    l1, l2, _ = LINK_LENGTHS  # Ignorujemy l3
-
-    r_target = math.hypot(x_target, y_target)
-    px = r_target
-    py = z_target
-
-    d = math.hypot(px, py)
-    if d > (l1 + l2):
+    r_target, theta1 = math.hypot(x_target, y_target), math.atan2(y_target, x_target)
+    
+    if (d := math.hypot(r_target, z_target)) > (l1 + l2):
         raise ValueError("Punkt poza zasięgiem manipulatora")
 
-    theta1 = math.atan2(y_target, x_target)
-
-    cos_theta3 = (r_target**2 + z_target**2 - l1**2 - l2**2) / (2 * l1 * l2)
-    
-    if not (-1 <= cos_theta3 <= 1):
+    if not (-1 <= (cos_theta3 := (r_target**2 + z_target**2 - l1**2 - l2**2) / (2 * l1 * l2)) <= 1):
         raise ValueError("Brak rozwiązania IK dla tej pozycji")
 
     theta3 = -math.acos(cos_theta3)
-    
-    k1 = l1 + l2 * math.cos(theta3)
-    k2 = l2 * math.sin(theta3)
+    k1, k2 = l1 + l2 * math.cos(theta3), l2 * math.sin(theta3)
     theta2 = math.atan2(z_target, r_target) - math.atan2(k2, k1)
-
-    if orientation_mode == "down":
-        theta4 = -pi/2 - (theta2 + theta3)  # Końcówka skierowana w dół
-    elif orientation_mode == "flat":
-        theta4 = 0 - (theta2 + theta3)  # Końcówka poziomo
-
-    best_angles = (theta1, theta2, theta3, theta4)
-    return best_angles
-
-def move_to_point(point, method, max_speed=2400):
-    x, y, z = point
-    servo_ids = [1, 2, 3, 4]
-
-    current_angles = [servo_to_rad(servo.ReadPosition(id)) for id in servo_ids]
     
-    if method == "full":
-        angles = solve_ik_full(x, y, z)
-    elif method == "wrist":
-        angles = solve_ik_wrist(x, y, z, orientation_mode)
-
-    corrected_speed = singularity_check(angles, max_speed)
-
-    delta_angles = [abs(target - current) for target, current in zip(angles, current_angles)]
-    max_delta = max(delta_angles) if delta_angles else 0
+    theta4 = (-pi/2 if orientation_mode == "down" else 0) - (theta2 + theta3)
     
-    servo_speeds = [int((delta / max_delta) * corrected_speed) if max_delta != 0 else 0 for delta in delta_angles]
-    servo_targets = [rad_to_servo(angle) for angle in angles]
+    return (theta1, theta2, theta3, theta4)
 
-    errors = check_servo_angles(servo_targets)
-    if errors:
-        print("Błędy:", errors)
-        return
-    
-    for id, target, speed in zip(servo_ids, servo_targets, servo_speeds):
-        servo.MoveTo(id, target, speed, 150)
+def move_to_point(point, method, max_speed=1000):
+    angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
+    servo_angles = [rad_to_servo(angle) for angle in angles]
+    servo_targets = {
+        1 : servo_angles[0],
+        2 : servo_angles[1],
+        3 : servo_angles[2],
+        4 : servo_angles[3]
+    }
+
+    if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
+    servo.SyncMoveTo(servo_targets, max_speed)
 
 def main():
     global method, orientation_mode
-    
-    step = 3 if method == "wrist" else 6
-    
+    step = 2 if method == "wrist" else 5
     joystick = initialize_joystick()
     current_position = INITIAL_POSITION
-
-    home = {
-    1: 2048,
-    2: 1025,
-    3: 2779,
-    4: 2723
-    }
+    button_states = {TRIANGLE_BUTTON_ID: 0, CIRCLE_BUTTON_ID: 0, CROSS_BUTTON_ID: 0}
     
-    servo.MoveManyTo(home, max_speed=500, acc=100, wait=True)
-
-    last_triangle_state = 0
-    last_circle_state = 0
-    last_cross_state = 0
+    move_to_point(current_position, method, max_speed=500)
     
     try:
         while True:
-            triangle_state = joystick.get_button(TRIANGLE_BUTTON_ID)
-            circle_state = joystick.get_button(CIRCLE_BUTTON_ID)
-            cross_state = joystick.get_button(CROSS_BUTTON_ID)
+            triangle, circle, cross = (joystick.get_button(btn) for btn in [TRIANGLE_BUTTON_ID, CIRCLE_BUTTON_ID, CROSS_BUTTON_ID])
             
-            if triangle_state == 1 and last_triangle_state == 0:
+            if triangle == 1 and button_states[TRIANGLE_BUTTON_ID] == 0:
                 orientation_mode = "down"
                 move_to_point(current_position, method)
             
-            if circle_state == 1 and last_circle_state == 0:
+            if circle == 1 and button_states[CIRCLE_BUTTON_ID] == 0:
                 orientation_mode = "flat"
                 move_to_point(current_position, method)
             
-            if cross_state == 1 and last_cross_state == 0:
-                if method == "full":
-                    method = "wrist"
-                    step = 3 
-                    angles = solve_ik_full(*current_position)
-                    wrist_point = find_wrist_point(angles)
-                    move_to_point(wrist_point, method="wrist")
+            if cross == 1 and button_states[CROSS_BUTTON_ID] == 0:
+                method = "wrist" if method == "full" else "full"
+                step = 3 if method == "wrist" else 6
+                if method == "wrist":
+                    wrist_point = find_wrist_point(solve_ik_full(*current_position))
+                    move_to_point(wrist_point, "wrist")
                     current_position = wrist_point
-                else:
-                    method = "full"
-                    step = 6
                 print(f"Zmieniono tryb na: {method}, step = {step}")
 
-            last_triangle_state = triangle_state
-            last_circle_state = circle_state
-            last_cross_state = cross_state
+            button_states = {TRIANGLE_BUTTON_ID: triangle, CIRCLE_BUTTON_ID: circle, CROSS_BUTTON_ID: cross}
             
             new_position = process_joystick_input(joystick, current_position, step)
             

@@ -14,7 +14,7 @@ DEADZONE = 0.8
 INITIAL_POSITION = (200, 0, 110)
 
 
-LINK_LENGTHS = (120, 120, 110)  # l1, l2, l3
+l1, l2, l3 = (120, 120, 110)
 
 def rad_to_servo(rad):
     center = 2048
@@ -28,10 +28,12 @@ def servo_to_rad(raw_position):
 
 def check_servo_angles(servo_targets):
     errors = []
-    for id, target in zip([1, 2, 3, 4], servo_targets):
+    for id, target in servo_targets.items():
         min_angle, max_angle = SERVO_LIMITS[id]
         if not (min_angle <= target <= max_angle):
-            errors.append(f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}")
+            errors.append(
+                f"Kąt serwa {id} poza zakresem ({min_angle}-{max_angle}): {target}"
+            )
     return errors
 
 def initialize_joystick():
@@ -67,8 +69,6 @@ def process_joystick_input(joystick, current_pos, step_size):
     return (x, y, z)
 
 def find_wrist_point(angles):
-    l1, l2, l3 = LINK_LENGTHS
-    
     theta1, theta2, theta3, theta4 = angles
 
     wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
@@ -79,8 +79,6 @@ def find_wrist_point(angles):
     return wrist_point
 
 def singularity_check(angles, max_speed):
-    l1, l2, l3 = LINK_LENGTHS
-    
     wrist_x, wrist_y, wrist_z = find_wrist_point(angles)
     
     wrist_distance = hypot(wrist_x, wrist_y, wrist_z)

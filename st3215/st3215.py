@@ -491,7 +491,7 @@ class ST3215(protocol_packet_handler):
         sts_present_speed, sts_comm_result, sts_error = self.read2ByteTxRx(sts_id, STS_PRESENT_SPEED_L)
         return self.sts_tohost(sts_present_speed, 15), sts_comm_result, sts_error
 
-    def MoveManyTo(self, servo_dict, max_speed=2400, acc=50, wait=False):
+    def SyncMoveTo(self, servo_dict, max_speed=2400, acc=50, wait=False):
         """
         Move multiple servos to predefined positions simultaneously with synchronized motion.
         All servos will start and finish movement at the same time.
