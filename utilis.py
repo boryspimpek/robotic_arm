@@ -1,20 +1,12 @@
 from math import cos, hypot, sin
 import pygame
+import time
+from ik import solve_ik_full, solve_ik_wrist
+from config import SERVO_LIMITS, DEADZONE, INITIAL_POSITION, l1, l2, l3
+from st3215 import ST3215
+from scservo_sdk import gripper
 
-
-SERVO_LIMITS = {
-    1: (1024, 3072),
-    2: (0, 2048), 
-    3: (400, 3700),
-    4: (600, 3500)
-}
-
-# Początkowe wartości
-DEADZONE = 0.8
-INITIAL_POSITION = (200, 0, 110)
-
-
-l1, l2, l3 = (120, 120, 110)
+servo = ST3215('/dev/ttyACM0')
 
 def rad_to_servo(rad):
     center = 2048
@@ -94,3 +86,16 @@ def singularity_check(angles, max_speed):
     # print(f"corrected speed: {corrected_speed:.2f}")
 
     return corrected_speed
+
+def move_to_point(point, method, orientation_mode, max_speed=1000):
+    angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
+    servo_angles = [rad_to_servo(angle) for angle in angles]
+    servo_targets = {
+        1 : servo_angles[0],
+        2 : servo_angles[1],
+        3 : servo_angles[2],
+        4 : servo_angles[3]
+    }
+
+    if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
+    servo.SyncMoveTo(servo_targets, max_speed)
