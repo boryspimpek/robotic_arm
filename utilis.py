@@ -66,17 +66,19 @@ def process_joystick_input_2d(joystick, current_pos, step_size):
     
     x, z = current_pos
     
-    lx = joystick.get_axis(1)
-    ry = joystick.get_axis(4)
+    lx = joystick.get_axis(1)  # Lewy joystick X
+    ry = joystick.get_axis(4)  # Prawy joystick Y
+    rx = joystick.get_axis(0)  # Prawy joystick X - DODANE dla obrotu podstawy
 
     lx = 0 if abs(lx) < DEADZONE else lx
     ry = 0 if abs(ry) < DEADZONE else ry
+    rx = 0 if abs(rx) < DEADZONE else rx  # DODANE
     
     x += -lx * step_size
     z -= ry * step_size
     
-    return (x, z)
-
+    # Zwracamy również wartość obrotu podstawy
+    return (x, z), rx
 
 
 def move_to_point(point, method, orientation_mode, max_speed=1000):
@@ -92,14 +94,19 @@ def move_to_point(point, method, orientation_mode, max_speed=1000):
     if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
     servo.SyncMoveTo(servo_targets, max_speed)
 
-def move_to_point_2d(point, method, orientation_mode, max_speed=1000):
+def move_to_point_2d(point, method, orientation_mode, base_rotation, max_speed=1000):
     angles = solve_ik_full_2d(*point) if method == "full" else solve_ik_wrist_2d(*point, orientation_mode)
     servo_angles = [rad_to_servo(angle) for angle in angles]
+
     servo_targets = {
-        2 : servo_angles[0],
-        3 : servo_angles[1],
-        4 : servo_angles[2]
+        1: base_rotation,  
+        2: servo_angles[0],
+        3: servo_angles[1],
+        4: servo_angles[2]
     }
 
-    if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
+    if errors := check_servo_angles(servo_targets): 
+        print("Błędy:", errors)
+        return
+    
     servo.SyncMoveTo(servo_targets, max_speed)
