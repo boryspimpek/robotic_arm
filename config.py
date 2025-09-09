@@ -5,7 +5,7 @@ SERVO_LIMITS = {
     4: (600, 3500)
 }
 
-DEADZONE = 0.8
+DEADZONE = 0.1
 INITIAL_POSITION = (150, 0, 100)
 l1, l2, l3 = (120, 120, 110)
 

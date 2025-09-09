@@ -74,26 +74,35 @@ def process_joystick_input(joystick, current_pos, step_size):
     
     return (x, y, z)
 
-def process_joystick_input_2d(joystick, current_pos, step_size):
+def process_joystick_input_2d(joystick, current_pos, step_size=0.1):
     pygame.event.pump()
     
     x, z = current_pos
     
     lx = joystick.get_axis(1)  # Lewy joystick X
     ry = joystick.get_axis(4)  # Prawy joystick Y
-    rx = joystick.get_axis(0)  # Prawy joystick X - DODANE dla obrotu podstawy
+    rx = joystick.get_axis(0)  # Prawy joystick X - dla obrotu podstawy
 
+    # Deadzone dla wszystkich osi
     lx = 0 if abs(lx) < DEADZONE else lx
     ry = 0 if abs(ry) < DEADZONE else ry
-    rx = 0 if abs(rx) < DEADZONE else rx  # DODANE
+    rx = 0 if abs(rx) < DEADZONE else rx
     
-    x += -lx * step_size
-    z -= ry * step_size
+    # Nieliniowa charakterystyka dla płynniejszego sterowania
+    lx_nonlinear = lx * abs(lx)  # lx^2 zachowując znak
+    ry_nonlinear = ry * abs(ry)  # ry^2 zachowując znak
     
-    # Zwracamy również wartość obrotu podstawy
-    return (x, z), rx
+    # Płynne sterowanie pozycją z nieliniową charakterystyką
+    x += -lx_nonlinear * step_size
+    z -= ry_nonlinear * step_size
+    
+    # Płynniejsze sterowanie obrotem podstawy z nieliniową charakterystyką
+    # Kwadratowa charakterystyka dla lepszej kontroli przy małych wychyleniach
+    rotation_input = rx * abs(rx)  # rx^2 zachowując znak
+    
+    return (x, z), rotation_input
 
-def move_to_point(point, method, orientation_mode, max_speed=1000):
+def move_to_point(point, method, orientation_mode, max_speed=2000):
     angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
     servo_angles = [rad_to_servo(angle) for angle in angles]
     servo_targets = {
