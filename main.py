@@ -8,8 +8,8 @@ import pygame
 from st3215 import ST3215
 
 from utilis import l1, l2, l3, INITIAL_POSITION
-from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input, move_to_point
-from ik import solve_ik_full, solve_ik_wrist
+from utilis import initialize_joystick, process_joystick_input, move_to_point
+from ik import solve_ik_full, solve_ik_wrist, find_wrist_point
 
 TRIANGLE_BUTTON_ID = 2
 CIRCLE_BUTTON_ID = 1

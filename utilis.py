@@ -3,6 +3,7 @@ import pygame
 import time
 from ik import solve_ik_full, solve_ik_wrist
 from config import SERVO_LIMITS, DEADZONE, INITIAL_POSITION, l1, l2, l3
+from ik_2d import solve_ik_full_2d, solve_ik_wrist_2d
 from st3215 import ST3215
 from scservo_sdk import gripper
 
@@ -60,32 +61,23 @@ def process_joystick_input(joystick, current_pos, step_size):
     
     return (x, y, z)
 
-def find_wrist_point(angles):
-    theta1, theta2, theta3, theta4 = angles
-
-    wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
-    wrist_y = l1 * cos(theta2) * sin(theta1) + l2 * cos(theta2 + theta3) * sin(theta1)
-    wrist_z = l1 * sin(theta2) + l2 * sin(theta2 + theta3)
-
-    wrist_point = (wrist_x, wrist_y, wrist_z)
-    return wrist_point
-
-def singularity_check(angles, max_speed):
-    wrist_x, wrist_y, wrist_z = find_wrist_point(angles)
+def process_joystick_input_2d(joystick, current_pos, step_size):
+    pygame.event.pump()
     
-    wrist_distance = hypot(wrist_x, wrist_y, wrist_z)
+    x, z = current_pos
+    
+    lx = joystick.get_axis(1)
+    ry = joystick.get_axis(4)
 
-    max_reach = l1 + l2
-    distance_to_max = max_reach - wrist_distance
-    print(f"distance to max: {distance_to_max:.2f}")
+    lx = 0 if abs(lx) < DEADZONE else lx
+    ry = 0 if abs(ry) < DEADZONE else ry
+    
+    x += -lx * step_size
+    z -= ry * step_size
+    
+    return (x, z)
 
-    exponent = 2
-    normalized = distance_to_max / (l1 + l2)
-    corrected_speed = (1 - (1 - normalized) ** exponent) * max_speed
-    corrected_speed = max(400, round(corrected_speed))  
-    # print(f"corrected speed: {corrected_speed:.2f}")
 
-    return corrected_speed
 
 def move_to_point(point, method, orientation_mode, max_speed=1000):
     angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
@@ -95,6 +87,18 @@ def move_to_point(point, method, orientation_mode, max_speed=1000):
         2 : servo_angles[1],
         3 : servo_angles[2],
         4 : servo_angles[3]
+    }
+
+    if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
+    servo.SyncMoveTo(servo_targets, max_speed)
+
+def move_to_point_2d(point, method, orientation_mode, max_speed=1000):
+    angles = solve_ik_full_2d(*point) if method == "full" else solve_ik_wrist_2d(*point, orientation_mode)
+    servo_angles = [rad_to_servo(angle) for angle in angles]
+    servo_targets = {
+        2 : servo_angles[0],
+        3 : servo_angles[1],
+        4 : servo_angles[2]
     }
 
     if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return

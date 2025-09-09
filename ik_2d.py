@@ -31,10 +31,10 @@ def solve_ik_full_2d(x_target, z_target):
 
         if (cost := theta3**2 + theta4**2) < min_cost:
             min_cost, best_angles = cost, (theta2, theta3, theta4)
-
+        
     if best_angles is None:
         raise ValueError("Brak rozwiązania IK dla tej pozycji")
-
+    
     return best_angles
 
 def solve_ik_wrist_2d(x_target, z_target, orientation_mode):
@@ -55,3 +55,17 @@ def solve_ik_wrist_2d(x_target, z_target, orientation_mode):
     theta4 = (-math.pi/2 if orientation_mode == "down" else 0) - (theta2 + theta3)
     
     return (theta2, theta3, theta4)
+
+def find_wrist_point_2d(angles):
+    """
+    Znajduje pozycję nadgarstka w płaszczyźnie 2D (X-Z)
+    angles: kąty (theta2, theta3) w radianach
+    returns: (x, z) pozycja nadgarstka
+    """
+    theta2, theta3, _ = angles
+    
+    wrist_x = l1 * math.cos(theta2) + l2 * math.cos(theta2 + theta3)
+    wrist_z = l1 * math.sin(theta2) + l2 * math.sin(theta2 + theta3)
+
+    wrist_point = (wrist_x, wrist_z)
+    return wrist_point

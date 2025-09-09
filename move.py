@@ -1,9 +1,18 @@
 import time
 import math
 from math import cos, pi, sin
-from math import cos, hypot, sin
+
 import numpy as np
-from config import l1, l2, l3
+
+from st3215 import ST3215
+
+from utilis import l1, l2, l3
+from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input
+
+method = "full"
+orientation_mode = "flat"
+
+servo = ST3215('/dev/ttyACM0')
 
 def solve_ik_full(x_target, y_target, z_target):
     theta4_candidates = np.arange(-np.pi, np.pi, np.radians(3))
@@ -55,29 +64,27 @@ def solve_ik_wrist(x_target, y_target, z_target, orientation_mode):
     
     return (theta1, theta2, theta3, theta4)
 
-def find_wrist_point(angles):
-    theta1, theta2, theta3, theta4 = angles
+def move_to_point(point, method, max_speed=1000):
+    angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
+    servo_angles = [rad_to_servo(angle) for angle in angles]
+    servo_targets = {
+        1 : servo_angles[0],
+        2 : servo_angles[1],
+        3 : servo_angles[2],
+        4 : servo_angles[3]
+    }
 
-    wrist_x = l1 * cos(theta2) * cos(theta1) + l2 * cos(theta2 + theta3) * cos(theta1)
-    wrist_y = l1 * cos(theta2) * sin(theta1) + l2 * cos(theta2 + theta3) * sin(theta1)
-    wrist_z = l1 * sin(theta2) + l2 * sin(theta2 + theta3)
+    if errors := check_servo_angles(servo_targets): print("Błędy:", errors); return
+    servo.SyncMoveTo(servo_targets, max_speed)
 
-    wrist_point = (wrist_x, wrist_y, wrist_z)
-    return wrist_point
-
-def singularity_check(angles, max_speed):
-    wrist_x, wrist_y, wrist_z = find_wrist_point(angles)
+def main():
+    global method, orientation_mode
+    current_position = (200, 0, 120)
     
-    wrist_distance = hypot(wrist_x, wrist_y, wrist_z)
+    move_to_point(current_position, method, max_speed=500)
+    time.sleep(3)
+    
 
-    max_reach = l1 + l2
-    distance_to_max = max_reach - wrist_distance
-    print(f"distance to max: {distance_to_max:.2f}")
 
-    exponent = 2
-    normalized = distance_to_max / (l1 + l2)
-    corrected_speed = (1 - (1 - normalized) ** exponent) * max_speed
-    corrected_speed = max(400, round(corrected_speed))  
-    # print(f"corrected speed: {corrected_speed:.2f}")
-
-    return corrected_speed
+if __name__ == "__main__":
+    main()

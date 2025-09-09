@@ -5,7 +5,6 @@ SERVO_LIMITS = {
     4: (600, 3500)
 }
 
-# Początkowe wartości
 DEADZONE = 0.8
-INITIAL_POSITION = (200, 0, 110)
+INITIAL_POSITION = (150, 0, 100)
 l1, l2, l3 = (120, 120, 110)
