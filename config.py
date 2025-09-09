@@ -8,3 +8,10 @@ SERVO_LIMITS = {
 DEADZONE = 0.8
 INITIAL_POSITION = (150, 0, 100)
 l1, l2, l3 = (120, 120, 110)
+
+home = {
+    1: 2048,  
+    2: 215,
+    3: 3763,
+    4: 2834
+}

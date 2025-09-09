@@ -1,11 +1,13 @@
+import time
 from math import cos, hypot, sin
 import pygame
-import time
+
+from config import DEADZONE, INITIAL_POSITION, SERVO_LIMITS, home, l1, l2, l3
 from ik import solve_ik_full, solve_ik_wrist
-from config import SERVO_LIMITS, DEADZONE, INITIAL_POSITION, l1, l2, l3
 from ik_2d import solve_ik_full_2d, solve_ik_wrist_2d
-from st3215 import ST3215
+
 from scservo_sdk import gripper
+from st3215 import ST3215
 
 servo = ST3215('/dev/ttyACM0')
 
@@ -18,6 +20,17 @@ def servo_to_rad(raw_position):
     center = 2048
     scale = 2048 / 3.1415926535
     return ((4095 - raw_position) - center) / scale
+
+def servo_positions():
+    ids = [1, 2, 3, 4]
+    positions = {}
+    for i in ids:
+        positions[i] = servo.ReadPosition(i)  # Dodaj do słownika
+    print(positions)    
+    return positions
+
+def go_home():
+    servo.SyncMoveTo(home, max_speed=500)
 
 def check_servo_angles(servo_targets):
     errors = []
@@ -79,7 +92,6 @@ def process_joystick_input_2d(joystick, current_pos, step_size):
     
     # Zwracamy również wartość obrotu podstawy
     return (x, z), rx
-
 
 def move_to_point(point, method, orientation_mode, max_speed=1000):
     angles = solve_ik_full(*point) if method == "full" else solve_ik_wrist(*point, orientation_mode)
