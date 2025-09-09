@@ -7,8 +7,6 @@ import pygame
 
 from st3215 import ST3215
 
-from utilis import l1, l2, l3, INITIAL_POSITION
-from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input
 
 TRIANGLE_BUTTON_ID = 2
 CIRCLE_BUTTON_ID = 1
@@ -93,9 +91,8 @@ def find_wrist_point(angles):
     wrist_point = (wrist_x, wrist_y, wrist_z)
     return wrist_point
 
-
 def solve_ik_full(x_target, y_target, z_target):
-    theta4_candidates = np.arange(-np.pi, np.pi, np.radians(3))
+    theta4_candidates = np.arange(-np.pi, np.pi, np.radians(1))
     
     r_target = math.hypot(x_target, y_target)
     theta1 = math.atan2(y_target, x_target)
@@ -180,7 +177,7 @@ def main():
             
             if cross == 1 and button_states[CROSS_BUTTON_ID] == 0:
                 method = "wrist" if method == "full" else "full"
-                step = 3 if method == "wrist" else 6
+                step = 3 if method == "wrist" else 5
                 if method == "wrist":
                     wrist_point = find_wrist_point(solve_ik_full(*current_position))
                     move_to_point(wrist_point, "wrist")

@@ -9,7 +9,7 @@ from st3215 import ST3215
 
 from utilis import l1, l2, l3, INITIAL_POSITION
 from utilis import servo_to_rad, rad_to_servo, check_servo_angles, find_wrist_point, singularity_check, initialize_joystick, process_joystick_input, move_to_point
-from ik_2d import solve_ik_full_2d, _2dsolve_ik_wrist
+from ik import solve_ik_full, solve_ik_wrist
 
 TRIANGLE_BUTTON_ID = 2
 CIRCLE_BUTTON_ID = 1
@@ -45,7 +45,7 @@ def main():
                 method = "wrist" if method == "full" else "full"
                 step = 3 if method == "wrist" else 5
                 if method == "wrist":
-                    wrist_point = find_wrist_point(solve_ik_full_2d(*current_position))
+                    wrist_point = find_wrist_point(solve_ik_full(*current_position))
                     move_to_point(wrist_point, "wrist", orientation_mode)
                     current_position = wrist_point
                 print(f"Zmieniono tryb na: {method}, step = {step}")
