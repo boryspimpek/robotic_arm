@@ -1,15 +1,14 @@
 import time
 import math
-from math import cos, pi, sin
-from math import cos, hypot, sin
+from math import cos, sin, pi, hypot
+
 import numpy as np
 
 from scservo_sdk import gripper
 from utilis import move_to_point
 
 
-method = "wrist"
-orientation_mode = "down"
+wait = True
 
 home = (120, 0, 150)
 speed_approach = 500
@@ -21,7 +20,7 @@ def pickup(point):
     above = (point[0], point[1], point[2] + 40)
 
     # Move above the pickup location
-    move_to_point(above, method, orientation_mode, speed_move)
+    move_to_point(above, max_speed=speed_move, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
 
     # Open gripper before moving down
@@ -29,7 +28,7 @@ def pickup(point):
     time.sleep(t)
 
     # Move down to pickup point
-    move_to_point(point, method, orientation_mode, speed_approach)
+    move_to_point(point, max_speed=speed_approach, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
 
     # Close gripper to grab object
@@ -37,28 +36,18 @@ def pickup(point):
     time.sleep(t)
 
     # Move back up
-    move_to_point(above, method, orientation_mode, speed_approach)
+    move_to_point(above, max_speed=speed_approach, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
-
-    # # Return home
-    # move_to_point(home, method, orientation_mode, speed_move)
-    # time.sleep(t)
 
 def place(point):
     above = (point[0], point[1], point[2] + 40)
 
-    # gripper("open")
-    # time.sleep(2)
-
-    # gripper("close")
-    # time.sleep(0.5)
-
     # Move above the target
-    move_to_point(above, method, orientation_mode, speed_move)
+    move_to_point(above, max_speed=speed_move, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
 
     # Move down to the place position
-    move_to_point(point, method, orientation_mode, speed_approach)
+    move_to_point(point, max_speed=speed_approach, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
 
     # Open gripper to release object
@@ -66,16 +55,12 @@ def place(point):
     time.sleep(t)
 
     # Move back up
-    move_to_point(above, method, orientation_mode, speed_approach)
+    move_to_point(above, max_speed=speed_approach, acc=50, wait=True, theta4_desired=-math.pi/2)
     time.sleep(t)
 
     # Close gripper befor returning to home
     gripper("close")
     time.sleep(t)
-
-    # # Return home
-    # move_to_point(home, method, orientation_mode, speed_move)
-    # time.sleep(0.5)
 
 def generate_points(start_point, num_objects=6, step=-40):
     """
@@ -118,14 +103,14 @@ def bricks_backward(points):
         print(f"Przeniesiono klocek {i+half+1} z pozycji {points[i + half]} do {points[i]}")
 
 
-move_to_point(home, method, orientation_mode, speed_move)
+move_to_point(home, max_speed=speed_move, acc=50, wait=True, theta4_desired=None)
 time.sleep(0.5)
 
-start = (100, 60, -5)
+start = (100, 60, 25)
 points_6 = generate_points(start, num_objects=6)
 
 bricks_forward(points_6)
 # bricks_backward(points_6)
 
-move_to_point(home, method, orientation_mode, speed_move)
+move_to_point(home, max_speed=speed_move, acc=50, wait=True, theta4_desired=None)
 time.sleep(0.5)

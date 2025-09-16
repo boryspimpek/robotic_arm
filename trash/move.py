@@ -17,3 +17,4 @@ servo = ST3215('/dev/ttyACM0')
 def go_home():
     servo.SyncMoveTo(home, max_speed=500)
 
+go_home()
