@@ -3,7 +3,7 @@ from math import cos, hypot, sin
 import pygame
 
 from config import DEADZONE, INITIAL_POSITION, SERVO_LIMITS, home, l1, l2, l3
-from ik import solve_ik, generate_trajectory
+from ik import solve_ik
 from ik_2d import solve_ik_2d
 
 from scservo_sdk import gripper

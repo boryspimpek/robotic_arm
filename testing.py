@@ -1,7 +1,6 @@
 import time
 import math
-from utilis import servo_positions, move_to_point, rad_to_servo, check_servo_angles, trajectory
-from ik import generate_trajectory, solve_ik
+from utilis import servo_positions, move_to_point, trajectory
 from st3215 import ST3215
 
 servo = ST3215('/dev/ttyACM0')
@@ -51,7 +50,7 @@ end = (180, 0, 115)
 x = 50
 move_to_point(start, max_speed=1200, acc=5, wait=True, theta4_desired=math.radians(x))
 
-for i in range(2):
+for i in range(1):
     trajectory(
         *start, math.radians(x),   
         *end, -math.radians(x),     
