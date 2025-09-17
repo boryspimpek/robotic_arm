@@ -1,0 +1,155 @@
+import time
+import math
+from math import cos, pi, sin
+
+import numpy as np
+import pygame
+
+from st3215 import ST3215
+from scservo_sdk import gripper
+
+from trash.ik_2d import solve_ik_2d
+from utilis import DEADZONE, INITIAL_POSITION
+from utilis import initialize_joystick, check_servo_angles, rad_to_servo
+
+TRIANGLE_BUTTON_ID = 2
+CIRCLE_BUTTON_ID = 1
+R1_BUTTON_ID = 5
+
+orientation_mode = "flat"
+gripper_state = "close"
+
+l1, l2 = (115, 115)
+
+
+servo = ST3215('/dev/ttyACM0')
+
+def process_joystick_input_2d(joystick, current_pos, step_size=0.1):
+    pygame.event.pump()
+    
+    x, z = current_pos
+    
+    lx = joystick.get_axis(1)  
+    ry = joystick.get_axis(4)  
+    rx = joystick.get_axis(0)  
+
+    lx = 0 if abs(lx) < DEADZONE else lx
+    ry = 0 if abs(ry) < DEADZONE else ry
+    rx = 0 if abs(rx) < DEADZONE else rx
+    
+    lx_nonlinear = lx * abs(lx)  
+    ry_nonlinear = ry * abs(ry)  
+    
+    x += -lx_nonlinear * step_size
+    z -= ry_nonlinear * step_size
+    
+    rotation_input = rx * abs(rx)  
+    
+    return (x, z), rotation_input
+
+def solve_ik_2d(x_target, z_target, orientation_mode):
+    """
+    Rozwiązanie IK w 2D dla pozycji nadgarstka (2 ogniwa).
+    Trzecie ramię jest ustawiane zgodnie z orientation_mode.
+    Zwraca kąty: theta2, theta3, theta4. Kąt theta1 (podstawa) 
+    jest ustawiany osobno. 
+    """
+    if (d := math.hypot(x_target, z_target)) > (l1 + l2):
+        raise ValueError("Punkt poza zasięgiem manipulatora")
+
+    if not (-1 <= (cos_theta3 := (x_target**2 + z_target**2 - l1**2 - l2**2) / (2 * l1 * l2)) <= 1):
+        raise ValueError("Brak rozwiązania IK dla tej pozycji")
+
+    theta3 = -math.acos(cos_theta3)
+    k1, k2 = l1 + l2 * math.cos(theta3), l2 * math.sin(theta3)
+    theta2 = math.atan2(z_target, x_target) - math.atan2(k2, k1)
+    theta4 = (-math.pi/2 if orientation_mode == "down" else 0) - (theta2 + theta3)
+    
+    return (theta2, theta3, theta4)
+
+def move_to_point_2d(point, orientation_mode, base_rotation, max_speed=1000):
+    angles = solve_ik_2d(*point, orientation_mode)
+    servo_angles = [rad_to_servo(angle) for angle in angles]
+    servo_targets = {
+        1 : base_rotation,
+        2 : servo_angles[0],
+        3 : servo_angles[1],
+        4 : servo_angles[2]
+    }
+
+    if errors := check_servo_angles(servo_targets):
+        print("Błędy:", errors)
+        return    
+    """     
+    Funkcja SyncMoveTo pochodzi z biblioteki st3215.
+    """
+    servo.SyncMoveTo(servo_targets, max_speed)
+
+def main():
+    global orientation_mode, gripper_state
+    step = 2 
+    joystick = initialize_joystick()
+    current_position = (INITIAL_POSITION[0], INITIAL_POSITION[2])
+    button_states = {TRIANGLE_BUTTON_ID: 0, CIRCLE_BUTTON_ID: 0, R1_BUTTON_ID:0}
+    
+    base_position = 2048  
+    base_speed = 500  
+    last_time = time.time()
+    
+    move_to_point_2d(current_position, orientation_mode, base_position, max_speed=500)
+    
+    try:
+        while True:
+            current_time = time.time()
+            delta_time = current_time - last_time
+            last_time = current_time
+            
+            triangle, circle, r1 = (joystick.get_button(btn) for btn in [TRIANGLE_BUTTON_ID, CIRCLE_BUTTON_ID, R1_BUTTON_ID])
+            
+            if triangle == 1 and button_states[TRIANGLE_BUTTON_ID] == 0:
+                orientation_mode = "down"
+                move_to_point_2d(current_position, orientation_mode, base_position)
+            
+            if circle == 1 and button_states[CIRCLE_BUTTON_ID] == 0:
+                orientation_mode = "flat"
+                move_to_point_2d(current_position, orientation_mode, base_position)
+            
+            if r1 == 1 and button_states[R1_BUTTON_ID] == 0:
+                if gripper_state == "close":
+                    gripper("open")
+                    gripper_state = "open"
+                    print("Chwytak otwarty")
+                else:
+                    gripper("close")
+                    gripper_state = "close"
+                    print("Chwytak zamknięty")
+
+            button_states = {TRIANGLE_BUTTON_ID: triangle, CIRCLE_BUTTON_ID: circle, R1_BUTTON_ID: r1}
+            
+            new_position, rotation_input = process_joystick_input_2d(joystick, current_position, step)
+            
+            needs_move = False
+            
+            if abs(rotation_input) > DEADZONE:
+                # Convert to integer after calculation to avoid floating-point issues
+                base_position += int(rotation_input * base_speed * delta_time)
+                base_position = max(0, min(4095, base_position))
+                needs_move = True
+            
+            if new_position != current_position or needs_move:
+                try:
+                    # base_position is already an integer now
+                    move_to_point_2d(new_position, orientation_mode, base_position)
+                    current_position = new_position
+                    print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}), Base: {base_position}")
+                
+                except ValueError as e:
+                    print(f"Nieosiągalna pozycja: {e}")
+
+            time.sleep(0.01)
+
+    except KeyboardInterrupt:
+        print("Sterowanie zakończone")        
+
+if __name__ == "__main__":
+    main()

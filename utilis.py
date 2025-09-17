@@ -108,7 +108,7 @@ def move_to_point(point, max_speed, acc, wait, theta4_desired):
 
 def move_to_point_2d(point, orientation_mode, base_rotation, max_speed=1000):
     """ This one uses Base orientation because IK function 
-        calculates angles only in in x/ z plane. Base rotation is provided with joystkick. 
+        calculates angles only in x/ z plane. Base rotation is provided with joystkick. 
         This function is meant to be used with joystick controller"""
     
     angles = solve_ik_2d(*point, orientation_mode)
