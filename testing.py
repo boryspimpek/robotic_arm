@@ -41,26 +41,25 @@ servo = ST3215('/dev/ttyACM0')
 # print(servo_angles := servo_positions())
 
 ########################### Move to point
-# point = (200, 0, 118)
-# move_to_point(point, max_speed=1000, acc=5, wait=True, theta4_desired=-math.radians(30))
+# point = (0, 0, 115)
+# move_to_point(point, max_speed=1000, acc=10, wait=True, theta4_desired=None)
 
 ########################## Test trajectory
-start = (180, 0, 115)    
-end = (180, 0, 115)
-x = 50
-move_to_point(start, max_speed=1200, acc=5, wait=True, theta4_desired=math.radians(x))
+start = (0, 0, 340)    
+end = (0, 0, 115)
+move_to_point(start, max_speed=1200, acc=5, wait=True, theta4_desired=math.radians(90))
 
 for i in range(1):
     trajectory(
-        *start, math.radians(x),   
-        *end, -math.radians(x),     
+        *start, math.radians(90),   
+        *end, -math.radians(0),     
         steps=100,
         max_speed=1000,
         acc=100
     )
     trajectory(
-        *end, -math.radians(x),     
-        *start, math.radians(x),   
+        *end, -math.radians(0),     
+        *start, math.radians(90),   
         steps=100,
         max_speed=1000,
         acc=100

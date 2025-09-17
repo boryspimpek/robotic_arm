@@ -29,7 +29,7 @@ def main():
     current_position = (INITIAL_POSITION[0], INITIAL_POSITION[2])
     button_states = {TRIANGLE_BUTTON_ID: 0, CIRCLE_BUTTON_ID: 0, CROSS_BUTTON_ID: 0, SQUARE_BUTTON_ID:0, R1_BUTTON_ID:0}
     
-    base_position = 2048  # Integer initial value
+    base_position = 2048  
     base_speed = 500  
     last_time = time.time()
     

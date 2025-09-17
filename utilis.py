@@ -113,7 +113,12 @@ def move_to_point_2d(point, orientation_mode, base_rotation, max_speed=1000):
     
     angles = solve_ik_2d(*point, orientation_mode)
     servo_angles = [rad_to_servo(angle) for angle in angles]
-    servo_targets = {j+1: servo_angles[j] for j in range(4)}
+    servo_targets = {
+        1 : base_rotation,
+        2 : servo_angles[0],
+        3 : servo_angles[1],
+        4 : servo_angles[2]
+    }
 
     if errors := check_servo_angles(servo_targets):
         print("Błędy:", errors)
