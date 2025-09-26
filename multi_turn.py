@@ -3,13 +3,9 @@ import math
 from utilis import servo_positions, move_to_point, trajectory, servo_to_rad
 from ik import forward_kinematics
 from st3215 import ST3215
-from STservo_sdk import PortHandler
 
 
 servo = ST3215('/dev/ttyACM0')
-
-import time
-import math
 
 class ServoPositionTracker:
     def __init__(self, servo, servo_id, servo_resolution=4096):
