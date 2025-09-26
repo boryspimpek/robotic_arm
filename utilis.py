@@ -1,9 +1,10 @@
 import time
+import math
 from math import cos, hypot, sin
 import pygame
 
 from config import DEADZONE, INITIAL_POSITION, SERVO_LIMITS, home, l1, l2, l3
-from ik import solve_ik
+from ik import solve_ik, forward_kinematics
 from ik_2d import solve_ik_2d
 
 from scservo_sdk import gripper
@@ -171,3 +172,49 @@ def trajectory(x_start, y_start, z_start, theta4_start,
 
         servo.SyncMoveTo(servo_targets, max_speed=max_speed, acc=acc, wait=False)
         time.sleep(step_time)
+
+def line_in_space(step):
+    servo_angles = servo_positions()
+    print(f"Servo_angles {servo_angles}") # wynik w takiej postaci {1: 1449, 2: 1595, 3: 3036, 4: 1242}
+
+    angles_rad = {servo_id: servo_to_rad(angle) for servo_id, angle in servo_angles.items()}
+    print("Angles in radians:", {sid: f"{rad:.2f}" for sid, rad in angles_rad.items()})
+
+    x, y, z, t3 = forward_kinematics(
+            angles_rad[1],  # podstawa
+            angles_rad[2],  # ramię 1
+            angles_rad[3],  # ramię 2
+            angles_rad[4],  # ramię 3
+        )
+    print(f"Pozycja efektora: x={x:.2f}, y={y:.2f}, z={z:.2f}, t3 angle={t3:.2f}")
+
+    point = (x, y, z)
+    alpha = t3 + math.radians(90)  # kąt nachylenia w radianach
+    
+    x0, y0, z0 = point
+    
+    if x0 != 0 or y0 != 0:
+        # Obliczamy kąt azymutalny (kierunek w płaszczyźnie XY)
+        azimuth = math.atan2(y0, x0)
+        
+        # Ruch w płaszczyźnie XZ: przesuwamy się pod kątem alpha
+        dx_horizontal = math.cos(alpha) * step  # składowa pozioma
+        dz = math.sin(alpha) * step             # składowa pionowa
+        
+        # Rozkładamy składową poziomą na osie X i Y zachowując azymut
+        dx = dx_horizontal * math.cos(azimuth)
+        dy = dx_horizontal * math.sin(azimuth)
+        
+        x = x0 + dx
+        y = y0 + dy
+        z = z0 + dz
+        
+    else:
+        # Punkt leży na osi Z - ruch czysto w płaszczyźnie XZ
+        x = step * math.cos(alpha)
+        y = 0
+        z = z0 + step * math.sin(alpha)
+    
+    print(f"Punkt początkowy: ({x0:.2f}, {y0:.2f}, {z0:.2f})")
+    print(f"Kąt α: {alpha:.2f} rad ({math.degrees(alpha):.1f}°)")
+    print(f"Punkt końcowy: ({x:.2f}, {y:.2f}, {z:.2f})")

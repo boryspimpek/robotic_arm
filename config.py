@@ -7,7 +7,7 @@ SERVO_LIMITS = {
 
 DEADZONE = 0.1
 INITIAL_POSITION = (150, 0, 100)
-l1, l2, l3 = (115, 115, 110)
+l1, l2, l3 = (115, 115, 120)
 
 home = {
     1: 2048,  

@@ -45,6 +45,24 @@ def solve_ik(x_target, y_target, z_target, theta4_desired):
 
     return best_angles
 
+
+def forward_kinematics(theta0, theta1, theta2, theta3):
+    # suma kątów dla płaszczyzny XY-Z
+    t1 = theta1
+    t2 = theta1 + theta2
+    t3 = theta1 + theta2 + theta3
+
+    # współrzędne w układzie obróconym o theta0
+    r = l1 * math.cos(t1) + l2 * math.cos(t2) + l3 * math.cos(t3)
+    z = l1 * math.sin(t1) + l2 * math.sin(t2) + l3 * math.sin(t3)
+
+    # obrót wokół osi Z (podstawa)
+    x = r * math.cos(theta0)
+    y = r * math.sin(theta0)
+
+    return x, y, z, t3
+
+
 def singularity_check(angles, max_speed):
     wrist_x, wrist_y, wrist_z = find_wrist_point(angles) # type: ignore
     
