@@ -2,7 +2,7 @@ import time
 from st3215 import ST3215
 
 class ContinuousServoController:
-    def __init__(self, servo, gear_ratio=9, resolution=4096):
+    def __init__(self, servo, gear_ratio=8.95, resolution=4096):
         self.servo = servo
         self.gear_ratio = gear_ratio
         self.resolution = resolution
@@ -125,10 +125,3 @@ class ContinuousServoController:
         """Resetuje pozycję serwa do zera"""
         self._reset_position(servo_id)
         print(f"Serwo {servo_id}: Pozycja zresetowana")
-
-if __name__ == "__main__":
-    servo = ST3215('/dev/ttyACM0')
-    controller = ContinuousServoController(servo)  
-    
-    controller.rotate_by(1, 100, 1000)
-    

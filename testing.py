@@ -50,10 +50,10 @@ multi = ContinuousServoController(servo)
 
 
 ###################################################### MULTI ROTATE ####################################
-multi.rotate_by(1, 100, 1000)
+# multi.rotate_by(1, -500, 1000)
 
 ###################################################### Zatrzymanie serwa ##############################
-# servo.StopServo(1)
+servo.StopServo(1)
 
 
 
