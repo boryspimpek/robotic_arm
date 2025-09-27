@@ -51,8 +51,10 @@ def two():
         acc=100
     )
 
+
+# Wkladanie pisaka do zatyczki
 def three():
-    line_in_space(step=100)
+    # line_in_space(step=100)
     end=(141.63, 216.25, 17.23)
     start=(118.59, 181.06, 107.96)
     t3 = 0.43
@@ -76,8 +78,7 @@ def three():
     )
 
 def four():
-    line_in_space(step=100)
-
+    # line_in_space(step=100)
     end=(160.90, 242.41, 12.12)
     start=(147.71, 222.54, 109.23)
     t3 = 0.24

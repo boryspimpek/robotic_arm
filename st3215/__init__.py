@@ -5,4 +5,5 @@
 __version__ = "IN_PROGRESS"
 
 from .st3215 import *
+from .multi_turn import ContinuousServoController
 

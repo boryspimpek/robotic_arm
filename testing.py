@@ -2,12 +2,13 @@ import time
 import math
 from utilis import servo_positions, move_to_point, trajectory, servo_to_rad
 from ik import forward_kinematics
-from st3215 import ST3215
+from st3215 import ST3215, ContinuousServoController
 
 
 servo = ST3215('/dev/ttyACM0')
+multi = ContinuousServoController(servo)
 
-########## SETTING SECTION #################
+###################################################### SETTING SECTION #################
 
 ######################## List servos
 # print(servos := servo.ListServos())
@@ -24,7 +25,7 @@ servo = ST3215('/dev/ttyACM0')
 
 
 
-######################## SET MODE
+###################################################### SET MODE #############################
 
 # servo.SetMode(1, 0)
 # time.sleep(1)
@@ -32,7 +33,7 @@ servo = ST3215('/dev/ttyACM0')
 # print(mode)
 
 
-######################## Move single servo
+###################################################### Move single servo #############################
 # servo.MoveTo(1, 0, speed = 1000, acc = 20, wait = True)
 # time.sleep(1)
 # print(position := servo.ReadPosition(1))
@@ -48,13 +49,15 @@ servo = ST3215('/dev/ttyACM0')
 #     time.sleep(1)
 
 
+###################################################### MULTI ROTATE ####################################
+multi.rotate_by(1, 100, 1000)
 
-###################################################### Zatrzymanie serwa
-servo.StopServo(1)
+###################################################### Zatrzymanie serwa ##############################
+# servo.StopServo(1)
 
 
 
-####################### Move all
+###################################################### Move all #######################################
 # servo_targets = {
 #     1 : 1449,
 #     2 : 1595,
@@ -64,7 +67,7 @@ servo.StopServo(1)
 # servo.SyncMoveTo(servo_targets, 500, 50, wait=True)
 
 
-###################### Print servo angles and x, y, z, and 3 arm orientation to the ground
+###################################################### Print servo angles and x, y, z, and 3 arm orientation to the ground
 # servo_angles = servo_positions()
 # print(servo_angles) # wynik w takiej postaci {1: 1449, 2: 1595, 3: 3036, 4: 1242}
 
@@ -84,14 +87,14 @@ servo.StopServo(1)
 
 
 
-########################### Move to point
+##################################################### Move to point
 # point = (168, 220, 31)
 # move_to_point(point, max_speed=500, acc=10, wait=True, theta4_desired=0.39)
 
 
 
 
-########################## Test trajectory
+##################################################### Test trajectory
 # start = (0, 0, 340)    
 # end = (0, 0, 115)
 # move_to_point(start, max_speed=1200, acc=5, wait=True, theta4_desired=math.radians(90))
