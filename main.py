@@ -11,7 +11,7 @@ from scservo_sdk import gripper
 from utilis import DEADZONE, INITIAL_POSITION
 from utilis import move_to_point_2d, initialize_joystick, process_joystick_input_2d
 
-TRIANGLE_BUTTON_ID = 2
+CROSS_BUTTON_ID = 0
 CIRCLE_BUTTON_ID = 1
 R1_BUTTON_ID = 5
 
@@ -25,13 +25,13 @@ def main():
     step = 2 
     joystick = initialize_joystick()
     current_position = (INITIAL_POSITION[0], INITIAL_POSITION[2])
-    button_states = {TRIANGLE_BUTTON_ID: 0, CIRCLE_BUTTON_ID: 0, R1_BUTTON_ID:0}
+    button_states = {CROSS_BUTTON_ID: 0, CIRCLE_BUTTON_ID: 0, R1_BUTTON_ID:0}
     
     base_position = 2048  
     base_speed = 500  
     last_time = time.time()
     
-    move_to_point_2d(current_position, orientation_mode, base_position, max_speed=500)
+    move_to_point_2d(current_position, orientation_mode, base_position, max_speed=500, acc=250, wait=False)
     
     try:
         while True:
@@ -39,15 +39,15 @@ def main():
             delta_time = current_time - last_time
             last_time = current_time
             
-            triangle, circle, r1 = (joystick.get_button(btn) for btn in [TRIANGLE_BUTTON_ID, CIRCLE_BUTTON_ID, R1_BUTTON_ID])
+            cross, circle, r1 = (joystick.get_button(btn) for btn in [CROSS_BUTTON_ID, CIRCLE_BUTTON_ID, R1_BUTTON_ID])
             
-            if triangle == 1 and button_states[TRIANGLE_BUTTON_ID] == 0:
+            if cross == 1 and button_states[CROSS_BUTTON_ID] == 0:
                 orientation_mode = "down"
-                move_to_point_2d(current_position, orientation_mode, base_position)
+                move_to_point_2d(current_position, orientation_mode, base_position, max_speed=1000, acc=250, wait=False)
             
             if circle == 1 and button_states[CIRCLE_BUTTON_ID] == 0:
                 orientation_mode = "flat"
-                move_to_point_2d(current_position, orientation_mode, base_position)
+                move_to_point_2d(current_position, orientation_mode, base_position, max_speed=1000, acc=250, wait=False)
             
             if r1 == 1 and button_states[R1_BUTTON_ID] == 0:
                 if gripper_state == "close":
@@ -59,7 +59,7 @@ def main():
                     gripper_state = "close"
                     print("Chwytak zamknięty")
 
-            button_states = {TRIANGLE_BUTTON_ID: triangle, CIRCLE_BUTTON_ID: circle, R1_BUTTON_ID: r1}
+            button_states = {CROSS_BUTTON_ID: cross, CIRCLE_BUTTON_ID: circle, R1_BUTTON_ID: r1}
             
             new_position, rotation_input = process_joystick_input_2d(joystick, current_position, step)
             
@@ -74,7 +74,7 @@ def main():
             if new_position != current_position or needs_move:
                 try:
                     # base_position is already an integer now
-                    move_to_point_2d(new_position, orientation_mode, base_position)
+                    move_to_point_2d(new_position, orientation_mode, base_position, max_speed=1000, acc=250, wait=False)
                     current_position = new_position
                     print(f"Position: ({current_position[0]:.2f}, {current_position[1]:.2f}), Base: {base_position}")
                 

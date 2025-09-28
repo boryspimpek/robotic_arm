@@ -63,19 +63,3 @@ def forward_kinematics(theta0, theta1, theta2, theta3):
     return x, y, z, t3
 
 
-def singularity_check(angles, max_speed):
-    wrist_x, wrist_y, wrist_z = find_wrist_point(angles) # type: ignore
-    
-    wrist_distance = hypot(wrist_x, wrist_y, wrist_z)
-
-    max_reach = l1 + l2
-    distance_to_max = max_reach - wrist_distance
-    print(f"distance to max: {distance_to_max:.2f}")
-
-    exponent = 2
-    normalized = distance_to_max / (l1 + l2)
-    corrected_speed = (1 - (1 - normalized) ** exponent) * max_speed
-    corrected_speed = max(400, round(corrected_speed))  
-    # print(f"corrected speed: {corrected_speed:.2f}")
-
-    return corrected_speed

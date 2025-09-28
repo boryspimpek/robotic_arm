@@ -107,12 +107,13 @@ def move_to_point(point, max_speed, acc, wait, theta4_desired):
         return    
     servo.SyncMoveTo(servo_targets, max_speed, acc, wait)
 
-def move_to_point_2d(point, orientation_mode, base_rotation, max_speed=1000):
+def move_to_point_2d(point, orientation_mode, base_rotation, max_speed, acc, wait):
     """ This one uses Base orientation because IK function 
         calculates angles only in x/ z plane. Base rotation is provided with joystkick. 
         This function is meant to be used with joystick controller"""
     
     angles = solve_ik_2d(*point, orientation_mode)
+    # corrected_speed = singularity_check(angles, max_speed)
     servo_angles = [rad_to_servo(angle) for angle in angles]
     servo_targets = {
         1 : base_rotation,
@@ -124,7 +125,7 @@ def move_to_point_2d(point, orientation_mode, base_rotation, max_speed=1000):
     if errors := check_servo_angles(servo_targets):
         print("Błędy:", errors)
         return    
-    servo.SyncMoveTo(servo_targets, max_speed)
+    servo.SyncMoveTo(servo_targets, max_speed, acc, wait)
 
 def trajectory(x_start, y_start, z_start, theta4_start,
                  x_end, y_end, z_end, theta4_end,

@@ -6,4 +6,4 @@ servo = ST3215('/dev/ttyACM0')
 multi = ContinuousServoController(servo)
 
 
-multi.rotate_by(1, 1024, 1000)
+multi.rotate_by(1, 20, 1000)
