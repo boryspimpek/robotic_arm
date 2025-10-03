@@ -4,8 +4,7 @@ from math import cos, hypot, sin
 import pygame
 
 from config import DEADZONE, INITIAL_POSITION, SERVO_LIMITS, home, l1, l2, l3
-from ik import solve_ik, forward_kinematics
-from ik_2d import solve_ik_2d
+from ik import solve_ik, forward_kinematics, solve_ik_2d
 
 from scservo_sdk import gripper
 from st3215 import ST3215
